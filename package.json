@@ -1,0 +1,36 @@
+{
+  "name": "0xJsStarterProject",
+  "version": "0.0.0",
+  "description": "",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "shx rm -rf _bundles lib",
+    "lint": "tslint src/**/*.ts",
+    "download_snapshot": "download --extract --strip 1 --out 0x_testrpc_snapshot ${npm_package_config_snapshot_url}",
+    "testrpc": "testrpc -p 8545 --networkId 50 --db ./0x_testrpc_snapshot -m \"${npm_package_config_mnemonic}\""
+  },
+  "license": "Apache-2.0",
+  "config": {
+    "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
+    "snapshot_url": "https://s3.amazonaws.com/testrpc-shapshots/35053f9.zip"
+  },
+  "devDependencies": {
+    "@types/bignumber.js": "4.0.2",
+    "@types/node": "^8.0.46",
+    "download-cli": "^1.0.5",
+    "npm-run-all": "^4.1.1",
+    "shx": "^0.2.2",
+    "tslint": "^5.7.0",
+    "tslint-config-0xproject": "^0.0.2",
+    "typescript": "^2.4.2",
+    "web3-typescript-typings": "^0.6.2"
+  },
+  "dependencies": {
+    "0x.js": "0.22.0",
+    "bignumber.js": "4.0.2",
+    "ethereumjs-testrpc": "4.0.1",
+    "web3": "0.18"
+  }
+}

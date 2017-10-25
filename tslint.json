@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "tslint-config-0xproject"
+  ],
+  "rules": {
+      "no-console": {
+          "severity": "off" 
+      }
+  }
+}
