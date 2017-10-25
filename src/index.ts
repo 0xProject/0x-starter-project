@@ -26,22 +26,22 @@ const mainAsync = async () => {
     // Set our addresses
     const [makerAddress, takerAddress] = accounts;
 
-    // Unlimited allowances to 0x contract for maker and taker
-    const txHashAllowMaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS,  makerAddress);
-    await zeroEx.awaitTransactionMinedAsync(txHashAllowMaker);
-    console.log('Maker Allowance Mined...');
+    // Unlimited allowances to 0x proxy contract for maker and taker
+    const setMakerAllowTxHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS,  makerAddress);
+    await zeroEx.awaitTransactionMinedAsync(setMakerAllowTxHash);
+    console.log('Maker allowance mined...');
 
-    const txHashAllowTaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(WETH_ADDRESS, takerAddress);
-    await zeroEx.awaitTransactionMinedAsync(txHashAllowTaker);
-    console.log('Taker Allowance Mined...');
+    const setTakerAllowTxHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(WETH_ADDRESS, takerAddress);
+    await zeroEx.awaitTransactionMinedAsync(setTakerAllowTxHash);
+    console.log('Taker allowance mined...');
 
     // Deposit WETH
     const ethAmount = new BigNumber(1);
     const ethToConvert = ZeroEx.toBaseUnitAmount(ethAmount, DECIMALS); // Number of ETH to convert to WETH
 
-    const txHashWETH = await zeroEx.etherToken.depositAsync(ethToConvert, takerAddress);
-    await zeroEx.awaitTransactionMinedAsync(txHashWETH);
-    console.log(`${ethAmount} ETH -> WETH conversion Mined...`);
+    const convertEthTxHash = await zeroEx.etherToken.depositAsync(ethToConvert, takerAddress);
+    await zeroEx.awaitTransactionMinedAsync(convertEthTxHash);
+    console.log(`${ethAmount} ETH -> WETH conversion mined...`);
 
     // Generate order
     const order = {
@@ -85,7 +85,7 @@ const mainAsync = async () => {
 
     // Transaction receipt
     const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash);
-    console.log('FillOrder transaction receipt: ', txReceipt.logs);
+    console.log('FillOrder transaction receipt: ', txReceipt);
 };
 
 mainAsync()
