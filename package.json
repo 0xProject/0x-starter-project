@@ -17,7 +17,6 @@
     "snapshot_url": "https://s3.amazonaws.com/testrpc-shapshots/35053f9.zip"
   },
   "devDependencies": {
-    "@types/bignumber.js": "4.0.2",
     "@types/node": "^8.0.46",
     "download-cli": "^1.0.5",
     "npm-run-all": "^4.1.1",
@@ -28,8 +27,8 @@
     "web3-typescript-typings": "^0.6.2"
   },
   "dependencies": {
-    "0x.js": "0.22.0",
-    "bignumber.js": "4.0.2",
+    "0x.js": "^0.22.3",
+    "bignumber.js": "^4.1.0",
     "ethereumjs-testrpc": "4.0.1",
     "web3": "0.18"
   }

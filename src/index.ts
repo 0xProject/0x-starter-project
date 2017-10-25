@@ -1,6 +1,6 @@
 import * as Web3 from 'web3';
 import {ZeroEx} from '0x.js';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 // Provider pointing to local TestRPC on default port 8545
 const provider = new Web3.providers.HttpProvider('http://localhost:8545');
