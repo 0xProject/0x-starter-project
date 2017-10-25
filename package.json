@@ -6,6 +6,7 @@
   "types": "lib/src/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "dev": "npm run build; node ./lib/index.js",
     "clean": "shx rm -rf _bundles lib",
     "lint": "tslint src/**/*.ts",
     "download_snapshot": "download --extract --strip 1 --out 0x_testrpc_snapshot ${npm_package_config_snapshot_url}",
