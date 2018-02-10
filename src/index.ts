@@ -2,14 +2,14 @@ import { DecodedLogEvent, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
+const TESTRPC_NETWORK_ID = 50;
+
 // Provider pointing to local TestRPC on default port 8545
 const provider = new Web3.providers.HttpProvider('http://localhost:8545');
 
 // Instantiate 0x.js instance
-const TESTRPC_NETWORK_ID = 50;
 const configs = {
     networkId: TESTRPC_NETWORK_ID,
-    orderWatcherConfig: {},
 };
 const zeroEx = new ZeroEx(provider, configs);
 
@@ -18,7 +18,7 @@ const DECIMALS = 18;
 
 const mainAsync = async () => {
     // Addresses
-    const WETH_ADDRESS = '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c'; // The wrapped ETH token contract
+    const WETH_ADDRESS = zeroEx.etherToken.getContractAddressIfExists() as string; // The wrapped ETH token contract
     const ZRX_ADDRESS = zeroEx.exchange.getZRXTokenAddress(); // The ZRX token contract
     // The Exchange.sol address (0x exchange smart contract)
     const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
