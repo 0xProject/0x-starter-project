@@ -1,23 +1,27 @@
+import { DecodedLogEvent, ZeroEx } from '0x.js';
+import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
-import {ZeroEx} from '0x.js';
-import BigNumber from 'bignumber.js';
 
 // Provider pointing to local TestRPC on default port 8545
 const provider = new Web3.providers.HttpProvider('http://localhost:8545');
 
 // Instantiate 0x.js instance
-const zeroEx = new ZeroEx(provider);
+const TESTRPC_NETWORK_ID = 50;
+const configs = {
+    networkId: TESTRPC_NETWORK_ID,
+    orderWatcherConfig: {},
+};
+const zeroEx = new ZeroEx(provider, configs);
 
 // Number of decimals to use (for ETH and ZRX)
 const DECIMALS = 18;
 
 const mainAsync = async () => {
-
     // Addresses
-    const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync(); // The wrapped ETH token contract
-    const ZRX_ADDRESS = await zeroEx.exchange.getZRXTokenAddressAsync(); // The ZRX token contract
+    const WETH_ADDRESS = '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c'; // The wrapped ETH token contract
+    const ZRX_ADDRESS = zeroEx.exchange.getZRXTokenAddress(); // The ZRX token contract
     // The Exchange.sol address (0x exchange smart contract)
-    const EXCHANGE_ADDRESS = await zeroEx.exchange.getContractAddressAsync();
+    const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
 
     // Getting list of accounts
     const accounts = await zeroEx.getAvailableAddressesAsync();
@@ -27,9 +31,8 @@ const mainAsync = async () => {
     const [makerAddress, takerAddress] = accounts;
 
     // Unlimited allowances to 0x proxy contract for maker and taker
-    const setMakerAllowTxHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS,  makerAddress);
+    const setMakerAllowTxHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS, makerAddress);
     await zeroEx.awaitTransactionMinedAsync(setMakerAllowTxHash);
-    console.log('Maker allowance mined...');
 
     const setTakerAllowTxHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(WETH_ADDRESS, takerAddress);
     await zeroEx.awaitTransactionMinedAsync(setTakerAllowTxHash);
@@ -39,7 +42,7 @@ const mainAsync = async () => {
     const ethAmount = new BigNumber(1);
     const ethToConvert = ZeroEx.toBaseUnitAmount(ethAmount, DECIMALS); // Number of ETH to convert to WETH
 
-    const convertEthTxHash = await zeroEx.etherToken.depositAsync(ethToConvert, takerAddress);
+    const convertEthTxHash = await zeroEx.etherToken.depositAsync(WETH_ADDRESS, ethToConvert, takerAddress);
     await zeroEx.awaitTransactionMinedAsync(convertEthTxHash);
     console.log(`${ethAmount} ETH -> WETH conversion mined...`);
 
@@ -54,16 +57,17 @@ const mainAsync = async () => {
         salt: ZeroEx.generatePseudoRandomSalt(),
         makerFee: new BigNumber(0),
         takerFee: new BigNumber(0),
-        makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(0.2), DECIMALS),  // Base 18 decimals
-        takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(0.3), DECIMALS),  // Base 18 decimals
-        expirationUnixTimestampSec: new BigNumber(Date.now() + 3600000),          // Valid for up to an hour
+        makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(0.2), DECIMALS), // Base 18 decimals
+        takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(0.3), DECIMALS), // Base 18 decimals
+        expirationUnixTimestampSec: new BigNumber(Date.now() + 3600000), // Valid for up to an hour
     };
 
     // Create orderHash
     const orderHash = ZeroEx.getOrderHashHex(order);
 
     // Signing orderHash -> ecSignature
-    const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
+    const shouldAddPersonalMessagePrefix = true;
+    const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress, shouldAddPersonalMessagePrefix);
 
     // Appending signature to order
     const signedOrder = {
@@ -80,7 +84,10 @@ const mainAsync = async () => {
 
     // Filling order
     const txHash = await zeroEx.exchange.fillOrderAsync(
-        signedOrder, fillTakerTokenAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
+        signedOrder,
+        fillTakerTokenAmount,
+        shouldThrowOnInsufficientBalanceOrAllowance,
+        takerAddress,
     );
 
     // Transaction receipt
@@ -88,5 +95,4 @@ const mainAsync = async () => {
     console.log('FillOrder transaction receipt: ', txReceipt);
 };
 
-mainAsync()
-    .catch(err => console.log);
+mainAsync().catch(err => console.log);
