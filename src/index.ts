@@ -66,7 +66,7 @@ const mainAsync = async () => {
     const orderHash = ZeroEx.getOrderHashHex(order);
 
     // Signing orderHash -> ecSignature
-    const shouldAddPersonalMessagePrefix = true;
+    const shouldAddPersonalMessagePrefix = false;
     const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress, shouldAddPersonalMessagePrefix);
 
     // Appending signature to order
