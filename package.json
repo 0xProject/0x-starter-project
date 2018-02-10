@@ -15,7 +15,7 @@
     "license": "Apache-2.0",
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "snapshot_url": "https://s3.amazonaws.com/testrpc-shapshots/35053f9.zip"
+        "snapshot_url": "https://s3.amazonaws.com/testrpc-shapshots/07d00cc515e0f9825b81595386b358593b7a3d6f.zip"
     },
     "devDependencies": {
         "@types/node": "^8.0.53",
