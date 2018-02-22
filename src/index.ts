@@ -95,4 +95,4 @@ const mainAsync = async () => {
     console.log('FillOrder transaction receipt: ', txReceipt);
 };
 
-mainAsync().catch(err => console.log);
+mainAsync().catch(console.error);
