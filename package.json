@@ -2,8 +2,6 @@
     "name": "0xJsStarterProject",
     "version": "0.1.0",
     "description": "",
-    "main": "lib/src/index.js",
-    "types": "lib/src/index.d.ts",
     "scripts": {
         "api": "npm run build; node ./lib/utils/server.js",
         "build": "tsc",
