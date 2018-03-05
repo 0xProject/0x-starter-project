@@ -4,8 +4,6 @@
 
 ## 0x Starter Project
 
----
-
 This is a 0x starter project used in the following tutorials:
 
 * [Create, Validate, Fill Order](https://0xproject.com/wiki#Create,-Validate,-Fill-Order)
