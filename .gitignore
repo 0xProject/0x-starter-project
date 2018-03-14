@@ -62,3 +62,6 @@ typings/
 
 # dotenv environment variables file
 .env
+
+# indexing files
+.DS_Store

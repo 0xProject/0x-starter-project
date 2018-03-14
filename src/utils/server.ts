@@ -45,7 +45,7 @@ app.post('/v0/order', (req, res) => {
 app.post('/v0/fees', (req, res) => {
     console.log('HTTP: POST fees');
     const makerFee = new BigNumber(0).toString();
-    const takerFee = ZeroEx.toBaseUnitAmount(new BigNumber(10), 18).toString();
+    const takerFee = new BigNumber(0).toString();
     res.status(201).send({
         feeRecipient: ZeroEx.NULL_ADDRESS,
         makerFee,
