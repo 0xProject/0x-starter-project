@@ -71,7 +71,7 @@ function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, b
     
     let bid: {order: SignedOrder, state: OrderStateValid}|null;
     let ask: {order: SignedOrder, state: OrderStateValid}|null;
-    let gen = async (): Promise<OrderFillRequest[]|null> => {
+    const gen = async (): Promise<OrderFillRequest[]|null> => {
         // Find next bid that has available fill amount
         bid = await nextOrder(bidIterator, orderStateUtils);
 
@@ -87,7 +87,7 @@ function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, b
         let availableAskTakerAmount = ask.state.orderRelevantState.remainingFillableTakerTokenAmount;
         let initialAvailableBidAmount = availableBidMakerAmount;
 
-        let matchingAsks = [];
+        const matchingAsks = [];
         while (availableBidMakerAmount.gt(0)) {
             // Check that bid exchange rate is better than ask, and give 5% leeway for fees and gas
             if (helpers.getExchangeRate(bid.order).mul(helpers.getExchangeRate(ask.order)).lte(config.ARBITRAGE_PROFIT_MARGIN)) {
@@ -113,10 +113,10 @@ function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, b
         }
 
         if (matchingAsks.length > 0) {
-            let bidMakerFillAmount = initialAvailableBidAmount.minus(availableBidMakerAmount);
-            let bidTakerFillAmount = bidMakerFillAmount.div(helpers.getExchangeRate(bid.order)).round();
-            let bidOrderRequest: OrderFillRequest = {signedOrder: bid.order, takerTokenFillAmount: bidTakerFillAmount};
-            let orderFillRequests: OrderFillRequest[] = [bidOrderRequest, ...matchingAsks];
+            const bidMakerFillAmount = initialAvailableBidAmount.minus(availableBidMakerAmount);
+            const bidTakerFillAmount = bidMakerFillAmount.div(helpers.getExchangeRate(bid.order)).round();
+            const bidOrderRequest: OrderFillRequest = {signedOrder: bid.order, takerTokenFillAmount: bidTakerFillAmount};
+            const orderFillRequests: OrderFillRequest[] = [bidOrderRequest, ...matchingAsks];
 
             return orderFillRequests;
         }
@@ -190,20 +190,20 @@ const mainAsync = async () => {
 
     // Calculate and print out the exchange rates
     const bid_rates = sortedBids.map(order => {
-        let rate = helpers.getExchangeRate(order).toFormat(4);
-        let takerAmt = ZeroEx.toUnitAmount(order.takerTokenAmount, baseTokenInfo.decimals);
-        let makerAmt = ZeroEx.toUnitAmount(order.makerTokenAmount, quoteTokenInfo.decimals);
-        let orderHash = ZeroEx.getOrderHashHex(order).substring(0,5);
+        const rate = helpers.getExchangeRate(order).toFormat(4);
+        const takerAmt = ZeroEx.toUnitAmount(order.takerTokenAmount, baseTokenInfo.decimals);
+        const makerAmt = ZeroEx.toUnitAmount(order.makerTokenAmount, quoteTokenInfo.decimals);
+        const orderHash = ZeroEx.getOrderHashHex(order).substring(0,5);
         return (`${rate} ${quoteSymbol}/${baseSymbol}, buying ${takerAmt} ${baseSymbol}, selling ${makerAmt} ${quoteSymbol}, ${orderHash}`);
     });
     console.log('Bids:');
     console.log(bid_rates);
 
     const ask_rates = sortedAsks.map(order => {
-        let rate = new BigNumber(1).div(helpers.getExchangeRate(order)).toFormat(4);
-        let takerAmt = ZeroEx.toUnitAmount(order.takerTokenAmount, quoteTokenInfo.decimals);
-        let makerAmt = ZeroEx.toUnitAmount(order.makerTokenAmount, baseTokenInfo.decimals);
-        let orderHash = ZeroEx.getOrderHashHex(order).substring(0,5);
+        const rate = new BigNumber(1).div(helpers.getExchangeRate(order)).toFormat(4);
+        const takerAmt = ZeroEx.toUnitAmount(order.takerTokenAmount, quoteTokenInfo.decimals);
+        const makerAmt = ZeroEx.toUnitAmount(order.makerTokenAmount, baseTokenInfo.decimals);
+        const orderHash = ZeroEx.getOrderHashHex(order).substring(0,5);
         return (`${rate} ${quoteSymbol}/${baseSymbol}, buying ${takerAmt} ${quoteSymbol}, selling ${makerAmt} ${baseSymbol}, ${orderHash}`);
     });
     console.log('Asks:');
@@ -219,19 +219,19 @@ const mainAsync = async () => {
     // Iterate through batches and fill them
     const orderGen = orderBatchGenerator(zeroEx, orderStateUtils, sortedBids, sortedAsks);
     let batch: OrderFillRequest[]|null;
-    let batches: OrderFillRequest[][] = [];
+    const batches: OrderFillRequest[][] = [];
     while ((batch = await orderGen())) {
-        let bid = batch[0];
-        let asks = batch.slice(1);
-        let bidTakerFillAmount = ZeroEx.toUnitAmount(bid.takerTokenFillAmount, baseTokenInfo.decimals);
-        let bidMakerFillAmount = ZeroEx.toUnitAmount(helpers.convertTakerToMakerAmount(bid.signedOrder, bid.takerTokenFillAmount), quoteTokenInfo.decimals)
-        let bidOrderHash = ZeroEx.getOrderHashHex(bid.signedOrder).substring(0,8)
+        const bid = batch[0];
+        const asks = batch.slice(1);
+        const bidTakerFillAmount = ZeroEx.toUnitAmount(bid.takerTokenFillAmount, baseTokenInfo.decimals);
+        const bidMakerFillAmount = ZeroEx.toUnitAmount(helpers.convertTakerToMakerAmount(bid.signedOrder, bid.takerTokenFillAmount), quoteTokenInfo.decimals)
+        const bidOrderHash = ZeroEx.getOrderHashHex(bid.signedOrder).substring(0,8)
         console.log('--------------------------------');
         console.log(`Bid: ${bidTakerFillAmount} ${baseSymbol} -> ${bidMakerFillAmount} ${quoteSymbol}, ${bidOrderHash}`);
-        for (let ask of asks) {
-            let askTakerFillAmount = ZeroEx.toUnitAmount(ask.takerTokenFillAmount, quoteTokenInfo.decimals);
-            let askMakerFillAmount = ZeroEx.toUnitAmount(helpers.convertTakerToMakerAmount(ask.signedOrder, ask.takerTokenFillAmount), baseTokenInfo.decimals);
-            let askOrderHash = ZeroEx.getOrderHashHex(ask.signedOrder).substring(0,8);
+        for (const ask of asks) {
+            const askTakerFillAmount = ZeroEx.toUnitAmount(ask.takerTokenFillAmount, quoteTokenInfo.decimals);
+            const askMakerFillAmount = ZeroEx.toUnitAmount(helpers.convertTakerToMakerAmount(ask.signedOrder, ask.takerTokenFillAmount), baseTokenInfo.decimals);
+            const askOrderHash = ZeroEx.getOrderHashHex(ask.signedOrder).substring(0,8);
             console.log(`Ask: ${askTakerFillAmount} ${quoteSymbol} -> ${askMakerFillAmount} ${baseSymbol}, ${askOrderHash}`);
         }
 

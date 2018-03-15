@@ -14,7 +14,7 @@ import { idManagement } from './id_management';
 import { ZeroExConfig } from '0x.js';
 import { create } from 'domain';
 
-var IS_PRODUCTION = (process.env.TEST_MODE == 'false');
+const IS_PRODUCTION = (process.env.TEST_MODE == 'false');
 
 function createTestProviderEngine() {
     const engine = new ProviderEngine();

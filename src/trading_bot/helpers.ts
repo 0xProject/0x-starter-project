@@ -14,12 +14,12 @@ function getExchangeRate(order: Order|SignedOrder): BigNumber {
 }
 
 function convertTakerToMakerAmount(order:Order|SignedOrder, takerAmount:BigNumber) {
-    let exchangeRate = getExchangeRate(order);
+    const exchangeRate = getExchangeRate(order);
     return takerAmount.mul(exchangeRate).round();
 }
 
 function convertMakerToTakerAmount(order:Order|SignedOrder, makerAmount:BigNumber) {
-    let exchangeRate = getExchangeRate(order);
+    const exchangeRate = getExchangeRate(order);
     return makerAmount.div(exchangeRate).round();
 }
 
