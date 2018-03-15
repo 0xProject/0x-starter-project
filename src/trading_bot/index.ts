@@ -13,8 +13,7 @@ import {
     SignedOrder,
 } from '@0xproject/connect';
 import { BigNumber } from '@0xproject/utils';
-import * as Web3 from 'web3';
-import { config, RELAYER_URLS } from './config';
+import { config } from './config';
 import * as _ from 'lodash';
 import { helpers } from './helpers';
 
@@ -109,20 +108,17 @@ function orderBatchGenerator(zeroEx: ZeroEx, bids: SignedOrder[], asks: SignedOr
 }
 
 const mainAsync = async () => {
-    // Provider pointing to local TestRPC on default port 8545
-    const provider = new Web3.providers.HttpProvider('http://localhost:8545');
+    // Create a provider engine
+    const providerEngine = config.PROVIDER_CREATOR_FN();
 
     // Instantiate 0x.js instance
-    const zeroExConfig: ZeroExConfig = {
-        networkId: 50, // testrpc
-    };
-    const zeroEx = new ZeroEx(provider, zeroExConfig);
+    const zeroEx = new ZeroEx(providerEngine, config.ZERO_EX_CONFIG);
 
     // Instantiate relayer clients
-    const relayerClients = RELAYER_URLS.map(url => new HttpClient(url));
+    const relayerClients = config.RELAYER_URLS.map(url => new HttpClient(url));
 
     // Get exchange contract address
-    const EXCHANGE_ADDRESS = await zeroEx.exchange.getContractAddress();
+    const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
 
     // Get the symbols from config
     const quoteSymbol = config.QUOTE_TOKEN_SYMBOL;
@@ -136,6 +132,11 @@ const mainAsync = async () => {
     if (quoteTokenInfo === undefined || baseTokenInfo === undefined) {
         throw new Error('could not find token info');
     }
+
+    console.log('Quote Token Info: ');
+    console.log(quoteTokenInfo);
+    console.log('Base Token Info: ');
+    console.log(baseTokenInfo);
 
     // Get token contract addresses
     const quoteTokenAddress = quoteTokenInfo.address;
@@ -212,18 +213,22 @@ const mainAsync = async () => {
     }
     console.log('--------------------------------');
 
-    const txnHashes = await Promise.all(batches.map(async (batch) => {
-        return zeroEx.exchange.batchFillOrKillAsync(batch, zrxOwnerAddress);
-    }));
-    await Promise.all(txnHashes.map((txnHash) => {
-        return zeroEx.awaitTransactionMinedAsync(txnHash);
-    }))
+    console.log('BATCH FILL OR KILL REMOVED');
+    // const txnHashes = await Promise.all(batches.map(async (batch) => {
+    //     return zeroEx.exchange.batchFillOrKillAsync(batch, zrxOwnerAddress);
+    // }));
+    // await Promise.all(txnHashes.map((txnHash) => {
+    //     return zeroEx.awaitTransactionMinedAsync(txnHash);
+    // }))
 
     // Get balances after the fill
     const baseBalanceAfterFill = await zeroEx.token.getBalanceAsync(baseTokenAddress, zrxOwnerAddress);
     const quoteBalanceAfterFill = await zeroEx.token.getBalanceAsync(quoteTokenAddress, zrxOwnerAddress);
     console.log(`${baseSymbol} After: ` + ZeroEx.toUnitAmount(baseBalanceAfterFill, baseTokenInfo.decimals).toString());
     console.log(`${quoteSymbol} After: ` + ZeroEx.toUnitAmount(quoteBalanceAfterFill, quoteTokenInfo.decimals).toString());
+
+    // Stop the providerEngine so that the process can end
+    providerEngine.stop()
 };
 
 mainAsync().catch(console.error);

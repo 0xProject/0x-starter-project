@@ -65,3 +65,6 @@ typings/
 
 # indexing files
 .DS_Store
+
+# Swap files
+*.swp
