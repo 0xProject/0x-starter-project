@@ -4,7 +4,7 @@ import * as Web3 from 'web3';
 // to know whether it is running in a browser or node environment. We need it to be undefined since
 // we are not running in a browser env.
 // Filed issue: https://github.com/ethereum/web3.js/issues/844
-(global as any).XMLHttpRequest = undefined; 
+(global as any).XMLHttpRequest = undefined;
 
 import ProviderEngine = require('web3-provider-engine');
 import { NonceTrackerSubprovider } from '@0xproject/subproviders';
@@ -18,7 +18,7 @@ const IS_PRODUCTION = (process.env.TEST_MODE == 'false');
 
 function createTestProviderEngine() {
     const engine = new ProviderEngine();
-    engine.addProvider(new RpcSubprovider({rpcUrl: 'http://localhost:8545'}));
+    engine.addProvider(new RpcSubprovider({ rpcUrl: 'http://localhost:8545' }));
     engine.start()
     return engine;
 }
@@ -27,7 +27,7 @@ function createMainnetProviderEngine() {
     const engine = new ProviderEngine();
     engine.addProvider(new NonceTrackerSubprovider());
     engine.addProvider(new HookedWalletSubprovider(idManagement));
-    engine.addProvider(new RpcSubprovider({rpcUrl: 'https://mainnet.infura.io/' + process.env.INFURA_API_KEY}));
+    engine.addProvider(new RpcSubprovider({ rpcUrl: 'https://mainnet.infura.io/' + process.env.INFURA_API_KEY }));
     engine.start()
     return engine;
 }
@@ -69,4 +69,3 @@ export const config = {
     PROVIDER_CREATOR_FN,
     ZERO_EX_CONFIG
 }
-
