@@ -23,20 +23,8 @@ function convertMakerToTakerAmount(order:Order|SignedOrder, makerAmount:BigNumbe
     return makerAmount.div(exchangeRate).round();
 }
 
-async function getFillableTakerAmount(zeroEx: ZeroEx, order: Order|SignedOrder): Promise<BigNumber> {
-    let orderHash = ZeroEx.getOrderHashHex(order);
-    return order.takerTokenAmount.minus(await zeroEx.exchange.getUnavailableTakerAmountAsync(orderHash));
-}
-
-async function getFillableMakerAmount(zeroEx: ZeroEx, order: Order|SignedOrder): Promise<BigNumber> {
-    let fillableTakerAmount = await getFillableTakerAmount(zeroEx, order);
-    return convertTakerToMakerAmount(order, fillableTakerAmount);
-}
-
 export const helpers = {
     getExchangeRate,
     convertTakerToMakerAmount,
-    convertMakerToTakerAmount,
-    getFillableTakerAmount,
-    getFillableMakerAmount
-}
+    convertMakerToTakerAmount
+};
