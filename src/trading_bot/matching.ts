@@ -51,18 +51,25 @@ async function nextOrder(iter: IterableIterator<SignedOrder>, orderStateUtils: O
 // Returns batches of orders that result in positive arbitrage.
 // Terminates with a null return value;
 function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, bids: SignedOrder[], asks: SignedOrder[],
-                             quoteTokenInfo: Token, baseTokenInfo: Token): () => Promise<OrderFillRequest[] | null> {
+                             quoteTokenInfo: Token, baseTokenInfo: Token, taker?: string): () => Promise<OrderFillRequest[] | null> {
     const bidIterator = helpers.sortOrders(bids, quoteTokenInfo, baseTokenInfo)[Symbol.iterator]();
     const askIterator = helpers.sortOrders(asks, baseTokenInfo, quoteTokenInfo)[Symbol.iterator]();
 
     let bid: { order: SignedOrder, state: OrderStateValid } | null;
     let ask: { order: SignedOrder, state: OrderStateValid } | null;
+    let availableAskTakerAmount = new BigNumber(0);
     const gen = async (): Promise<OrderFillRequest[] | null> => {
         // Find next bid that has available fill amount
-        bid = await nextOrder(bidIterator, orderStateUtils);
+        bid = await nextOrder(bidIterator, orderStateUtils, taker);
 
         // There may be an ask with available fill amount from prev run (mainly for initial run)
-        if (!ask) { ask = await nextOrder(askIterator, orderStateUtils); }
+        if (!ask) { 
+            ask = await nextOrder(askIterator, orderStateUtils, taker); 
+            if (ask) {
+                availableAskTakerAmount = ask.state.orderRelevantState.remainingFillableTakerTokenAmount;
+            }
+        }
+        // console.log('ASK: '+availableAskTakerAmount.toString());
 
         if (!bid || !ask) {
             // Reached end of one of the lists
@@ -70,8 +77,8 @@ function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, b
         }
 
         let availableBidMakerAmount = bid.state.orderRelevantState.remainingFillableMakerTokenAmount;
-        let availableAskTakerAmount = ask.state.orderRelevantState.remainingFillableTakerTokenAmount;
         const initialAvailableBidAmount = availableBidMakerAmount;
+        // console.log('BID: '+availableBidMakerAmount.toString());
 
         const matchingAsks = [];
         while (availableBidMakerAmount.gt(0)) {
@@ -88,6 +95,7 @@ function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, b
                     matchingAsks.push({ signedOrder: ask.order, takerTokenFillAmount: availableBidMakerAmount });
                     availableAskTakerAmount = availableAskTakerAmount.minus(availableBidMakerAmount);
                     availableBidMakerAmount = new BigNumber(0);
+                    break;
                 }
                 // Otherwise, completely fill ask
                 else {
@@ -96,7 +104,7 @@ function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, b
                 }
             }
 
-            ask = await nextOrder(askIterator, orderStateUtils);
+            ask = await nextOrder(askIterator, orderStateUtils, taker);
             if (!ask) { break; }
 
             availableAskTakerAmount = ask.state.orderRelevantState.remainingFillableTakerTokenAmount;
