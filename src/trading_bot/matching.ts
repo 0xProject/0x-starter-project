@@ -34,7 +34,7 @@ async function nextOrder(iter: IterableIterator<SignedOrder>, orderStateUtils: O
         state = await orderStateUtils.getOrderStateAsync(order);
 
         // Go to next order if in an invalid state
-        if (!state.isValid) { console.log(state.error); continue; }
+        if (!state.isValid) { continue; }
 
         // Check that there is some available fill amount
         availableMakerAmount = (state as OrderStateValid).orderRelevantState.remainingFillableMakerTokenAmount;
@@ -48,11 +48,10 @@ async function nextOrder(iter: IterableIterator<SignedOrder>, orderStateUtils: O
     return { order, state: validState }
 }
 
+// Returns batches of orders that result in positive arbitrage.
+// Terminates with a null return value;
 function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, bids: SignedOrder[], asks: SignedOrder[],
-                             quoteTokenInfo: Token, baseTokenInfo: Token):
-    () => Promise<OrderFillRequest[] | null> {
-    // Returns batches of orders that result in positive arbitrage.
-    // Terminates with a null return value;
+                             quoteTokenInfo: Token, baseTokenInfo: Token): () => Promise<OrderFillRequest[] | null> {
     const bidIterator = helpers.sortOrders(bids, quoteTokenInfo, baseTokenInfo)[Symbol.iterator]();
     const askIterator = helpers.sortOrders(asks, baseTokenInfo, quoteTokenInfo)[Symbol.iterator]();
 
@@ -72,7 +71,7 @@ function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, b
 
         let availableBidMakerAmount = bid.state.orderRelevantState.remainingFillableMakerTokenAmount;
         let availableAskTakerAmount = ask.state.orderRelevantState.remainingFillableTakerTokenAmount;
-        let initialAvailableBidAmount = availableBidMakerAmount;
+        const initialAvailableBidAmount = availableBidMakerAmount;
 
         const matchingAsks = [];
         while (availableBidMakerAmount.gt(0)) {
@@ -99,6 +98,8 @@ function orderBatchGenerator(zeroEx: ZeroEx, orderStateUtils: OrderStateUtils, b
 
             ask = await nextOrder(askIterator, orderStateUtils);
             if (!ask) { break; }
+
+            availableAskTakerAmount = ask.state.orderRelevantState.remainingFillableTakerTokenAmount;
         }
 
         if (matchingAsks.length > 0) {

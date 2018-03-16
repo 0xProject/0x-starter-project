@@ -33,11 +33,6 @@ function createMainnetProviderEngine() {
 }
 
 // Local mode
-const testConfig = {
-    ARBITRAGE_PROFIT_MARGIN: 1.01,
-    QUOTE_TOKEN_SYMBOL: 'WETH',
-    BASE_TOKEN_SYMBOL: 'ZRX',
-}
 const testRpcRelayerUrls = [
     'http://localhost:3000/v0'
 ]
@@ -61,8 +56,8 @@ const ZERO_EX_CONFIG: ZeroExConfig = IS_PRODUCTION ? mainnetZeroExConfig : testZ
 export const config = {
     IS_PRODUCTION,
     ARBITRAGE_PROFIT_MARGIN: 1.05,
-    QUOTE_TOKEN_SYMBOL: 'ZRX',
-    BASE_TOKEN_SYMBOL: 'WETH',
+    QUOTE_TOKEN_SYMBOL: 'WETH',
+    BASE_TOKEN_SYMBOL: 'ZRX',
     BOT_ADDRESS: process.env.BOT_ADDRESS,
     BOT_PRIVATE_KEY: process.env.BOT_PRIVATE_KEY,
     RELAYER_URLS,

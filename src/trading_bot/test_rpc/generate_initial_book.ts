@@ -66,7 +66,7 @@ const mainAsync = async () => {
     }));
 
     // There is a bug on test_rpc that errors on trades that bring a token balance to 0
-    const eth = ZeroEx.toBaseUnitAmount(new BigNumber('1'), wethTokenInfo.decimals);
+    const eth = ZeroEx.toBaseUnitAmount(new BigNumber('10'), wethTokenInfo.decimals);
     const ethTxnHash = await zeroEx.etherToken.depositAsync(WETH_ADDRESS, eth, zrxOwnerAddress);
     await zeroEx.awaitTransactionMinedAsync(ethTxnHash);
 
