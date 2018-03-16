@@ -2,7 +2,7 @@ import 'mocha';
 import * as chai from 'chai';
 import { Token, ZeroEx } from '0x.js';
 import { SignedOrder } from '@0xproject/connect';
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import { helpers } from '../../src/trading_bot/helpers';
 
 // TODO: should become a shared dependency

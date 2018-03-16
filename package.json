@@ -15,7 +15,7 @@
         "relayer_websocket:part2": "npm run build; node ./lib/src/tutorials/relayer_websocket/generate_new_orders_with_interval.js",
         "trading_bot_testrpc": "npm run build; node ./lib/src/trading_bot/test_rpc/generate_initial_book.js; node ./lib/src/trading_bot/index.js",
         "trading_bot": "npm run build; dotenv -e .env node ./lib/src/trading_bot/index.js",
-        "run_mocha": "mocha lib/test/**/*_test.js",
+        "run_mocha": "mocha lib/test/**/*_test.js --timeout 10000 --bail --exit",
         "test": "run-s clean build run_mocha"
     },
     "license": "Apache-2.0",
@@ -24,6 +24,7 @@
         "snapshot_url": "https://s3.amazonaws.com/testrpc-shapshots/07d00cc515e0f9825b81595386b358593b7a3d6f.zip"
     },
     "devDependencies": {
+        "@0xproject/dev-utils": "^0.2.1",
         "@types/body-parser": "^1.16.8",
         "@types/express": "^4.11.1",
         "@types/lodash": "^4.14.104",
