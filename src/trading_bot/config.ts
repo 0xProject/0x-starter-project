@@ -61,8 +61,8 @@ const ZERO_EX_CONFIG: ZeroExConfig = IS_PRODUCTION ? mainnetZeroExConfig : testZ
 export const config = {
     IS_PRODUCTION,
     ARBITRAGE_PROFIT_MARGIN: 1.05,
-    QUOTE_TOKEN_SYMBOL: 'WETH',
-    BASE_TOKEN_SYMBOL: 'ZRX',
+    QUOTE_TOKEN_SYMBOL: 'ZRX',
+    BASE_TOKEN_SYMBOL: 'WETH',
     BOT_ADDRESS: process.env.BOT_ADDRESS,
     BOT_PRIVATE_KEY: process.env.BOT_PRIVATE_KEY,
     RELAYER_URLS,

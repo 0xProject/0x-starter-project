@@ -10,26 +10,26 @@ import { BigNumber } from '@0xproject/utils';
 // when converting back and forth from maker to taker amount using exchange rate.
 BigNumber.config({ DECIMAL_PLACES: 35 })
 
-function getExchangeRate(order: Order | SignedOrder, makerTokenInfo: Token, takerTokenInfo: Token): BigNumber {
+function getExchangeRate(order: Order, makerTokenInfo: Token, takerTokenInfo: Token): BigNumber {
     const makerUnitAmount = ZeroEx.toUnitAmount(order.makerTokenAmount, makerTokenInfo.decimals);
     const takerUnitAmount = ZeroEx.toUnitAmount(order.takerTokenAmount, takerTokenInfo.decimals);
     return makerUnitAmount.div(takerUnitAmount);
 }
 
-function convertTakerToMakerAmount(order: Order | SignedOrder, takerBaseUnitAmount: BigNumber, makerTokenInfo: Token, takerTokenInfo: Token) {
+function convertTakerToMakerAmount(order: Order, takerBaseUnitAmount: BigNumber, makerTokenInfo: Token, takerTokenInfo: Token) {
     const exchangeRate = getExchangeRate(order, makerTokenInfo, takerTokenInfo);
     const takerUnitAmount = ZeroEx.toUnitAmount(takerBaseUnitAmount, takerTokenInfo.decimals);
-    const makerUnitAmount = takerUnitAmount.mul(exchangeRate);
-    const makerBaseUnitAmount = ZeroEx.toUnitAmount(makerUnitAmount, makerTokenInfo.decimals);
-    return makerBaseUnitAmount;
+    const makerUnitAmount = takerUnitAmount.mul(exchangeRate).round(makerTokenInfo.decimals);
+    const makerBaseUnitAmount = ZeroEx.toBaseUnitAmount(makerUnitAmount, makerTokenInfo.decimals);
+    return makerBaseUnitAmount.floor();
 }
 
-function convertMakerToTakerAmount(order: Order | SignedOrder, makerBaseUnitAmount: BigNumber, makerTokenInfo: Token, takerTokenInfo: Token) {
+function convertMakerToTakerAmount(order: Order, makerBaseUnitAmount: BigNumber, makerTokenInfo: Token, takerTokenInfo: Token) {
     const exchangeRate = getExchangeRate(order, makerTokenInfo, takerTokenInfo);
     const makerUnitAmount = ZeroEx.toUnitAmount(makerBaseUnitAmount, makerTokenInfo.decimals);
-    const takerUnitAmount = makerBaseUnitAmount.mul(exchangeRate);
-    const takerBaseUnitAmount = ZeroEx.toUnitAmount(makerUnitAmount, takerTokenInfo.decimals);
-    return takerBaseUnitAmount;
+    const takerUnitAmount = makerUnitAmount.div(exchangeRate).round(takerTokenInfo.decimals);
+    const takerBaseUnitAmount = ZeroEx.toBaseUnitAmount(takerUnitAmount, takerTokenInfo.decimals);
+    return takerBaseUnitAmount.floor();
 }
 
 function sortOrders(orders: SignedOrder[], makerTokenInfo: Token, takerTokenInfo: Token) {

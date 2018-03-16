@@ -1,5 +1,20 @@
+declare module 'chai-bignumber';
+declare module 'dirty-chai';
 declare module 'web3-provider-engine/subproviders/hooked-wallet';
 declare module 'web3-provider-engine/subproviders/rpc';
+
+// HACK: In order to merge the bignumber declaration added by chai-bignumber to the chai Assertion
+// interface we must use `namespace` as the Chai definitelyTyped definition does. Since we otherwise
+// disallow `namespace`, we disable tslint for the following.
+/* tslint:disable */
+declare namespace Chai {
+    interface Assertion {
+        bignumber: Assertion;
+        // HACK: In order to comply with chai-as-promised we make eventually a `PromisedAssertion` not an `Assertion`
+        eventually: PromisedAssertion;
+    }
+}
+/* tslint:enable */
 
 // Ethereumjs-tx declarations
 declare module 'ethereumjs-tx' {
