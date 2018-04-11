@@ -10,4 +10,4 @@ This is a 0x starter project used in the following tutorials:
 * [Find, Submit, Fill Order From Relayer](https://0xproject.com/wiki#Find,-Submit,-Fill-Order-From-Relayer)
 * [Subscribe Relayer WebSocket](https://0xproject.com/wiki#Subscribe-Relayer-WebSocket) 
 
-The tutorials are published in the 0x wiki. The instructions on how to get started can be found there.
+The tutorials are published in the [0x wiki](https://0xproject.com/wiki). The instructions on how to get started can be found there.
