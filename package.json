@@ -12,13 +12,15 @@
         "testrpc": "cross-env testrpc -p 8545 --networkId 50 --db ./0x_testrpc_snapshot -m \"${npm_package_config_mnemonic}\"",
         "tutorial:order_actions": "cross-env node ./lib/tutorials/order_actions/index.js",
         "tutorial:relayer_actions": "cross-env node ./lib/tutorials/relayer_actions/index.js",
+        "tutorial:aggregate_orderbook": "cross-env node ./lib/tutorials/aggregate_orderbook/index.js",
         "tutorial:relayer_websocket:part1": "cross-env node ./lib/tutorials/relayer_websocket/index.js",
         "tutorial:relayer_websocket:part2": "cross-env node ./lib/tutorials/relayer_websocket/generate_new_orders_with_interval.js",
         "generate_initial_order_book": "cross-env node ./lib/tutorials/relayer_websocket/generate_initial_book.js",
         "relayer_actions": "run-s build tutorial:relayer_actions",
         "order_actions": "run-s build tutorial:order_actions",
         "relayer_websocket:part1": "run-s build generate_initial_order_book tutorial:relayer_websocket:part1",
-        "relayer_websocket:part2": "run-s build tutorial:relayer_websocket:part2"
+        "relayer_websocket:part2": "run-s build tutorial:relayer_websocket:part2",
+        "aggregate_orderbook": "run-s build tutorial:aggregate_orderbook"
     },
     "license": "Apache-2.0",
     "config": {
@@ -26,9 +28,12 @@
         "snapshot_url": "https://s3.amazonaws.com/testrpc-shapshots/07d00cc515e0f9825b81595386b358593b7a3d6f.zip"
     },
     "devDependencies": {
+        "@0xproject/typescript-typings": "^0.2.0",
         "@types/body-parser": "^1.16.8",
         "@types/express": "^4.11.1",
+        "@types/lodash": "^4.14.108",
         "@types/node": "^8.0.53",
+        "@types/query-string": "^5.1.0",
         "@types/websocket": "^0.0.37",
         "cross-env": "^5.1.4",
         "download-cli": "^1.0.5",
@@ -36,17 +41,22 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
-        "typescript": "2.7.1",
-        "@0xproject/typescript-typings": "^0.2.0"
+        "typescript": "2.7.1"
     },
     "dependencies": {
         "0x.js": "0.36.3",
         "@0xproject/connect": "^0.6.10",
+        "@0xproject/subproviders": "^0.9.0",
         "@0xproject/tslint-config": "^0.4.16",
         "@0xproject/utils": "^0.5.2",
         "body-parser": "^1.18.2",
+        "debug": "^3.1.0",
         "express": "^4.16.2",
+        "isomorphic-fetch": "^2.2.1",
+        "lodash": "^4.17.10",
+        "query-string": "^6.1.0",
         "web3": "^0.20.0",
+        "web3-provider-engine": "^14.0.5",
         "websocket": "^1.0.25"
     }
 }
