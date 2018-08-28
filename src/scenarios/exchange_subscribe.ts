@@ -16,7 +16,7 @@ import { PrintUtils } from '../print_utils';
  * will create a process to listen to the events, execute another scenario such as fill_order
  * to see the logs printed out.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Exchange Subscribe');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -54,7 +54,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);

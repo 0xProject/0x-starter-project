@@ -22,7 +22,7 @@ import { PrintUtils } from '../print_utils';
  * this Standard Relayer API to discover orders.
  * The taker fills this order via the 0x Exchange contract.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order Standard Relayer API');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -143,7 +143,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);

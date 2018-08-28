@@ -19,7 +19,7 @@ import { PrintUtils } from '../print_utils';
  * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
  * The taker takes this order and fills it via the 0x Exchange contract.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -132,7 +132,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);

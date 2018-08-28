@@ -23,7 +23,7 @@ import { PrintUtils } from '../print_utils';
  * and the rightMaker pays the rightOrder maker fee.
  * Any spread in the two orders is sent to the sender.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Match Orders');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -184,7 +184,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);

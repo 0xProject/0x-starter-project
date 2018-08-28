@@ -20,7 +20,7 @@ import { PrintUtils } from '../print_utils';
  * The taker uses the forwarding contract to buy these tokens. When using
  * the forwarding contract the taker does not require any additional setup.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Forwarder Buy Tokens');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -131,7 +131,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);

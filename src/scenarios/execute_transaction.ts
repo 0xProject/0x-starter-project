@@ -24,7 +24,7 @@ import { PrintUtils } from '../print_utils';
  * The maker creates and signs the order. The signed order and fillOrder parameters for the
  * execute transaction function call are signed by the taker.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Execute Transaction fillOrder');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -181,7 +181,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);

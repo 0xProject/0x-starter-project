@@ -20,7 +20,7 @@ import { PrintUtils } from '../print_utils';
  * This order has ZRX fees for both the maker and taker, paid out to the fee recipient.
  * The taker takes this order and fills it via the 0x Exchange contract.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order with Fees');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -147,7 +147,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);

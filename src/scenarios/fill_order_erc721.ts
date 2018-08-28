@@ -19,7 +19,7 @@ import { PrintUtils } from '../print_utils';
  * In this scenario, the maker creates and signs an order for selling an ERC721 token for WETH.
  * The taker fills it via the 0x Exchange contract.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order ERC721');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -140,7 +140,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);

@@ -10,7 +10,7 @@ import { PrintUtils } from '../print_utils';
  * In this scenario, the maker creates and signs many orders selling ZRX for WETH.
  * The maker is able to cancel all any number of these orders effeciently by using cancelOrdersUpTo.
  */
-export async function scenario(): Promise<void> {
+export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Cancel Orders Up To');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
@@ -99,7 +99,7 @@ export async function scenario(): Promise<void> {
 void (async () => {
     try {
         if (!module.parent) {
-            await scenario();
+            await scenarioAsync();
         }
     } catch (e) {
         console.log(e);
