@@ -8,9 +8,9 @@ export const mnemonicWallet = new MnemonicWalletSubprovider({
     baseDerivationPath: BASE_DERIVATION_PATH,
 });
 
-export const providerEng = new Web3ProviderEngine();
-providerEng.addProvider(mnemonicWallet);
-providerEng.addProvider(new RPCSubprovider(NETWORK_CONFIGS.rpcUrl));
-providerEng.start();
+export const pe = new Web3ProviderEngine();
+pe.addProvider(mnemonicWallet);
+pe.addProvider(new RPCSubprovider(NETWORK_CONFIGS.rpcUrl));
+pe.start();
 
-export const providerEngine = providerEng;
+export const providerEngine = pe;
