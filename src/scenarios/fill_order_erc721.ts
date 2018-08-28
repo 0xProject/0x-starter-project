@@ -22,7 +22,7 @@ import { PrintUtils } from '../print_utils';
 export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order ERC721');
     // Initialize the ContractWrappers, this provides helper functions around calling
-    // contracts on the blockchain
+    // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     const dummyERC721TokenContract = dummyERC721TokenContracts[0];
     if (!dummyERC721TokenContract) {

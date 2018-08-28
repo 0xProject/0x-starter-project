@@ -23,7 +23,7 @@ import { PrintUtils } from '../print_utils';
 export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Forwarder Buy Tokens');
     // Initialize the ContractWrappers, this provides helper functions around calling
-    // contracts on the blockchain
+    // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, {
         networkId: NETWORK_CONFIGS.networkId,
         forwarderContractAddress: NETWORK_CONFIGS.forwarderAddress,

@@ -27,7 +27,7 @@ import { PrintUtils } from '../print_utils';
 export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Execute Transaction fillOrder');
     // Initialize the ContractWrappers, this provides helper functions around calling
-    // contracts on the blockchain
+    // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     // Initialize the Web3Wraper, this provides helper functions around calling
     // account information, balances, general contract logs
