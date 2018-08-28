@@ -12,7 +12,7 @@ import { APIOrder, OrderbookResponse } from '@0xproject/connect';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
-import { NETWORK_ID } from './constants';
+import { NETWORK_CONFIGS } from './configs';
 import { providerEngine } from './contracts';
 
 const HTTP_OK_STATUS = 200;
@@ -24,7 +24,7 @@ const orders: SignedOrder[] = [];
 const ordersByHash: { [hash: string]: SignedOrder } = {};
 
 // We subscribe to the Exchange Events to remove any filled or cancelled orders
-const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_ID });
+const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
 contractWrappers.exchange.subscribe(
     ExchangeEvents.Fill,
     {},
@@ -69,7 +69,7 @@ app.get('/v2/orderbook', (req, res) => {
     const networkIdRaw = req.query.networkId;
     // tslint:disable-next-line:custom-no-magic-numbers
     const networkId = parseInt(networkIdRaw, 10);
-    if (networkId !== NETWORK_ID) {
+    if (networkId !== NETWORK_CONFIGS.networkId) {
         console.log(`Incorrect Network ID: ${networkId}`);
         res.status(HTTP_BAD_REQUEST_STATUS).send({});
     } else {
@@ -86,7 +86,7 @@ app.post('/v2/order', (req, res) => {
     const networkIdRaw = req.query.networkId;
     // tslint:disable-next-line:custom-no-magic-numbers
     const networkId = parseInt(networkIdRaw, 10);
-    if (networkId !== NETWORK_ID) {
+    if (networkId !== NETWORK_CONFIGS.networkId) {
         console.log(`Incorrect Network ID: ${networkId}`);
         res.status(HTTP_BAD_REQUEST_STATUS).send({});
     } else {

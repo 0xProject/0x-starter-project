@@ -7,7 +7,7 @@ import {
     IndexedFilterValues,
 } from '0x.js';
 
-import { NETWORK_ID } from '../constants';
+import { NETWORK_CONFIGS } from '../configs';
 import { providerEngine } from '../contracts';
 import { PrintUtils } from '../print_utils';
 
@@ -20,7 +20,7 @@ export async function scenario(): Promise<void> {
     PrintUtils.printScenario('Exchange Subscribe');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_ID });
+    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     // No filter, get all of the Fill Events
     const filterValues: IndexedFilterValues = {};
     // Subscribe to the Fill Events on the Exchange

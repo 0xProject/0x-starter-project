@@ -10,7 +10,8 @@ import {
 } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-import { NETWORK_ID, NULL_ADDRESS, TEN_MINUTES, TX_DEFAULTS, ZERO } from '../constants';
+import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
+import { NULL_ADDRESS, TEN_MINUTES, ZERO } from '../constants';
 import { dummyERC721TokenContracts, providerEngine } from '../contracts';
 import { PrintUtils } from '../print_utils';
 
@@ -22,7 +23,7 @@ export async function scenario(): Promise<void> {
     PrintUtils.printScenario('Fill Order ERC721');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_ID });
+    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     const dummyERC721TokenContract = dummyERC721TokenContracts[0];
     if (!dummyERC721TokenContract) {
         console.log('No Dummy ERC721 Tokens deployed on this network');

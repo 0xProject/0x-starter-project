@@ -1,12 +1,12 @@
 import { ContractWrappers } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-import { NETWORK_ID } from '../constants';
+import { NETWORK_CONFIGS } from '../configs';
 import { providerEngine } from '../contracts';
 import { PrintUtils } from '../print_utils';
 
 void (async () => {
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_ID });
+    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();
     const zrxTokenAddress = contractWrappers.exchange.getZRXTokenAddress();

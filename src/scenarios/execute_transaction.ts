@@ -11,7 +11,8 @@ import {
 } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-import { NETWORK_ID, NULL_ADDRESS, TEN_MINUTES, TX_DEFAULTS } from '../constants';
+import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
+import { NULL_ADDRESS, TEN_MINUTES } from '../constants';
 import { providerEngine } from '../contracts';
 import { PrintUtils } from '../print_utils';
 
@@ -27,7 +28,7 @@ export async function scenario(): Promise<void> {
     PrintUtils.printScenario('Execute Transaction fillOrder');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_ID });
+    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     // Initialize the Web3Wraper, this provides helper functions around calling
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);

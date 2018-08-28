@@ -10,7 +10,8 @@ import {
 } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-import { FORWARDER_ADDRESS, NETWORK_ID, NULL_ADDRESS, TEN_MINUTES, TX_DEFAULTS, ZERO } from '../constants';
+import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
+import { NULL_ADDRESS, TEN_MINUTES, ZERO } from '../constants';
 import { providerEngine } from '../contracts';
 import { PrintUtils } from '../print_utils';
 
@@ -24,8 +25,8 @@ export async function scenario(): Promise<void> {
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, {
-        networkId: NETWORK_ID,
-        forwarderContractAddress: FORWARDER_ADDRESS,
+        networkId: NETWORK_CONFIGS.networkId,
+        forwarderContractAddress: NETWORK_CONFIGS.forwarderAddress,
     });
     // Initialize the Web3Wraper, this provides helper functions around calling
     // account information, balances, general contract logs

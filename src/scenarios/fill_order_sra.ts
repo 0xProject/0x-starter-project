@@ -11,7 +11,8 @@ import {
 import { HttpClient, OrderbookRequest } from '@0xproject/connect';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-import { NETWORK_ID, NULL_ADDRESS, TEN_MINUTES, TX_DEFAULTS, ZERO } from '../constants';
+import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
+import { NULL_ADDRESS, TEN_MINUTES, ZERO } from '../constants';
 import { providerEngine } from '../contracts';
 import { PrintUtils } from '../print_utils';
 
@@ -25,7 +26,7 @@ export async function scenario(): Promise<void> {
     PrintUtils.printScenario('Fill Order Standard Relayer API');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_ID });
+    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     // Initialize the Web3Wraper, this provides helper functions around calling
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
@@ -114,11 +115,11 @@ export async function scenario(): Promise<void> {
 
     // Create a HTTP Client to query the SRA Endpoint
     const httpClient = new HttpClient('http://localhost:3000/v2/');
-    await httpClient.submitOrderAsync(signedOrder, { networkId: NETWORK_ID });
+    await httpClient.submitOrderAsync(signedOrder, { networkId: NETWORK_CONFIGS.networkId });
 
     // Taker queries the Orderbook from the Relayer
     const orderbookRequest: OrderbookRequest = { baseAssetData: makerAssetData, quoteAssetData: takerAssetData };
-    const response = await httpClient.getOrderbookAsync(orderbookRequest, { networkId: NETWORK_ID });
+    const response = await httpClient.getOrderbookAsync(orderbookRequest, { networkId: NETWORK_CONFIGS.networkId });
     if (response.asks.total === 0) {
         throw new Error('No orders found on the SRA Endpoint');
     }

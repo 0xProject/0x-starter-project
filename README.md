@@ -62,22 +62,18 @@ All the scenarios commands can be found in the `package.json`'s `scripts` sectio
 
 ### Switching to Kovan
 
-To switch between Kovan/ganache, uncomment the appropriate lines in `src/constants.ts` and re-build. Ganache is enabled by default.
+To switch between Kovan/ganache, change the last line in `src/configs.ts` and re-build. Ganache is enabled by default.
 
 For Ganache:
 
 ```
-// Ganache
-export const RPC_URL = GANACHE_RPC;
-export const NETWORK_ID = GANACHE_NETWORK_ID;
+export const NETWORK_CONFIGS = GANACHE_CONFIGS;
 ```
 
 For Kovan:
 
 ```
-// Kovan
-export const RPC_URL = KOVAN_RPC;
-export const NETWORK_ID = KOVAN_NETWORK_ID;
+export const NETWORK_CONFIGS = KOVAN_CONFIGS;
 ```
 
 ### Fill Order SRA Example
