@@ -2,8 +2,8 @@ import { ContractWrappers } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS } from '../configs';
-import { providerEngine } from '../provider_engine';
 import { PrintUtils } from '../print_utils';
+import { providerEngine } from '../provider_engine';
 
 void (async () => {
     const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });

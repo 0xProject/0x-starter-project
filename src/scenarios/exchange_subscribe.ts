@@ -8,8 +8,8 @@ import {
 } from '0x.js';
 
 import { NETWORK_CONFIGS } from '../configs';
-import { providerEngine } from '../provider_engine';
 import { PrintUtils } from '../print_utils';
+import { providerEngine } from '../provider_engine';
 
 /**
  * In this scenario, we will subscribe to the Exchange events, listening for Fills. This
