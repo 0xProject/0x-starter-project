@@ -2,7 +2,7 @@ import { ContractWrappers } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS } from '../configs';
-import { providerEngine } from '../contracts';
+import { providerEngine } from '../provider_engine';
 import { PrintUtils } from '../print_utils';
 
 void (async () => {

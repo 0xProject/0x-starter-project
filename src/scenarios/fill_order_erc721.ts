@@ -12,8 +12,9 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { NULL_ADDRESS, TEN_MINUTES, ZERO } from '../constants';
-import { dummyERC721TokenContracts, providerEngine } from '../contracts';
+import { dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
+import { providerEngine } from '../provider_engine';
 
 /**
  * In this scenario, the maker creates and signs an order for selling an ERC721 token for WETH.
@@ -33,7 +34,7 @@ export async function scenarioAsync(): Promise<void> {
     if (!etherTokenAddress) {
         throw new Error('Ether Token not found on this network');
     }
-    // Initialize the Web3Wraper, this provides helper functions around calling
+    // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();

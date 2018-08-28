@@ -12,8 +12,8 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { NULL_ADDRESS, TEN_MINUTES, ZERO } from '../constants';
-import { providerEngine } from '../contracts';
 import { PrintUtils } from '../print_utils';
+import { providerEngine } from '../provider_engine';
 
 /**
  * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
@@ -24,7 +24,7 @@ export async function scenarioAsync(): Promise<void> {
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
-    // Initialize the Web3Wraper, this provides helper functions around calling
+    // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();

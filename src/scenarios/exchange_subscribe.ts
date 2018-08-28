@@ -8,7 +8,7 @@ import {
 } from '0x.js';
 
 import { NETWORK_CONFIGS } from '../configs';
-import { providerEngine } from '../contracts';
+import { providerEngine } from '../provider_engine';
 import { PrintUtils } from '../print_utils';
 
 /**

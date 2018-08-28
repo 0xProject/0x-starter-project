@@ -1,20 +1,8 @@
-import { RPCSubprovider, Web3ProviderEngine } from '0x.js';
-import { MnemonicWalletSubprovider } from '@0xproject/subproviders';
-
 import { artifacts } from './artifacts';
-import { BASE_DERIVATION_PATH, GANACHE_CONFIGS, MNEMONIC, NETWORK_CONFIGS } from './configs';
+import { GANACHE_CONFIGS, NETWORK_CONFIGS } from './configs';
 import { DummyERC20TokenContract } from './generated_contract_wrappers/dummy_erc20_token';
 import { DummyERC721TokenContract } from './generated_contract_wrappers/dummy_erc721_token';
-
-export const mnemonicWallet = new MnemonicWalletSubprovider({
-    mnemonic: MNEMONIC,
-    baseDerivationPath: BASE_DERIVATION_PATH,
-});
-
-export const providerEngine = new Web3ProviderEngine();
-providerEngine.addProvider(mnemonicWallet);
-providerEngine.addProvider(new RPCSubprovider(NETWORK_CONFIGS.rpcUrl));
-providerEngine.start();
+import { providerEngine } from './provider_engine';
 
 // These are only deployed on Ganache
 export const dummyERC20TokenContracts: DummyERC20TokenContract[] = [];

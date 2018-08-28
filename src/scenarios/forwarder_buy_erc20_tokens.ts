@@ -12,7 +12,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { NULL_ADDRESS, TEN_MINUTES, ZERO } from '../constants';
-import { providerEngine } from '../contracts';
+import { providerEngine } from '../provider_engine';
 import { PrintUtils } from '../print_utils';
 
 /**
@@ -28,7 +28,7 @@ export async function scenarioAsync(): Promise<void> {
         networkId: NETWORK_CONFIGS.networkId,
         forwarderContractAddress: NETWORK_CONFIGS.forwarderAddress,
     });
-    // Initialize the Web3Wraper, this provides helper functions around calling
+    // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();

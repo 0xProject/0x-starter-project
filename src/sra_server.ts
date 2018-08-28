@@ -13,7 +13,7 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
 import { NETWORK_CONFIGS } from './configs';
-import { providerEngine } from './contracts';
+import { providerEngine } from './provider_engine';
 
 const HTTP_OK_STATUS = 200;
 const HTTP_BAD_REQUEST_STATUS = 400;
