@@ -38,16 +38,17 @@ export async function scenarioAsync(): Promise<void> {
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();
+
     const printUtils = new PrintUtils(web3Wrapper, contractWrappers, { maker, taker }, { WETH: etherTokenAddress });
     printUtils.printAccounts();
 
-    // the amount the maker is selling in maker asset (1 ERC721 Token)
+    // the amount the maker is selling of maker asset (1 ERC721 Token)
     const makerAssetAmount = new BigNumber(1);
-    // the amount the maker is wanting in taker asset
+    // the amount the maker wants of taker asset
     const takerAssetAmount = new BigNumber(10);
     // Generate a random token id
     const tokenId = generatePseudoRandomSalt();
-    // 0x v2 uses asset data to encode the correct proxy type and additional parameters
+    // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC721AssetData(dummyERC721TokenContract.address, tokenId);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
     let txHash;
@@ -56,7 +57,7 @@ export async function scenarioAsync(): Promise<void> {
     const mintTxHash = await dummyERC721TokenContract.mint.sendTransactionAsync(maker, tokenId, { from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Mint ERC721 Token', mintTxHash);
 
-    // Approve the ERC721 Proxy to move the ERC721 tokens for maker
+    // Allow the 0x ERC721 Proxy to move ERC721 tokens on behalf of maker
     const makerERC721ApprovalTxHash = await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
         dummyERC721TokenContract.address,
         maker,
@@ -64,14 +65,14 @@ export async function scenarioAsync(): Promise<void> {
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ERC721 Approval', makerERC721ApprovalTxHash);
 
-    // Approve the ERC20 Proxy to move WETH for takerAccount
+    // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
     const takerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
         etherTokenAddress,
         taker,
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
-    // Deposit ETH into WETH for the taker
+    // Convert ETH into WETH for taker by depositing ETH into the WETH contract
     const takerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
         etherTokenAddress,
         takerAssetAmount,
@@ -114,7 +115,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractBalancesAsync();
     await printUtils.fetchAndPrintERC721OwnerAsync(dummyERC721TokenContract.address, tokenId);
 
-    // Generate the order hash and sign the order
+    // Generate the order hash and sign it
     const orderHashHex = orderHashUtils.getOrderHashHex(order);
     const signature = await signatureUtils.ecSignOrderHashAsync(
         providerEngine,

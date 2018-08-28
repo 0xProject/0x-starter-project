@@ -12,8 +12,8 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { NULL_ADDRESS, TEN_MINUTES, ZERO } from '../constants';
-import { providerEngine } from '../provider_engine';
 import { PrintUtils } from '../print_utils';
+import { providerEngine } from '../provider_engine';
 
 /**
  * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
@@ -45,17 +45,17 @@ export async function scenarioAsync(): Promise<void> {
     );
     printUtils.printAccounts();
 
-    // the amount the maker is selling in maker asset
+    // the amount the maker is selling of maker asset
     const makerAssetAmount = new BigNumber(100);
-    // the amount the maker is wanting in taker asset
+    // the amount the maker wants of taker asset
     const takerAssetAmount = new BigNumber(10);
-    // 0x v2 uses asset data to encode the correct proxy type and additional parameters
+    // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
     let txHash;
     let txReceipt;
 
-    // Approve the ERC20 Proxy to move ZRX for makerAccount
+    // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
     const makerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
         zrxTokenAddress,
         maker,
@@ -91,7 +91,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractAllowancesAsync();
     await printUtils.fetchAndPrintContractBalancesAsync();
 
-    // Generate the order hash and sign the order
+    // Generate the order hash and sign it
     const orderHashHex = orderHashUtils.getOrderHashHex(order);
     const signature = await signatureUtils.ecSignOrderHashAsync(
         providerEngine,

@@ -32,11 +32,11 @@ export async function scenarioAsync(): Promise<void> {
     );
     printUtils.printAccounts();
 
-    // the amount the maker is selling in maker asset
+    // the amount the maker is selling of maker asset
     const makerAssetAmount = new BigNumber(100);
-    // the amount the maker is wanting in taker asset
+    // the amount the maker wants of taker asset
     const takerAssetAmount = new BigNumber(10);
-    // 0x v2 uses asset data to encode the correct proxy type and additional parameters
+    // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
 

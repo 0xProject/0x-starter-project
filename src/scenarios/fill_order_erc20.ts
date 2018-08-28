@@ -41,31 +41,31 @@ export async function scenarioAsync(): Promise<void> {
     );
     printUtils.printAccounts();
 
-    // the amount the maker is selling in maker asset
+    // the amount the maker is selling of maker asset
     const makerAssetAmount = new BigNumber(100);
-    // the amount the maker is wanting in taker asset
+    // the amount the maker wants of taker asset
     const takerAssetAmount = new BigNumber(10);
-    // 0x v2 uses asset data to encode the correct proxy type and additional parameters
+    // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
     let txHash;
     let txReceipt;
 
-    // Approve the ERC20 Proxy to move ZRX for makerAccount
+    // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
     const makerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
         zrxTokenAddress,
         maker,
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
 
-    // Approve the ERC20 Proxy to move WETH for takerAccount
+    // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
     const takerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
         etherTokenAddress,
         taker,
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
-    // Deposit ETH into WETH for the taker
+    // Convert ETH into WETH for taker by depositing ETH into the WETH contract
     const takerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
         etherTokenAddress,
         takerAssetAmount,
@@ -106,7 +106,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractAllowancesAsync();
     await printUtils.fetchAndPrintContractBalancesAsync();
 
-    // Generate the order hash and sign the order
+    // Generate the order hash and sign it
     const orderHashHex = orderHashUtils.getOrderHashHex(order);
     const signature = await signatureUtils.ecSignOrderHashAsync(
         providerEngine,
@@ -115,6 +115,7 @@ export async function scenarioAsync(): Promise<void> {
         SignerType.Default,
     );
     const signedOrder = { ...order, signature };
+
     // Fill the Order via 0x Exchange contract
     txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerAssetAmount, taker, {
         gasLimit: TX_DEFAULTS.gas,
