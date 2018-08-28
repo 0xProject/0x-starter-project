@@ -3,9 +3,8 @@ import { MnemonicWalletSubprovider } from '@0xproject/subproviders';
 
 import { artifacts } from './artifacts';
 import { BASE_DERIVATION_PATH, GANACHE_NETWORK_ID, MNEMONIC, NETWORK_ID, RPC_URL } from './constants';
-import { DummyERC20TokenContract } from './contract_wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from './contract_wrappers/dummy_erc721_token';
-import { ForwarderContract } from './contract_wrappers/forwarder';
+import { DummyERC20TokenContract } from './generated_contract_wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from './generated_contract_wrappers/dummy_erc721_token';
 
 export const mnemonicWallet = new MnemonicWalletSubprovider({
     mnemonic: MNEMONIC,
@@ -16,13 +15,6 @@ export const providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWallet);
 providerEngine.addProvider(new RPCSubprovider(RPC_URL));
 providerEngine.start();
-
-// Extract the Proxy addresses
-export const forwarderContract = new ForwarderContract(
-    artifacts.Forwarder.compilerOutput.abi,
-    artifacts.Forwarder.networks[NETWORK_ID].address,
-    providerEngine,
-);
 
 // These are only deployed on Ganache
 export const dummyERC20TokenContracts: DummyERC20TokenContract[] = [];

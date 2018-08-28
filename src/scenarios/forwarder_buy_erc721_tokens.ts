@@ -10,8 +10,8 @@ import {
 } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-import { NETWORK_ID, NULL_ADDRESS, TEN_MINUTES, TX_DEFAULTS, ZERO } from '../constants';
-import { dummyERC721TokenContracts, forwarderContract, providerEngine } from '../contracts';
+import { FORWARDER_ADDRESS, NETWORK_ID, NULL_ADDRESS, TEN_MINUTES, TX_DEFAULTS, ZERO } from '../constants';
+import { dummyERC721TokenContracts, providerEngine } from '../contracts';
 import { PrintUtils } from '../print_utils';
 
 /**
@@ -23,7 +23,10 @@ export async function scenario(): Promise<void> {
     PrintUtils.printScenario('Forwarder Buy ERC721 token');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_ID });
+    const contractWrappers = new ContractWrappers(providerEngine, {
+        networkId: NETWORK_ID,
+        forwarderContractAddress: FORWARDER_ADDRESS,
+    });
     const dummyERC721TokenContract = dummyERC721TokenContracts[0];
     if (!dummyERC721TokenContract) {
         console.log('No Dummy ERC721 Tokens deployed on this network');
@@ -104,21 +107,23 @@ export async function scenario(): Promise<void> {
         maker,
         SignerType.Default,
     );
+    const signedOrder = {
+        ...order,
+        signature,
+    };
 
     // Use the Forwarder to market buy the ERC721 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
-    txHash = await forwarderContract.marketBuyOrdersWithEth.sendTransactionAsync(
-        [order],
+    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+        [signedOrder],
         order.makerAssetAmount,
-        [signature],
-        [],
+        taker,
+        order.takerAssetAmount,
         [],
         new BigNumber(0),
         NULL_ADDRESS,
         {
-            ...TX_DEFAULTS,
-            from: taker,
-            value: order.takerAssetAmount,
+            gasLimit: TX_DEFAULTS.gas,
         },
     );
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('marketBuyTokensWithEth', txHash);

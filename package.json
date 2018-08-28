@@ -4,11 +4,11 @@
     "main": "lib/scenarios/fill_order.js",
     "description": "0x Starter Project",
     "scripts": {
-        "lint": "tslint --format stylish --project . --exclude **/src/contract_wrappers/**/*",
+        "lint": "tslint --format stylish --project . --exclude **/src/generated_contract_wrappers/**/*",
         "watch_without_deps": "cross-env yarn pre_build && tsc -w",
         "build": "cross-env yarn pre_build && tsc",
-        "pre_build": "run-s generate_contract_wrappers copy_artifacts",
-        "clean": "shx rm -rf lib artifacts src/contract_wrappers",
+        "pre_build": "run-s copy_artifacts",
+        "clean": "shx rm -rf lib artifacts",
         "copy_artifacts": "copyfiles -u 1 './src/artifacts/**/*' ./lib",
         "download_snapshot": "cross-env download --extract --strip 1 --out 0x_testrpc_snapshot ${npm_package_config_snapshot_url}",
         "ganache-cli": "cross-env ganache-cli --gasLimit 10000000 --noVMErrorsOnRPCResponse --db 0x_testrpc_snapshot --noVMErrorsOnRPCResponse -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
@@ -22,13 +22,11 @@
         "scenario:match_orders": "cross-env yarn run build && node ./lib/scenarios/match_orders.js",
         "scenario:execute_transaction": "cross-env yarn run build && node ./lib/scenarios/execute_transaction.js",
         "scenario:cancel_orders_up_to": "cross-env yarn run build && node ./lib/scenarios/cancel_orders_up_to.js",
-        "scenario:forwarder_buy_tokens": "cross-env yarn run build && node ./lib/scenarios/forwarder_buy_tokens.js",
+        "scenario:forwarder_buy_erc20_tokens": "cross-env yarn run build && node ./lib/scenarios/forwarder_buy_erc20_tokens.js",
         "scenario:forwarder_buy_erc721_tokens": "cross-env yarn run build && node ./lib/scenarios/forwarder_buy_erc721_tokens.js",
-        "scenario:exchange_subscribe": "cross-env yarn run build && node ./lib/scenarios/exchange_subscribe.js",
-        "generate_contract_wrappers": "cross-env abi-gen --abis ${npm_package_config_abis} --template ./contract_templates/contract.handlebars --partials './contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers"
+        "scenario:exchange_subscribe": "cross-env yarn run build && node ./lib/scenarios/exchange_subscribe.js"
     },
     "config": {
-        "abis": "./src/artifacts/@(DummyERC20Token|DummyERC721Token|Forwarder|WETH9).json",
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "snapshot_url": "https://s3.amazonaws.com/testrpc-shapshots/2c62504b79315099346665225d3637662ff87db6.zip"
     },
