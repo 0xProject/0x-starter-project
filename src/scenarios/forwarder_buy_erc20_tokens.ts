@@ -11,7 +11,7 @@ import {
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { NULL_ADDRESS, TEN_MINUTES, ZERO } from '../constants';
+import { NULL_ADDRESS, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 
@@ -65,7 +65,7 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printData('Setup', [['Maker ZRX Approval', makerZRXApprovalTxHash]]);
 
     // Set up the Order and fill it
-    const randomExpiration = new BigNumber(Date.now() + TEN_MINUTES);
+    const randomExpiration = new BigNumber(Date.now() + TEN_MINUTES_MS).div(ONE_MINUTE_MS);
     const exchangeAddress = contractWrappers.exchange.getContractAddress();
 
     // Create the order

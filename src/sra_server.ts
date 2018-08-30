@@ -60,7 +60,7 @@ const app = express();
 app.use(bodyParser.json());
 /**
  * GET Orderbook endpoint retrieves the orderbook for a given asset pair.
- * http://sra-api.s3-website-us-east-1.amazonaws.com/#operation/getOrderbook
+ * http://sra-spec.s3-website-us-east-1.amazonaws.com/#operation/getOrderbook
  */
 app.get('/v2/orderbook', (req, res) => {
     console.log('HTTP: GET orderbook');
@@ -79,7 +79,7 @@ app.get('/v2/orderbook', (req, res) => {
 });
 /**
  * POST Order endpoint submits an order to the Relayer.
- * http://sra-api.s3-website-us-east-1.amazonaws.com/#operation/postOrder
+ * http://sra-spec.s3-website-us-east-1.amazonaws.com/#operation/postOrder
  */
 app.post('/v2/order', (req, res) => {
     console.log('HTTP: POST order');

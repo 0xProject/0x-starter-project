@@ -2,7 +2,7 @@ import { assetDataUtils, BigNumber, ContractWrappers, Order } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS } from '../configs';
-import { NULL_ADDRESS, ONE_MINUTE, TEN_MINUTES, ZERO } from '../constants';
+import { NULL_ADDRESS, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 
@@ -41,7 +41,7 @@ export async function scenarioAsync(): Promise<void> {
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
 
     // Set up the Order and fill it
-    const randomExpiration = new BigNumber(Date.now() + TEN_MINUTES);
+    const randomExpiration = new BigNumber(Date.now() + TEN_MINUTES_MS).div(ONE_MINUTE_MS);
     const exchangeAddress = contractWrappers.exchange.getContractAddress();
 
     // Rather than using a random salt, we use an incrementing salt value.
@@ -56,7 +56,7 @@ export async function scenarioAsync(): Promise<void> {
         senderAddress: NULL_ADDRESS,
         feeRecipientAddress: NULL_ADDRESS,
         expirationTimeSeconds: randomExpiration,
-        salt: new BigNumber(Date.now() - TEN_MINUTES),
+        salt: new BigNumber(Date.now() - TEN_MINUTES_MS),
         makerAssetAmount,
         takerAssetAmount,
         makerAssetData,
@@ -67,7 +67,7 @@ export async function scenarioAsync(): Promise<void> {
 
     const order2: Order = {
         ...order1,
-        salt: new BigNumber(Date.now() - ONE_MINUTE),
+        salt: new BigNumber(Date.now() - ONE_MINUTE_MS),
     };
 
     const order3: Order = {
