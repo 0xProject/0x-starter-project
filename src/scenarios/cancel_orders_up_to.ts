@@ -5,6 +5,7 @@ import { NETWORK_CONFIGS } from '../configs';
 import { NULL_ADDRESS, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
+import { getRandomFutureDateInSeconds } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs many orders selling ZRX for WETH.
@@ -41,7 +42,7 @@ export async function scenarioAsync(): Promise<void> {
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
 
     // Set up the Order and fill it
-    const randomExpiration = new BigNumber(Date.now() + TEN_MINUTES_MS).div(ONE_MINUTE_MS);
+    const randomExpiration = getRandomFutureDateInSeconds();
     const exchangeAddress = contractWrappers.exchange.getContractAddress();
 
     // Rather than using a random salt, we use an incrementing salt value.

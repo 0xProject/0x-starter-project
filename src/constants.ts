@@ -1,7 +1,9 @@
 import { BigNumber } from '0x.js';
 
 // tslint:disable-next-line:custom-no-magic-numbers
-export const ONE_MINUTE_MS = 60 * 1000;
+export const ONE_SECOND_MS = 1000;
+// tslint:disable-next-line:custom-no-magic-numbers
+export const ONE_MINUTE_MS = ONE_SECOND_MS * 60;
 // tslint:disable-next-line:custom-no-magic-numbers
 export const TEN_MINUTES_MS = ONE_MINUTE_MS * 10;
 // tslint:disable-next-line:custom-no-magic-numbers

@@ -14,6 +14,7 @@ import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { NULL_ADDRESS, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
+import { getRandomFutureDateInSeconds } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
@@ -80,7 +81,7 @@ export async function scenarioAsync(): Promise<void> {
     ]);
 
     // Set up the Order and fill it
-    const randomExpiration = new BigNumber(Date.now() + TEN_MINUTES_MS).div(ONE_MINUTE_MS);
+    const randomExpiration = getRandomFutureDateInSeconds();
     const exchangeAddress = contractWrappers.exchange.getContractAddress();
 
     // Create the order
