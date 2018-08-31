@@ -4,6 +4,7 @@
         "no-console": {
             "severity": "off"
         },
+        "no-unused-variable": true,
         "forin": false
     }
 }

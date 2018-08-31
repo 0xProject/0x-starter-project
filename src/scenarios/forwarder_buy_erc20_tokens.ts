@@ -11,7 +11,7 @@ import {
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { NULL_ADDRESS, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants';
+import { NULL_ADDRESS, ZERO } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds } from '../utils';
