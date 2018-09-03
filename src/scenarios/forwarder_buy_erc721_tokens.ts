@@ -11,7 +11,7 @@ import {
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { NULL_ADDRESS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
 import { dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -48,8 +48,8 @@ export async function scenarioAsync(): Promise<void> {
 
     // the amount the maker is selling of maker asset: 1 ERC721 Token
     const makerAssetAmount = new BigNumber(1);
-    // the amount the maker wants of taker asset
-    const takerAssetAmount = new BigNumber(10);
+    // the amount the maker is selling of maker asset
+    const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
     const tokenId = generatePseudoRandomSalt();
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC721AssetData(dummyERC721TokenContract.address, tokenId);

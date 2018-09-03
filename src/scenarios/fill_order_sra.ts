@@ -12,7 +12,7 @@ import { HttpClient, OrderbookRequest } from '@0xproject/connect';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { NULL_ADDRESS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds } from '../utils';
@@ -48,9 +48,9 @@ export async function scenarioAsync(): Promise<void> {
     const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
     // the amount the maker is selling of maker asset
-    const makerAssetAmount = new BigNumber(100);
+    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), DECIMALS);
     // the amount the maker wants of taker asset
-    const takerAssetAmount = new BigNumber(10);
+    const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
 
     let txHash;
     let txReceipt;

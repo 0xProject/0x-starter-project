@@ -4,7 +4,7 @@ import { DecodedLogArgs, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs }
 import * as _ from 'lodash';
 import ora = require('ora');
 
-import { UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from './constants';
+import { DECIMALS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from './constants';
 
 // tslint:disable-next-line:no-var-requires
 const Table = require('cli-table');
@@ -135,7 +135,8 @@ export class PrintUtils {
             const tokenAddress = this._tokens[tokenSymbol];
             for (const account in this._accounts) {
                 const address = this._accounts[account];
-                const balance = await this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, address);
+                const balanceBaseUnits = await this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, address);
+                const balance = Web3Wrapper.toUnitAmount(balanceBaseUnits, DECIMALS);
                 balances.push(balance.toString());
             }
             flattenedBalances.push(balances);
