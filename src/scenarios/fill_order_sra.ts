@@ -8,7 +8,7 @@ import {
     signatureUtils,
     SignerType,
 } from '0x.js';
-import { HttpClient, OrderbookRequest } from '@0xproject/connect';
+import { HttpClient, OrderbookRequest, OrderConfigRequest } from '@0xproject/connect';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
@@ -83,25 +83,38 @@ export async function scenarioAsync(): Promise<void> {
         ['Taker WETH Deposit', takerWETHDepositTxHash],
     ]);
 
-    // Set up the Order and fill it
+    // Generate and expiration time and find the exchange smart contract address
     const randomExpiration = getRandomFutureDateInSeconds();
     const exchangeAddress = contractWrappers.exchange.getContractAddress();
 
-    // Create the order
-    const order: Order = {
+    // Initialize the Standard Relayer API client
+    const httpClient = new HttpClient('http://localhost:3000/v2/');
+
+    // Ask the relayer about the parameters they require for the order
+    const orderConfigRequest = {
         exchangeAddress,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
-        senderAddress: NULL_ADDRESS,
-        feeRecipientAddress: NULL_ADDRESS,
         expirationTimeSeconds: randomExpiration,
-        salt: generatePseudoRandomSalt(),
         makerAssetAmount,
         takerAssetAmount,
         makerAssetData,
         takerAssetData,
-        makerFee: ZERO,
-        takerFee: ZERO,
+    };
+    const orderConfig = await httpClient.getOrderConfigAsync({
+        // TODO: OrderConfigRequest should just accept BigNumber
+        // https://github.com/0xProject/0x-monorepo/pull/1058
+        ...orderConfigRequest,
+        expirationTimeSeconds: orderConfigRequest.expirationTimeSeconds.toString(),
+        makerAssetAmount: orderConfigRequest.makerAssetAmount.toString(),
+        takerAssetAmount: orderConfigRequest.takerAssetAmount.toString(),
+    }, { networkId: NETWORK_CONFIGS.networkId });
+
+    // Create the order
+    const order: Order = {
+        salt: generatePseudoRandomSalt(),
+        ...orderConfigRequest,
+        ...orderConfig,
     };
 
     // Generate the order hash and sign it
@@ -114,8 +127,7 @@ export async function scenarioAsync(): Promise<void> {
     );
     const signedOrder = { ...order, signature };
 
-    // Create a HTTP Client to query the SRA Endpoint
-    const httpClient = new HttpClient('http://localhost:3000/v2/');
+    // Submit the order to the SRA Endpoint
     await httpClient.submitOrderAsync(signedOrder, { networkId: NETWORK_CONFIGS.networkId });
 
     // Taker queries the Orderbook from the Relayer
