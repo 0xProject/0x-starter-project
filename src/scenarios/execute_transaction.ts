@@ -12,7 +12,7 @@ import {
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { NULL_ADDRESS } from '../constants';
+import { DECIMALS, NULL_ADDRESS } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds } from '../utils';
@@ -49,13 +49,13 @@ export async function scenarioAsync(): Promise<void> {
     printUtils.printAccounts();
 
     // the amount the maker is selling of maker asset
-    const makerAssetAmount = new BigNumber(100);
+    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), DECIMALS);
     // the amount the maker wants of taker asset
-    const takerAssetAmount = new BigNumber(10);
-    // the amount the maker pays in fees
-    const makerFee = new BigNumber(2);
-    // the amount the taker pays in fees
-    const takerFee = new BigNumber(3);
+    const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
+    // the amount of fees the maker pays in ZRX
+    const makerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.01), DECIMALS);
+    // the amount of fees the taker pays in ZRX
+    const takerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.01), DECIMALS);
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
