@@ -1,8 +1,8 @@
 # build files
 lib
 
-# Testrpc snapshot files
-0x_testrpc_snapshot
+# Ganache snapshot files
+0x_ganache_snapshot
 
 # Logs
 logs
