@@ -83,12 +83,12 @@ export async function scenarioAsync(): Promise<void> {
         ['Taker WETH Deposit', takerWETHDepositTxHash],
     ]);
 
+    // Initialize the Standard Relayer API client
+    const httpClient = new HttpClient('http://localhost:3000/v2/');
+
     // Generate and expiration time and find the exchange smart contract address
     const randomExpiration = getRandomFutureDateInSeconds();
     const exchangeAddress = contractWrappers.exchange.getContractAddress();
-
-    // Initialize the Standard Relayer API client
-    const httpClient = new HttpClient('http://localhost:3000/v2/');
 
     // Ask the relayer about the parameters they require for the order
     const orderConfigRequest = {
