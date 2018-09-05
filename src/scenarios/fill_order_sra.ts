@@ -101,14 +101,15 @@ export async function scenarioAsync(): Promise<void> {
         makerAssetData,
         takerAssetData,
     };
-    const orderConfig = await httpClient.getOrderConfigAsync({
-        // TODO: OrderConfigRequest should just accept BigNumber
-        // https://github.com/0xProject/0x-monorepo/pull/1058
-        ...orderConfigRequest,
-        expirationTimeSeconds: orderConfigRequest.expirationTimeSeconds.toString(),
-        makerAssetAmount: orderConfigRequest.makerAssetAmount.toString(),
-        takerAssetAmount: orderConfigRequest.takerAssetAmount.toString(),
-    }, { networkId: NETWORK_CONFIGS.networkId });
+    const orderConfig = await httpClient.getOrderConfigAsync(
+        {
+            ...orderConfigRequest,
+            expirationTimeSeconds: orderConfigRequest.expirationTimeSeconds,
+            makerAssetAmount: orderConfigRequest.makerAssetAmount,
+            takerAssetAmount: orderConfigRequest.takerAssetAmount,
+        },
+        { networkId: NETWORK_CONFIGS.networkId },
+    );
 
     // Create the order
     const order: Order = {
