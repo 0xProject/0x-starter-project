@@ -28,7 +28,6 @@ export async function scenarioAsync(): Promise<void> {
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, {
         networkId: NETWORK_CONFIGS.networkId,
-        forwarderContractAddress: NETWORK_CONFIGS.forwarderAddress,
     });
     const dummyERC721TokenContract = dummyERC721TokenContracts[0];
     if (!dummyERC721TokenContract) {

@@ -14,3 +14,4 @@ export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const ZERO = new BigNumber(0);
 export const GANACHE_NETWORK_ID = 50;
 export const KOVAN_NETWORK_ID = 42;
+export const ROPSTEN_NETWORK_ID = 3;

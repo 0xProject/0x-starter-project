@@ -1,7 +1,7 @@
 import { assetDataUtils, BigNumber, ContractWrappers, Order } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-import { NETWORK_CONFIGS } from '../configs';
+import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { NULL_ADDRESS, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -84,7 +84,9 @@ export async function scenarioAsync(): Promise<void> {
 
     // Maker cancels all orders before and including order2, order3 remains valid
     const targetOrderEpoch = order2.salt;
-    const txHash = await contractWrappers.exchange.cancelOrdersUpToAsync(targetOrderEpoch, maker);
+    const txHash = await contractWrappers.exchange.cancelOrdersUpToAsync(targetOrderEpoch, maker, {
+        gasLimit: TX_DEFAULTS.gas,
+    });
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('cancelOrdersUpTo', txHash);
     printUtils.printTransaction('cancelOrdersUpTo', txReceipt, [['targetOrderEpoch', targetOrderEpoch.toString()]]);
     // Fetch and print the order info

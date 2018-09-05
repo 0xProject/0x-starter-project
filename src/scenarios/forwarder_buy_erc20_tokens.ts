@@ -27,7 +27,6 @@ export async function scenarioAsync(): Promise<void> {
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, {
         networkId: NETWORK_CONFIGS.networkId,
-        forwarderContractAddress: NETWORK_CONFIGS.forwarderAddress,
     });
     // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
