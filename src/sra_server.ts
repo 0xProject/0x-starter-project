@@ -82,9 +82,7 @@ app.get('/v2/orderbook', (req, res) => {
  * GET Order config endpoint retrives the values for order fields that the relayer requires.
  * http://sra-spec.s3-website-us-east-1.amazonaws.com/#operation/getOrderConfig
  */
-// TODO: Should be a GET
-// https://github.com/0xProject/0x-monorepo/pull/1058
-app.post('/v2/order_config', (req, res) => {
+app.get('/v2/order_config', (req, res) => {
     console.log('HTTP: GET order config');
     const networkIdRaw = req.query.networkId;
     // tslint:disable-next-line:custom-no-magic-numbers

@@ -102,12 +102,7 @@ export async function scenarioAsync(): Promise<void> {
         takerAssetData,
     };
     const orderConfig = await httpClient.getOrderConfigAsync(
-        {
-            ...orderConfigRequest,
-            expirationTimeSeconds: orderConfigRequest.expirationTimeSeconds,
-            makerAssetAmount: orderConfigRequest.makerAssetAmount,
-            takerAssetAmount: orderConfigRequest.takerAssetAmount,
-        },
+        orderConfigRequest,
         { networkId: NETWORK_CONFIGS.networkId },
     );
 
