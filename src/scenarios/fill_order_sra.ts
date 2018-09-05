@@ -128,6 +128,9 @@ export async function scenarioAsync(): Promise<void> {
     );
     const signedOrder = { ...order, signature };
 
+    // Validate this order
+    await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder);
+
     // Submit the order to the SRA Endpoint
     await httpClient.submitOrderAsync(signedOrder, { networkId: NETWORK_CONFIGS.networkId });
 
@@ -139,6 +142,9 @@ export async function scenarioAsync(): Promise<void> {
     }
     const sraOrder = response.asks.records[0].order;
     printUtils.printOrder(sraOrder);
+
+    // Validate the order is Fillable given the maker and taker balances
+    await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(sraOrder, takerAssetAmount, taker);
 
     // Fill the Order via 0x Exchange contract
     txHash = await contractWrappers.exchange.fillOrderAsync(sraOrder, takerAssetAmount, taker, {
