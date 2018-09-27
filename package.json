@@ -21,6 +21,7 @@
         "scenario:match_orders": "cross-env yarn build && node ./lib/scenarios/match_orders.js",
         "scenario:mint_tokens": "cross-env yarn build && node ./lib/scenarios/mint_tokens.js",
         "scenario:execute_transaction": "cross-env yarn build && node ./lib/scenarios/execute_transaction.js",
+        "scenario:execute_transaction_cancel_order": "cross-env yarn build && node ./lib/scenarios/execute_transaction_cancel_order.js",
         "scenario:cancel_orders_up_to": "cross-env yarn build && node ./lib/scenarios/cancel_orders_up_to.js",
         "scenario:forwarder_buy_erc20_tokens": "cross-env yarn build && node ./lib/scenarios/forwarder_buy_erc20_tokens.js",
         "scenario:forwarder_buy_erc721_tokens": "cross-env yarn build && node ./lib/scenarios/forwarder_buy_erc721_tokens.js",
