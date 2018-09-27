@@ -148,5 +148,6 @@ void (async () => {
     } catch (e) {
         console.log(e);
         providerEngine.stop();
+        process.exit(1);
     }
 })();

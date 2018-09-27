@@ -101,10 +101,9 @@ export async function scenarioAsync(): Promise<void> {
         makerAssetData,
         takerAssetData,
     };
-    const orderConfig = await httpClient.getOrderConfigAsync(
-        orderConfigRequest,
-        { networkId: NETWORK_CONFIGS.networkId },
-    );
+    const orderConfig = await httpClient.getOrderConfigAsync(orderConfigRequest, {
+        networkId: NETWORK_CONFIGS.networkId,
+    });
 
     // Create the order
     const order: Order = {
@@ -163,5 +162,6 @@ void (async () => {
     } catch (e) {
         console.log(e);
         providerEngine.stop();
+        process.exit(1);
     }
 })();
