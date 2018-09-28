@@ -8,6 +8,7 @@
         "build": "cross-env yarn pre_build && tsc",
         "pre_build": "run-s copy_artifacts",
         "clean": "shx rm -rf lib artifacts",
+        "start": "yarn download_snapshot && yarn ganache-cli",
         "copy_artifacts:comment": "Typescript doesn't copy non-typescript files to `lib`, so we need to copy the artifact JSONs ourselves.",
         "copy_artifacts": "copyfiles -u 1 './src/artifacts/**/*' ./lib",
         "download_snapshot": "cross-env download --extract --strip 1 --out 0x_ganache_snapshot ${npm_package_config_snapshot_url}",
