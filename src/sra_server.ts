@@ -79,11 +79,11 @@ app.get('/v2/orderbook', (req, res) => {
     }
 });
 /**
- * GET Order config endpoint retrives the values for order fields that the relayer requires.
+ * POST Order config endpoint retrives the values for order fields that the relayer requires.
  * http://sra-spec.s3-website-us-east-1.amazonaws.com/#operation/getOrderConfig
  */
-app.get('/v2/order_config', (req, res) => {
-    console.log('HTTP: GET order config');
+app.post('/v2/order_config', (req, res) => {
+    console.log('HTTP: POST order config');
     const networkIdRaw = req.query.networkId;
     // tslint:disable-next-line:custom-no-magic-numbers
     const networkId = parseInt(networkIdRaw, 10);
