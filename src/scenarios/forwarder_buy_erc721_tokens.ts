@@ -122,7 +122,7 @@ export async function scenarioAsync(): Promise<void> {
         taker,
         order.takerAssetAmount,
         [],
-        new BigNumber(0),
+        0,
         NULL_ADDRESS,
         {
             gasLimit: TX_DEFAULTS.gas,

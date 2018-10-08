@@ -104,7 +104,7 @@ export async function scenarioAsync(): Promise<void> {
         signature,
     };
 
-    // Use the Forwarder to market buy the ERC721 orders using Eth. When using the Forwarder
+    // Use the Forwarder to market buy the ERC20 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
     txHash = await contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
         [signedOrder],
@@ -112,7 +112,7 @@ export async function scenarioAsync(): Promise<void> {
         taker,
         order.takerAssetAmount,
         [],
-        new BigNumber(0),
+        0,
         NULL_ADDRESS,
         {
             gasLimit: TX_DEFAULTS.gas,
