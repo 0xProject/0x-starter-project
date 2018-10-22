@@ -1,5 +1,5 @@
 import { BigNumber, ContractWrappers, Order, OrderInfo, OrderStatus, SignedOrder } from '0x.js';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { DecodedLogArgs, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 import ora = require('ora');
@@ -149,7 +149,7 @@ export class PrintUtils {
         PrintUtils.pushAndPrint(table, flattenedBalances);
     }
     public async fetchAndPrintContractAllowancesAsync(): Promise<void> {
-        const erc20ProxyAddress = this._contractWrappers.erc20Proxy.getContractAddress();
+        const erc20ProxyAddress = this._contractWrappers.erc20Proxy.address;
         const flattenedAllowances = [];
         const flattenedAccounts = Object.keys(this._accounts).map(
             account => account.charAt(0).toUpperCase() + account.slice(1),

@@ -8,7 +8,7 @@ import {
     orderHashUtils,
     SignedOrder,
 } from '0x.js';
-import { APIOrder, OrderbookResponse, OrderConfigResponse } from '@0xproject/connect';
+import { APIOrder, OrderbookResponse } from '@0x/connect';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 

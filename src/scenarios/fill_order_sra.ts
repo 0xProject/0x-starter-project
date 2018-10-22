@@ -6,13 +6,13 @@ import {
     Order,
     orderHashUtils,
     signatureUtils,
-    SignerType,
 } from '0x.js';
-import { HttpClient, OrderbookRequest, OrderConfigRequest } from '@0xproject/connect';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { HttpClient, OrderbookRequest } from '@0x/connect';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS } from '../constants';
+import { getContractAddressesForNetwork, getContractWrappersConfig } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds } from '../utils';
@@ -27,16 +27,14 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order Standard Relayer API');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, getContractWrappersConfig(NETWORK_CONFIGS.networkId));
     // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();
-    const zrxTokenAddress = contractWrappers.exchange.getZRXTokenAddress();
-    const etherTokenAddress = contractWrappers.etherToken.getContractAddressIfExists();
-    if (!etherTokenAddress) {
-        throw new Error('Ether Token not found on this network');
-    }
+    const contractAddresses = getContractAddressesForNetwork(NETWORK_CONFIGS.networkId);
+    const zrxTokenAddress = contractAddresses.zrxToken;
+    const etherTokenAddress = contractAddresses.etherToken;
     const printUtils = new PrintUtils(
         web3Wrapper,
         contractWrappers,
@@ -88,7 +86,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Generate and expiration time and find the exchange smart contract address
     const randomExpiration = getRandomFutureDateInSeconds();
-    const exchangeAddress = contractWrappers.exchange.getContractAddress();
+    const exchangeAddress = contractAddresses.exchange;
 
     // Ask the relayer about the parameters they require for the order
     const orderConfigRequest = {
@@ -114,12 +112,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Generate the order hash and sign it
     const orderHashHex = orderHashUtils.getOrderHashHex(order);
-    const signature = await signatureUtils.ecSignOrderHashAsync(
-        providerEngine,
-        orderHashHex,
-        maker,
-        SignerType.Default,
-    );
+    const signature = await signatureUtils.ecSignHashAsync(providerEngine, orderHashHex, maker);
     const signedOrder = { ...order, signature };
 
     // Validate this order

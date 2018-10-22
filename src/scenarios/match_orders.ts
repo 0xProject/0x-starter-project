@@ -6,12 +6,12 @@ import {
     Order,
     orderHashUtils,
     signatureUtils,
-    SignerType,
 } from '0x.js';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
+import { getContractAddressesForNetwork, getContractWrappersConfig } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds } from '../utils';
@@ -28,16 +28,14 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Match Orders');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, getContractWrappersConfig(NETWORK_CONFIGS.networkId));
     // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [leftMaker, rightMaker, matcherAccount] = await web3Wrapper.getAvailableAddressesAsync();
-    const zrxTokenAddress = contractWrappers.exchange.getZRXTokenAddress();
-    const etherTokenAddress = contractWrappers.etherToken.getContractAddressIfExists();
-    if (!etherTokenAddress) {
-        throw new Error('Ether Token not found on this network');
-    }
+    const contractAddresses = getContractAddressesForNetwork(NETWORK_CONFIGS.networkId);
+    const zrxTokenAddress = contractAddresses.zrxToken;
+    const etherTokenAddress = contractAddresses.etherToken;
     const printUtils = new PrintUtils(
         web3Wrapper,
         contractWrappers,
@@ -102,7 +100,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Set up the Order and fill it
     const randomExpiration = getRandomFutureDateInSeconds();
-    const exchangeAddress = contractWrappers.exchange.getContractAddress();
+    const exchangeAddress = contractAddresses.exchange;
 
     // Create the order
     const leftOrder: Order = {
@@ -143,22 +141,12 @@ export async function scenarioAsync(): Promise<void> {
 
     // Generate the order hash and sign it
     const leftOrderHashHex = orderHashUtils.getOrderHashHex(leftOrder);
-    const leftOrderSignature = await signatureUtils.ecSignOrderHashAsync(
-        providerEngine,
-        leftOrderHashHex,
-        leftMaker,
-        SignerType.Default,
-    );
+    const leftOrderSignature = await signatureUtils.ecSignHashAsync(providerEngine, leftOrderHashHex, leftMaker);
     const leftSignedOrder = { ...leftOrder, signature: leftOrderSignature };
 
     // Generate the order hash and sign it
     const rightOrderHashHex = orderHashUtils.getOrderHashHex(rightOrder);
-    const rightOrderSignature = await signatureUtils.ecSignOrderHashAsync(
-        providerEngine,
-        rightOrderHashHex,
-        rightMaker,
-        SignerType.Default,
-    );
+    const rightOrderSignature = await signatureUtils.ecSignHashAsync(providerEngine, rightOrderHashHex, rightMaker);
     const rightSignedOrder = { ...rightOrder, signature: rightOrderSignature };
 
     // Print out the Balances and Allowances
