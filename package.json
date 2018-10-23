@@ -11,7 +11,7 @@
         "copy_artifacts:comment": "Typescript doesn't copy non-typescript files to `lib`, so we need to copy the artifact JSONs ourselves.",
         "copy_artifacts": "copyfiles -u 1 './src/artifacts/**/*' ./lib",
         "download_snapshot": "cross-env-shell download --extract --strip 1 --out 0x_ganache_snapshot ${npm_package_config_snapshot_url}",
-        "ganache-cli": "cross-env-shell ganache-cli --gasLimit 10000000 --noVMErrorsOnRPCResponse --db 0x_ganache_snapshot --noVMErrorsOnRPCResponse -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
+        "ganache-cli": "cross-env ganache-cli --gasLimit 10000000 --noVMErrorsOnRPCResponse --db 0x_ganache_snapshot --noVMErrorsOnRPCResponse -p 8545 --networkId 50 -m \"concert load couple harbor equip island argue ramp clarify fence smart topic\"",
         "fake_sra_server": "cross-env yarn build && node ./lib/sra_server.js",
         "scenario:all": "cross-env yarn build && node ./lib/scenarios/all.js",
         "scenario:fill_order_erc20": "cross-env yarn build && node ./lib/scenarios/fill_order_erc20.js",
