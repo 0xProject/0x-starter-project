@@ -5,6 +5,9 @@
             "severity": "off"
         },
         "no-unused-variable": true,
-        "forin": false
+        "forin": false,
+        "custom-no-magic-numbers": false,
+        "semicolon": [true, "always", "ignore-bound-class-methods"],
+        "no-floating-promises": false
     }
 }

@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
         "outDir": "lib",
-        "lib": ["es2017"],
+        "lib": ["es2017", "dom"],
         "skipLibCheck": true,
         "sourceMap": true,
         "declaration": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
-        "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"]
+        "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+        "jsx": "react"
     },
     "include": ["src/**/*", "test/**/*"]
 }

@@ -8,7 +8,7 @@ import { providerEngine } from './provider_engine';
 
 // The deployed addresses from the Ganache snapshot
 const GANACHE_ERC721_TOKENS = ['0x131855dda0aaff096f6854854c55a4debf61077a'];
-const GANACHE_CONTRACT_ADDRESSES: ContractAddresses = {
+export const GANACHE_CONTRACT_ADDRESSES: ContractAddresses = {
     exchange: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
     erc20Proxy: '0x1dc4c1cefef38a777b15aa20260a54e584b16c48',
     erc721Proxy: '0x1d7022f5b17d2f8b695918fb48fa1089c9f85401',
