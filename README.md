@@ -25,7 +25,7 @@ This repository contains a bunch of scenarios that you can run from the command-
 
 By default this project uses the 0x development mnemonic running against Ganache. This project can be configured to use a different mnenonic and also run against Kovan testnet.
 
-You may choose to update the mnemonic in `src/constants.ts` or use the one provided (note if many people use this mnemonic on Kovan then the funds may be drained). When changing the mnemonic ensure that the account has available funds (ETH and ZRX) on the respective network. You can request ZRX and ETH from the 0x Faucet located in [0x Portal](https://0xproject.com/portal/account).
+You may choose to update the mnemonic in `src/configs.ts` or use the one provided (note if many people use this mnemonic on Kovan then the funds may be drained). When changing the mnemonic ensure that the account has available funds (ETH and ZRX) on the respective network. You can request ZRX and ETH from the 0x Faucet located in [0x Portal](https://0xproject.com/portal/account).
 
 Install dependencies:
 
