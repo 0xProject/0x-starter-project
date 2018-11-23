@@ -3,11 +3,13 @@ import { DummyERC721TokenContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses, getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { DummyERC721Token } from '@0x/contract-artifacts';
 
-import { GANACHE_CONFIGS, NETWORK_CONFIGS } from './configs';
+import { GANACHE_CONFIGS, KOVAN_CONFIGS, NETWORK_CONFIGS } from './configs';
 import { providerEngine } from './provider_engine';
 
 // The deployed addresses from the Ganache snapshot
 const GANACHE_ERC721_TOKENS = ['0x131855dda0aaff096f6854854c55a4debf61077a'];
+const KOVAN_ERC721_TOKENS = ['0xffda8718d38aaff9a006302386645cbc814b3bd5'];
+
 const GANACHE_CONTRACT_ADDRESSES: ContractAddresses = {
     exchange: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
     erc20Proxy: '0x1dc4c1cefef38a777b15aa20260a54e584b16c48',
@@ -23,6 +25,14 @@ export const dummyERC721TokenContracts: DummyERC721TokenContract[] = [];
 
 if (NETWORK_CONFIGS.networkId === GANACHE_CONFIGS.networkId) {
     for (const tokenAddress of GANACHE_ERC721_TOKENS) {
+        dummyERC721TokenContracts.push(
+            new DummyERC721TokenContract((DummyERC721Token as any).compilerOutput.abi, tokenAddress, providerEngine),
+        );
+    }
+}
+
+if (NETWORK_CONFIGS.networkId === KOVAN_CONFIGS.networkId) {
+    for (const tokenAddress of KOVAN_ERC721_TOKENS) {
         dummyERC721TokenContracts.push(
             new DummyERC721TokenContract((DummyERC721Token as any).compilerOutput.abi, tokenAddress, providerEngine),
         );
