@@ -141,6 +141,15 @@ export class PrintUtils {
             }
             flattenedBalances.push(balances);
         }
+        const ethBalances = ['ETH'];
+        // ETH
+        for (const account in this._accounts) {
+            const address = this._accounts[account];
+            const balanceBaseUnits = await this._web3Wrapper.getBalanceInWeiAsync(address);
+            const balance = Web3Wrapper.toUnitAmount(balanceBaseUnits, DECIMALS);
+            ethBalances.push(balance.toString());
+        }
+        flattenedBalances.push(ethBalances);
         const table = new Table({
             ...dataSchema,
             head: ['Token', ...flattenedAccounts],
@@ -205,14 +214,8 @@ export class PrintUtils {
             head: [header, txReceipt.transactionHash],
             style: { ...defaultSchema.style, head: [headerColor] },
         });
-        // HACK gasUsed is actually a hex string sometimes
-        // tslint:disable:custom-no-magic-numbers
-        const gasUsed = txReceipt.gasUsed.toString().startsWith('0x')
-            ? parseInt(txReceipt.gasUsed.toString(), 16).toString()
-            : txReceipt.gasUsed;
-        // tslint:enable:custom-no-magic-numbers
         const status = txReceipt.status === 1 ? 'Success' : 'Failure';
-        const tableData = [...data, ['gasUsed', gasUsed.toString()], ['status', status]];
+        const tableData = [...data, ['gasUsed', txReceipt.gasUsed.toString()], ['status', status]];
         PrintUtils.pushAndPrint(table, tableData);
 
         if (txReceipt.logs.length > 0) {

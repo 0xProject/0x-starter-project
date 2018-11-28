@@ -11,7 +11,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
-import { dummyERC721TokenContracts, getContractAddressesForNetwork, getContractWrappersConfig } from '../contracts';
+import { contractAddresses, dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds } from '../utils';
@@ -24,8 +24,7 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order ERC721');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, getContractWrappersConfig(NETWORK_CONFIGS.networkId));
-    const contractAddresses = getContractAddressesForNetwork(NETWORK_CONFIGS.networkId);
+    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     const etherTokenAddress = contractAddresses.etherToken;
     const dummyERC721TokenContract = dummyERC721TokenContracts[0];
     if (!dummyERC721TokenContract) {

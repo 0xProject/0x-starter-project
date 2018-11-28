@@ -1,4 +1,4 @@
-import { GANACHE_NETWORK_ID, KOVAN_NETWORK_ID, ROPSTEN_NETWORK_ID } from './constants';
+import { GANACHE_NETWORK_ID, KOVAN_NETWORK_ID, RINKEBY_NETWORK_ID, ROPSTEN_NETWORK_ID } from './constants';
 import { NetworkSpecificConfigs } from './types';
 
 export const TX_DEFAULTS = { gas: 400000 };
@@ -16,4 +16,8 @@ export const ROPSTEN_CONFIGS: NetworkSpecificConfigs = {
     rpcUrl: 'https://ropsten.infura.io/',
     networkId: ROPSTEN_NETWORK_ID,
 };
-export const NETWORK_CONFIGS = GANACHE_CONFIGS; // or KOVAN_CONFIGS or ROPSTEN_CONFIGS
+export const RINKEBY_CONFIGS: NetworkSpecificConfigs = {
+    rpcUrl: 'https://rinkeby.infura.io/',
+    networkId: RINKEBY_NETWORK_ID,
+};
+export const NETWORK_CONFIGS = GANACHE_CONFIGS; // or KOVAN_CONFIGS or ROPSTEN_CONFIGS or RINKEBY_CONFIGS

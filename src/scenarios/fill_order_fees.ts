@@ -11,7 +11,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS } from '../constants';
-import { getContractAddressesForNetwork, getContractWrappersConfig } from '../contracts';
+import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds } from '../utils';
@@ -25,12 +25,11 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order with Fees');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, getContractWrappersConfig(NETWORK_CONFIGS.networkId));
+    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
     // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker, feeRecipient] = await web3Wrapper.getAvailableAddressesAsync();
-    const contractAddresses = getContractAddressesForNetwork(NETWORK_CONFIGS.networkId);
     const zrxTokenAddress = contractAddresses.zrxToken;
     const etherTokenAddress = contractAddresses.etherToken;
     const printUtils = new PrintUtils(

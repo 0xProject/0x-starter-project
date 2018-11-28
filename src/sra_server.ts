@@ -15,7 +15,6 @@ import * as express from 'express';
 import { NETWORK_CONFIGS } from './configs';
 import { NULL_ADDRESS, ZERO } from './constants';
 import { providerEngine } from './provider_engine';
-import { getContractWrappersConfig } from './contracts';
 
 const HTTP_OK_STATUS = 200;
 const HTTP_BAD_REQUEST_STATUS = 400;
@@ -26,7 +25,7 @@ const orders: SignedOrder[] = [];
 const ordersByHash: { [hash: string]: SignedOrder } = {};
 
 // We subscribe to the Exchange Events to remove any filled or cancelled orders
-const contractWrappers = new ContractWrappers(providerEngine, getContractWrappersConfig(NETWORK_CONFIGS.networkId));
+const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
 contractWrappers.exchange.subscribe(
     ExchangeEvents.Fill,
     {},
