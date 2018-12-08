@@ -71,12 +71,6 @@
     uuid "^3.3.2"
     websocket "^1.0.25"
 
-"@0x/contract-addresses@^1.0.1":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-1.2.0.tgz#aa5001d73adb1ec9cc58ab4f6e0cac0acc4ad0a8"
-  dependencies:
-    lodash "^4.17.5"
-
 "@0x/contract-addresses@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.0.0.tgz#c760f72a5d18b10f42e6bc993d8a09c93053727d"
