@@ -424,9 +424,9 @@
   dependencies:
     "@types/ethereum-protocol" "*"
 
-"@types/websocket@^0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@types/websocket/-/websocket-0.0.39.tgz#aa971e24f9c1455fe2a57ee3e69c7d395016b12a"
+"@types/websocket@^0.0.40":
+  version "0.0.40"
+  resolved "https://registry.yarnpkg.com/@types/websocket/-/websocket-0.0.40.tgz#887cd632a8b3d0d11da7b9d0d106af85997b358c"
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
