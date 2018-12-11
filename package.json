@@ -31,7 +31,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "0x.js": "^2.0.0",
-        "@0x/abi-gen-wrappers": "^1.0.1",
+        "@0x/abi-gen-wrappers": "^2.0.0",
         "@0x/connect": "^3.0.0",
         "@0x/contract-addresses": "^2.0.0",
         "@0x/contract-artifacts": "^1.0.1",
@@ -43,7 +43,7 @@
         "express": "^4.16.3",
         "http": "^0.0.0",
         "lodash": "^4.17.5",
-        "ora": "^2.1.0",
+        "ora": "^3.0.0",
         "run-s": "^0.0.0",
         "websocket": "^1.0.26"
     },
@@ -53,15 +53,15 @@
         "@types/body-parser": "^1.17.0",
         "@types/express": "^4.16.0",
         "@types/lodash": "^4.14.116",
-        "@types/websocket": "^0.0.39",
+        "@types/websocket": "^0.0.40",
         "cross-env": "^5.1.4",
         "download-cli": "^1.0.5",
         "ethereum-types": "^1.0.5",
-        "ganache-cli": "6.1.6",
-        "make-promises-safe": "^1.1.0",
+        "ganache-cli": "6.2.3",
+        "make-promises-safe": "^4.0.0",
         "npm-run-all": "^4.1.2",
-        "shx": "^0.2.2",
+        "shx": "^0.3.2",
         "tslint": "5.11.0",
-        "typescript": "3.0.1"
+        "typescript": "3.2.2"
     }
 }
