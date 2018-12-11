@@ -22,12 +22,6 @@
     lodash "^4.17.5"
     web3-provider-engine "14.0.6"
 
-"@0x/abi-gen-wrappers@^1.0.1":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-1.1.0.tgz#d4e4f10699b5da6bcfadc3842f165fc59f686e09"
-  dependencies:
-    "@0x/base-contract" "^3.0.7"
-
 "@0x/abi-gen-wrappers@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-2.0.0.tgz#9dbc52efe2dd8c6985c847c732735d4b293f1b98"
@@ -44,7 +38,7 @@
     lodash "^4.17.5"
     valid-url "^1.0.9"
 
-"@0x/base-contract@^3.0.7", "@0x/base-contract@^3.0.8":
+"@0x/base-contract@^3.0.8":
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-3.0.8.tgz#9cd507587ae3ee3f61327e0e4a2e3623fe40e2f2"
   dependencies:
@@ -424,9 +418,10 @@
   dependencies:
     "@types/ethereum-protocol" "*"
 
-"@types/websocket@^0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@types/websocket/-/websocket-0.0.39.tgz#aa971e24f9c1455fe2a57ee3e69c7d395016b12a"
+"@types/websocket@^0.0.40":
+  version "0.0.40"
+  resolved "https://registry.yarnpkg.com/@types/websocket/-/websocket-0.0.40.tgz#887cd632a8b3d0d11da7b9d0d106af85997b358c"
+  integrity sha512-ldteZwWIgl9cOy7FyvYn+39Ah4+PfpVE72eYKw75iy2L0zTbhbcwvzeJ5IOu6DQP93bjfXq0NGHY6FYtmYoqFQ==
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
@@ -2669,13 +2664,17 @@ functional-red-black-tree@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
 
-ganache-cli@6.1.6:
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/ganache-cli/-/ganache-cli-6.1.6.tgz#99b500a25f571271a6978ef3f9c9c53e1a3854f0"
+ganache-cli@6.2.3:
+  version "6.2.3"
+  resolved "https://registry.yarnpkg.com/ganache-cli/-/ganache-cli-6.2.3.tgz#8648224e7c54aa86c52125f8fa10fba2f549b149"
+  integrity sha512-+FYzINouw+yHHG6bT8m6O5xCw5NP6rpSL2keChKlcwgRRFz8SrZS6Q26iJ7ixBp6bk+UMMua8IPZgNFizbdZlQ==
   dependencies:
+    bn.js "4.11.8"
+    ganache-core "^2.3.1"
     source-map-support "^0.5.3"
+    yargs "^11.0.0"
 
-ganache-core@^2.2.1:
+ganache-core@^2.2.1, ganache-core@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/ganache-core/-/ganache-core-2.3.1.tgz#c22a22edfec9c990e530c7a9736dbf09599b99bb"
   dependencies:
@@ -3483,9 +3482,10 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
-make-promises-safe@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/make-promises-safe/-/make-promises-safe-1.1.0.tgz#b4d28c61ef8ad5502f38dbb3a0ee89627f76ad61"
+make-promises-safe@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/make-promises-safe/-/make-promises-safe-4.0.0.tgz#cee2ccf0871753be6829828483f32de397cf7594"
+  integrity sha512-THuAUvvKk+cFWEev3BmiLHwCpXyCHgOHxqzwHxKi4gxzxYNY4RQGJFeBtH6n7sukCLqRbtZ+FPqyq30F92Dltg==
 
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
@@ -3886,9 +3886,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-ora@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/ora/-/ora-2.1.0.tgz#6caf2830eb924941861ec53a173799e008b51e5b"
+ora@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ora/-/ora-3.0.0.tgz#8179e3525b9aafd99242d63cc206fd64732741d0"
+  integrity sha512-LBS97LFe2RV6GJmXBi6OKcETKyklHNMV0xw7BtsVn2MlsgsydyZetSCbCANr+PFLmDyv4KV88nn0eCKza665Mg==
   dependencies:
     chalk "^2.3.1"
     cli-cursor "^2.1.0"
@@ -4662,21 +4663,23 @@ shell-quote@^1.6.1:
     array-reduce "~0.0.0"
     jsonify "~0.0.0"
 
-shelljs@^0.7.3:
-  version "0.7.8"
-  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.7.8.tgz#decbcf874b0d1e5fb72e14b164a9683048e9acb3"
+shelljs@^0.8.1:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.8.3.tgz#a7f3319520ebf09ee81275b2368adb286659b097"
+  integrity sha512-fc0BKlAWiLpwZljmOvAOTE/gXawtCoNrP5oaY7KIaQbbyHeQVg01pSEuEGvGh3HEdBU4baCD7wQBwADmM/7f7A==
   dependencies:
     glob "^7.0.0"
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
-shx@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/shx/-/shx-0.2.2.tgz#0a304d020b0edf1306ad81570e80f0346df58a39"
+shx@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/shx/-/shx-0.3.2.tgz#40501ce14eb5e0cbcac7ddbd4b325563aad8c123"
+  integrity sha512-aS0mWtW3T2sHAenrSrip2XGv39O9dXIFUqxAEWHEOS1ePtGIBavdPJY1kE2IHl14V/4iCbUiNDPGdyYTtmhSoA==
   dependencies:
     es6-object-assign "^1.0.3"
     minimist "^1.2.0"
-    shelljs "^0.7.3"
+    shelljs "^0.8.1"
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
@@ -5177,9 +5180,10 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.0.1.tgz#43738f29585d3a87575520a4b93ab6026ef11fdb"
+typescript@3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.2.tgz#fe8101c46aa123f8353523ebdcf5730c2ae493e5"
+  integrity sha512-VCj5UiSyHBjwfYacmDuc/NOk4QQixbE+Wn7MFJuS0nRuPQbof132Pw4u53dm264O8LPc2MVsc7RJNml5szurkg==
 
 typewise-core@^1.2, typewise-core@^1.2.0:
   version "1.2.0"
