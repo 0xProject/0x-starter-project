@@ -3483,9 +3483,9 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
-make-promises-safe@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/make-promises-safe/-/make-promises-safe-1.1.0.tgz#b4d28c61ef8ad5502f38dbb3a0ee89627f76ad61"
+make-promises-safe@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/make-promises-safe/-/make-promises-safe-4.0.0.tgz#cee2ccf0871753be6829828483f32de397cf7594"
 
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
