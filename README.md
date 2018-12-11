@@ -2,6 +2,8 @@
 
 # 0x Starter Project
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/0xProject/0x-starter-project.svg)](https://greenkeeper.io/)
+
 ![cli](https://user-images.githubusercontent.com/27389/42074402-6dcc5ccc-7baf-11e8-84f1-9a27f1a96b08.png)
 
 This project will take you through a number of scenarios using the 0x v2 protocol.
