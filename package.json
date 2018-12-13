@@ -30,7 +30,7 @@
     "author": "",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^2.0.0",
+        "0x.js": "^2.0.7",
         "@0x/abi-gen-wrappers": "^1.0.1",
         "@0x/connect": "^3.0.0",
         "@0x/contract-addresses": "^2.0.0",
