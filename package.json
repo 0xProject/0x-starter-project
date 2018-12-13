@@ -32,7 +32,7 @@
     "dependencies": {
         "0x.js": "^2.0.0",
         "@0x/abi-gen-wrappers": "^1.0.1",
-        "@0x/connect": "^3.0.0",
+        "@0x/connect": "^3.0.9",
         "@0x/contract-addresses": "^2.0.0",
         "@0x/contract-artifacts": "^1.0.1",
         "@0x/subproviders": "^2.0.7",
