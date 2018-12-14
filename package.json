@@ -36,7 +36,7 @@
         "@0x/contract-addresses": "^2.0.0",
         "@0x/contract-artifacts": "^1.0.1",
         "@0x/subproviders": "^2.0.7",
-        "@0x/web3-wrapper": "^3.1.0",
+        "@0x/web3-wrapper": "^3.2.1",
         "body-parser": "^1.18.3",
         "cli-table": "^0.3.1",
         "copyfiles": "^2.0.0",
