@@ -217,9 +217,9 @@
   optionalDependencies:
     "@ledgerhq/hw-transport-node-hid" "^4.3.0"
 
-"@0x/tslint-config@^1.0.7":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@0x/tslint-config/-/tslint-config-1.0.10.tgz#a83d7f0591d6557f18bdeba85a2040741e555a56"
+"@0x/tslint-config@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@0x/tslint-config/-/tslint-config-2.0.0.tgz#f4db527d40c2f69f2fe7c0d211a502525694eb1a"
   dependencies:
     lodash "^4.17.5"
     tslint "5.11.0"
