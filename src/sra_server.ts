@@ -121,13 +121,24 @@ app.post('/v2/order', (req, res) => {
     }
 });
 app.listen(HTTP_PORT, () => console.log('Standard relayer API (HTTP) listening on port 3000!'));
-
+function getCurrentUnixTimestampSec(): BigNumber {
+    const milisecondsInSecond = 1000;
+    return new BigNumber(Date.now() / milisecondsInSecond).round();
+}
 function renderOrderbookResponse(baseAssetData: string, quoteAssetData: string): OrderbookResponse {
     const bidOrders = orders.filter(order => {
-        return order.takerAssetData === baseAssetData && order.makerAssetData === quoteAssetData;
+        return (
+            order.takerAssetData === baseAssetData &&
+            order.makerAssetData === quoteAssetData &&
+            order.expirationTimeSeconds.greaterThan(getCurrentUnixTimestampSec())
+        );
     });
     const askOrders = orders.filter(order => {
-        return order.takerAssetData === quoteAssetData && order.makerAssetData === baseAssetData;
+        return (
+            order.takerAssetData === quoteAssetData &&
+            order.makerAssetData === baseAssetData &&
+            order.expirationTimeSeconds.greaterThan(getCurrentUnixTimestampSec())
+        );
     });
     const bidApiOrders: APIOrder[] = bidOrders.map(order => {
         return { metaData: {}, order };

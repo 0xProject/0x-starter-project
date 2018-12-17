@@ -59,6 +59,13 @@ export async function scenarioAsync(): Promise<void> {
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
 
+    // Allow the 0x ERC20 Proxy to move ZRX on behalf of takerAccount
+    const takerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
+        zrxTokenAddress,
+        taker,
+    );
+    await printUtils.awaitTransactionMinedSpinnerAsync('Taker ZRX Approval', takerZRXApprovalTxHash);
+
     // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
     const takerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
         etherTokenAddress,
@@ -128,6 +135,19 @@ export async function scenarioAsync(): Promise<void> {
     }
     const sraOrder = response.asks.records[0].order;
     printUtils.printOrder(sraOrder);
+
+    // If the SRA endpoint has a taker fee the taker will need to be funded
+    const takerZRXBalance = await contractWrappers.erc20Token.getBalanceAsync(zrxTokenAddress, taker);
+    if (order.takerFee.greaterThan(takerZRXBalance)) {
+        // As an example we fund the taker from the maker
+        const takerZRXFeeTxHash = await contractWrappers.erc20Token.transferAsync(
+            zrxTokenAddress,
+            maker,
+            taker,
+            order.takerFee,
+        );
+        await printUtils.awaitTransactionMinedSpinnerAsync('Taker ZRX fund', takerZRXFeeTxHash);
+    }
 
     // Validate the order is Fillable given the maker and taker balances
     await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(sraOrder, takerAssetAmount, taker);
