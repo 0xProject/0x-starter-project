@@ -6,6 +6,7 @@ import { scenarioAsync as executeTransactionCancelOrder } from './execute_transa
 import { scenarioAsync as fillOrderERC20 } from './fill_order_erc20';
 import { scenarioAsync as fillOrderERC721 } from './fill_order_erc721';
 import { scenarioAsync as fillOrderFees } from './fill_order_fees';
+import { scenarioAsync as fillOrderMultiAsset } from './fill_order_multi_asset';
 import { scenarioAsync as forwarder_buy_erc20_tokens } from './forwarder_buy_erc20_tokens';
 import { scenarioAsync as forwarder_buy_erc721_tokens } from './forwarder_buy_erc721_tokens';
 import { scenarioAsync as matchOrders } from './match_orders';
@@ -21,6 +22,7 @@ void (async () => {
         await cancelOrdersUpTo();
         await forwarder_buy_erc20_tokens();
         await forwarder_buy_erc721_tokens();
+        await fillOrderMultiAsset();
     } catch (e) {
         console.log(e);
         providerEngine.stop();
