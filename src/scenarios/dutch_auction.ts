@@ -18,14 +18,16 @@ import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds } from '../utils';
 
 /**
- * In this scenario, the Seller is creating an order for use in the Dutch Auction contract.
- * Over time the price for this asset will decrease until it reached the auction end time.
- * The Seller signs an order for the price at the end of the auction, though the Dutch Auction
- * contract ensures the order is filled at the correct amount.
+ * In this scenario, the Seller is creating an order for use via the Dutch Auction contract.
+ * Over time the price for this asset will decrease until it reaches the auction end time.
+ * The Seller signs an order for the price at the end of the auction. The Dutch Auction
+ * contract ensures the order is filled at the correct amount given the current block.
+ * The Seller's order can only be filled via the Dutch Auction contract as takerAddress
+ * is specified.
  *
  * The Buyer creates a matching order and calls matchOrders on the Dutch Auction contract.
- * The cost amount for the Buyer is calculated given the current block, if the Buyer's order
- * had excess amount, it is returned to the buyer.
+ * The amount for the Buyer is calculated given the current block, if the Buyer's order
+ * has any excess amount it is returned to the buyer.
  */
 export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Dutch Auction');
@@ -103,13 +105,19 @@ export async function scenarioAsync(): Promise<void> {
     const sellOrder: Order = {
         exchangeAddress,
         makerAddress: sellMaker,
+        // taker address is specified to ensure ONLY the dutch auction contract
+        // can fill this order (ensuring the price given the block time)
         takerAddress: contractWrappers.dutchAuction.address,
         senderAddress: NULL_ADDRESS,
         feeRecipientAddress: NULL_ADDRESS,
         expirationTimeSeconds: randomExpiration,
         salt: generatePseudoRandomSalt(),
         makerAssetAmount,
+        // taker asset amount is the auction end price. The Dutch Auction
+        // contract ensures this is filled at the correct amount
         takerAssetAmount: auctionEndAmount,
+        // maker asset data is encoded with additional data used by
+        // the Dutch Auction contract
         makerAssetData: dutchAuctionEncodedAssetData,
         takerAssetData,
         makerFee: ZERO,
@@ -143,7 +151,7 @@ export async function scenarioAsync(): Promise<void> {
     // Print out the Balances and Allowances
     await printUtils.fetchAndPrintContractAllowancesAsync();
     await printUtils.fetchAndPrintContractBalancesAsync();
-    // Match the orders via the DutchAuction contract
+    // Match the orders via the Dutch Auction contract
     txHash = await contractWrappers.dutchAuction.matchOrdersAsync(buySignedOrder, sellSignedOrder, buyMaker, {
         gasLimit: TX_DEFAULTS.gas,
     });
