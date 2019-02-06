@@ -82,11 +82,11 @@
     uuid "^3.3.2"
     websocket "^1.0.25"
 
-"@0x/contract-addresses@^2.0.0", "@0x/contract-addresses@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.2.0.tgz#14f803009cccda70f56fc95968dddad2b2968a14"
+"@0x/contract-addresses@^2.2.0", "@0x/contract-addresses@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.2.1.tgz#d828c3584d41f9a82a7c83b345b5fbcf865d39d3"
   dependencies:
-    lodash "^4.17.5"
+    lodash "^4.17.11"
 
 "@0x/contract-artifacts@^1.0.0", "@0x/contract-artifacts@^1.3.0":
   version "1.3.0"
