@@ -22,13 +22,7 @@
     lodash "^4.17.11"
     web3-provider-engine "14.0.6"
 
-"@0x/abi-gen-wrappers@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-3.0.0.tgz#61f981c837849920ff2ec8df071c73a28664c68c"
-  dependencies:
-    "@0x/base-contract" "^4.0.0"
-
-"@0x/abi-gen-wrappers@^3.0.2":
+"@0x/abi-gen-wrappers@^3.0.0", "@0x/abi-gen-wrappers@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-3.0.2.tgz#bc1b37a96ab7322d815dac1f3275b9885971440e"
   dependencies:
@@ -71,18 +65,7 @@
     lodash "^4.17.11"
     valid-url "^1.0.9"
 
-"@0x/base-contract@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-4.0.0.tgz#5bd4bfd40181d10f8c865a5a9a2f8eee34423ca1"
-  dependencies:
-    "@0x/typescript-typings" "^4.0.0"
-    "@0x/utils" "^4.0.1"
-    "@0x/web3-wrapper" "^4.0.0"
-    ethereum-types "^2.0.0"
-    ethers "~4.0.4"
-    lodash "^4.17.11"
-
-"@0x/base-contract@^4.0.2":
+"@0x/base-contract@^4.0.0", "@0x/base-contract@^4.0.2":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-4.0.2.tgz#8f52c6f21a48f5e82cffa96736b9e0864afd1053"
   dependencies:

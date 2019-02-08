@@ -32,7 +32,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "0x.js": "^4.0.0",
-        "@0x/abi-gen-wrappers": "^3.0.0",
+        "@0x/abi-gen-wrappers": "^3.0.2",
         "@0x/connect": "^4.0.0",
         "@0x/contract-addresses": "^2.2.1",
         "@0x/contract-artifacts": "^1.0.0",
