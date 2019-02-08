@@ -58,7 +58,9 @@ export async function scenarioAsync(): Promise<void> {
     const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
     // Begin the auction ten minutes ago
-    const auctionBeginTimeSeconds = new BigNumber(Date.now() - TEN_MINUTES_MS).div(ONE_SECOND_MS).ceil();
+    const auctionBeginTimeSeconds = new BigNumber(Date.now() - TEN_MINUTES_MS)
+        .div(ONE_SECOND_MS)
+        .integerValue(BigNumber.ROUND_CEIL);
     // Additional data is encoded in the maker asset data, this includes the begin time and begin amount
     // for the auction
     const dutchAuctionEncodedAssetData = DutchAuctionWrapper.encodeDutchAuctionAssetData(
