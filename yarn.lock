@@ -395,7 +395,7 @@
     semaphore-async-await "^1.5.1"
     solidity-parser-antlr "^0.2.12"
 
-"@0x/subproviders@^2.0.7", "@0x/subproviders@^2.1.11":
+"@0x/subproviders@^2.1.11":
   version "2.1.11"
   resolved "https://registry.yarnpkg.com/@0x/subproviders/-/subproviders-2.1.11.tgz#3f2dc27467b933c97732c466a23ff86bf835ada9"
   dependencies:
@@ -2824,10 +2824,6 @@ ethereumjs-common@^0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-0.6.1.tgz#ec98edf315a7f107afb6acc48e937a8266979fae"
 
-ethereumjs-common@~0.4.0:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-0.4.1.tgz#27690a24a817b058cc3a2aedef9392e8d7d63984"
-
 ethereumjs-tx@1.3.7, ethereumjs-tx@^1.1.1, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.2.2, ethereumjs-tx@^1.3.3, ethereumjs-tx@^1.3.5:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-1.3.7.tgz#88323a2d875b10549b8347e09f4862b546f3d89a"
@@ -2883,22 +2879,6 @@ ethereumjs-vm@2.3.4:
     functional-red-black-tree "^1.0.1"
     merkle-patricia-tree "^2.1.2"
     rustbn.js "~0.1.1"
-    safe-buffer "^5.1.1"
-
-ethereumjs-vm@2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/ethereumjs-vm/-/ethereumjs-vm-2.4.0.tgz#244f1e35f2755e537a13546111d1a4c159d34b13"
-  dependencies:
-    async "^2.1.2"
-    async-eventemitter "^0.2.2"
-    ethereumjs-account "^2.0.3"
-    ethereumjs-block "~1.7.0"
-    ethereumjs-common "~0.4.0"
-    ethereumjs-util "^5.2.0"
-    fake-merkle-patricia-tree "^1.0.1"
-    functional-red-black-tree "^1.0.1"
-    merkle-patricia-tree "^2.1.2"
-    rustbn.js "~0.2.0"
     safe-buffer "^5.1.1"
 
 ethereumjs-vm@^2.0.2, ethereumjs-vm@^2.1.0, ethereumjs-vm@^2.3.4, ethereumjs-vm@^2.5.1:
@@ -3297,9 +3277,9 @@ ganache-cli@6.1.6:
   dependencies:
     source-map-support "^0.5.3"
 
-ganache-core@^2.2.1:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/ganache-core/-/ganache-core-2.3.3.tgz#e35c76d405f0ffba5c48621596fdcc38b0a03136"
+ganache-core@^2.2.1, ganache-core@^2.3.3:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/ganache-core/-/ganache-core-2.4.0.tgz#8593fc98db9b5fb14ce96736d843ca98e70b3344"
   dependencies:
     abstract-leveldown "3.0.0"
     async "2.6.1"
@@ -3315,7 +3295,7 @@ ganache-core@^2.2.1:
     ethereumjs-block "2.1.0"
     ethereumjs-tx "1.3.7"
     ethereumjs-util "5.2.0"
-    ethereumjs-vm "2.4.0"
+    ethereumjs-vm "^2.5.1"
     heap "0.2.6"
     level-sublevel "6.6.4"
     levelup "3.1.1"
