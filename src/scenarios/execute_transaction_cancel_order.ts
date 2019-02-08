@@ -145,7 +145,7 @@ export async function scenarioAsync(): Promise<void> {
     // Generate a random salt to mitigate replay attacks
     const makerCancelOrderTransactionSalt = generatePseudoRandomSalt();
     // The maker signs the operation data (cancelOrder) with the salt
-    const executeTransactionHex = transactionEncoder.getTransactionHex(
+    const executeTransactionHex = transactionEncoder.getTransactionHashHex(
         cancelData,
         makerCancelOrderTransactionSalt,
         maker,

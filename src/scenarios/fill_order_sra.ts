@@ -138,7 +138,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // If the SRA endpoint has a taker fee the taker will need to be funded
     const takerZRXBalance = await contractWrappers.erc20Token.getBalanceAsync(zrxTokenAddress, taker);
-    if (order.takerFee.greaterThan(takerZRXBalance)) {
+    if (order.takerFee.isGreaterThan(takerZRXBalance)) {
         // As an example we fund the taker from the maker
         const takerZRXFeeTxHash = await contractWrappers.erc20Token.transferAsync(
             zrxTokenAddress,
