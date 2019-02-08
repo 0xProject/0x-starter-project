@@ -143,7 +143,7 @@ export async function scenarioAsync(): Promise<void> {
     // Generate a random salt to mitigate replay attacks
     const takerTransactionSalt = generatePseudoRandomSalt();
     // The taker signs the operation data (fillOrder) with the salt
-    const executeTransactionHex = transactionEncoder.getTransactionHex(fillData, takerTransactionSalt, taker);
+    const executeTransactionHex = transactionEncoder.getTransactionHashHex(fillData, takerTransactionSalt, taker);
     const takerSignatureHex = await signatureUtils.ecSignHashAsync(providerEngine, executeTransactionHex, taker);
     // The sender submits this operation via executeTransaction passing in the signature from the taker
     txHash = await contractWrappers.exchange.executeTransactionAsync(
