@@ -34,7 +34,7 @@
         "0x.js": "^3.0.0",
         "@0x/abi-gen-wrappers": "^2.0.0",
         "@0x/connect": "^4.0.0",
-        "@0x/contract-addresses": "^2.0.0",
+        "@0x/contract-addresses": "^2.2.1",
         "@0x/contract-artifacts": "^1.0.0",
         "@0x/subproviders": "^2.0.7",
         "@0x/web3-wrapper": "^3.1.0",
