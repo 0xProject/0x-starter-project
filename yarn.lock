@@ -22,17 +22,11 @@
     lodash "^4.17.11"
     web3-provider-engine "14.0.6"
 
-"@0x/abi-gen-wrappers@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-3.0.0.tgz#61f981c837849920ff2ec8df071c73a28664c68c"
+"@0x/abi-gen-wrappers@^3.0.0", "@0x/abi-gen-wrappers@^3.0.2", "@0x/abi-gen-wrappers@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-3.0.3.tgz#a30fdb3c520ce45fb327590281d000e086ff9609"
   dependencies:
-    "@0x/base-contract" "^4.0.0"
-
-"@0x/abi-gen-wrappers@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-3.0.2.tgz#bc1b37a96ab7322d815dac1f3275b9885971440e"
-  dependencies:
-    "@0x/base-contract" "^4.0.2"
+    "@0x/base-contract" "^4.0.3"
 
 "@0x/abi-gen@^2.0.2":
   version "2.0.2"
@@ -71,24 +65,23 @@
     lodash "^4.17.11"
     valid-url "^1.0.9"
 
-"@0x/base-contract@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-4.0.0.tgz#5bd4bfd40181d10f8c865a5a9a2f8eee34423ca1"
+"@0x/assert@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/assert/-/assert-2.0.3.tgz#379b5cb9af69a308d10795ff26a9794d81136c22"
   dependencies:
+    "@0x/json-schemas" "^3.0.3"
     "@0x/typescript-typings" "^4.0.0"
-    "@0x/utils" "^4.0.1"
-    "@0x/web3-wrapper" "^4.0.0"
-    ethereum-types "^2.0.0"
-    ethers "~4.0.4"
+    "@0x/utils" "^4.1.0"
     lodash "^4.17.11"
+    valid-url "^1.0.9"
 
-"@0x/base-contract@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-4.0.2.tgz#8f52c6f21a48f5e82cffa96736b9e0864afd1053"
+"@0x/base-contract@^4.0.0", "@0x/base-contract@^4.0.2", "@0x/base-contract@^4.0.3":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-4.0.3.tgz#ea5e3640824ee096813350e55546d98455a57805"
   dependencies:
     "@0x/typescript-typings" "^4.0.0"
-    "@0x/utils" "^4.0.3"
-    "@0x/web3-wrapper" "^4.0.2"
+    "@0x/utils" "^4.1.0"
+    "@0x/web3-wrapper" "^5.0.0"
     ethereum-types "^2.0.0"
     ethers "~4.0.4"
     lodash "^4.17.11"
@@ -233,6 +226,15 @@
 "@0x/json-schemas@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-3.0.2.tgz#aca5790f6db98de490fc13c8812ac8b9f3f3a3d8"
+  dependencies:
+    "@0x/typescript-typings" "^4.0.0"
+    "@types/node" "*"
+    jsonschema "^1.2.0"
+    lodash.values "^4.3.0"
+
+"@0x/json-schemas@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-3.0.3.tgz#ff8b9759c72da6991ca67fc3ab84c084a52a032c"
   dependencies:
     "@0x/typescript-typings" "^4.0.0"
     "@types/node" "*"
@@ -530,6 +532,24 @@
     js-sha3 "^0.7.0"
     lodash "^4.17.11"
 
+"@0x/utils@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.1.0.tgz#8c2092a366ffc6548e686795d756686519bb8960"
+  dependencies:
+    "@0x/types" "^2.0.2"
+    "@0x/typescript-typings" "^4.0.0"
+    "@types/node" "*"
+    abortcontroller-polyfill "^1.1.9"
+    bignumber.js "~8.0.2"
+    chalk "^2.3.0"
+    detect-node "2.0.3"
+    ethereum-types "^2.0.0"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    isomorphic-fetch "2.2.1"
+    js-sha3 "^0.7.0"
+    lodash "^4.17.11"
+
 "@0x/web3-wrapper@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-4.0.0.tgz#4bfaa4119f9068ca1de1836de3066976a95b2aa0"
@@ -551,6 +571,19 @@
     "@0x/json-schemas" "^3.0.2"
     "@0x/typescript-typings" "^4.0.0"
     "@0x/utils" "^4.0.3"
+    ethereum-types "^2.0.0"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    lodash "^4.17.11"
+
+"@0x/web3-wrapper@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-5.0.0.tgz#a9b4baf0dca125181885b31c4dd5a3fbf6b87260"
+  dependencies:
+    "@0x/assert" "^2.0.3"
+    "@0x/json-schemas" "^3.0.3"
+    "@0x/typescript-typings" "^4.0.0"
+    "@0x/utils" "^4.1.0"
     ethereum-types "^2.0.0"
     ethereumjs-util "^5.1.1"
     ethers "~4.0.4"
