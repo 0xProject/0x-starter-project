@@ -16,12 +16,14 @@ This repository contains a bunch of scenarios that you can run from the command-
 -   Fill order (ERC20)
 -   Fill order Fees
 -   Fill order (ERC721)
+-   Fill order (Multiple assets)
 -   Cancel orders up to
 -   Match orders
 -   Execute transaction
 -   Forwarder buy orders (ERC20)
 -   Forwarder buy orders (ERC721)
 -   Standard Relayer API fill order example
+-   Dutch Auction (decreasing price auction)
 
 ## Getting Started
 
