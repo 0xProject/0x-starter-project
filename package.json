@@ -59,7 +59,7 @@
         "cross-env": "^5.1.4",
         "download-cli": "^1.0.5",
         "ethereum-types": "^2.0.0",
-        "ganache-cli": "6.1.6",
+        "ganache-cli": "6.4.3",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
