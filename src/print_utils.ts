@@ -120,7 +120,7 @@ export class PrintUtils {
     public printAccounts(): void {
         const data: string[][] = [];
         _.forOwn(this._accounts, (address, name) => {
-            const accountName = name.charAt(0).toUpperCase() + name.slice(1);
+            const accountName = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
             data.push([accountName, address]);
         });
         PrintUtils.printData('Accounts', data);
