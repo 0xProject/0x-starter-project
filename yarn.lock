@@ -49,13 +49,13 @@
     ethers "~4.0.4"
     lodash "^4.17.11"
 
-"@0x/connect@^5.0.6":
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/@0x/connect/-/connect-5.0.6.tgz#d79487844ec77e84a6a79415ee31b122494863f4"
+"@0x/connect@^5.0.9":
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/@0x/connect/-/connect-5.0.9.tgz#cc69047ef6e24fbbcf8883b7babf18dc4fa51bab"
   dependencies:
     "@0x/assert" "^2.0.10"
     "@0x/json-schemas" "^3.0.10"
-    "@0x/order-utils" "^8.0.0"
+    "@0x/order-utils" "^8.1.0"
     "@0x/types" "^2.2.2"
     "@0x/typescript-typings" "^4.2.2"
     "@0x/utils" "^4.3.3"
@@ -68,6 +68,12 @@
 "@0x/contract-addresses@^2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.3.1.tgz#6720ba4e564b405ded6e290d8fc51c4356a1db49"
+  dependencies:
+    lodash "^4.17.11"
+
+"@0x/contract-addresses@^2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.3.3.tgz#8cf009e7668c2fccca416177c85f3f6612c724c6"
   dependencies:
     lodash "^4.17.11"
 
@@ -138,14 +144,14 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
-"@0x/order-utils@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-8.0.0.tgz#658c13ed2b3120549d29bfc013c72215d1b0db12"
+"@0x/order-utils@^8.0.0", "@0x/order-utils@^8.1.0":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-8.1.0.tgz#5bc9aa76b016f2d64b8fe2b9aade273e29b9afff"
   dependencies:
     "@0x/abi-gen-wrappers" "^4.3.0"
     "@0x/assert" "^2.0.10"
     "@0x/base-contract" "^5.1.0"
-    "@0x/contract-addresses" "^2.3.1"
+    "@0x/contract-addresses" "^2.3.3"
     "@0x/contract-artifacts" "^1.5.1"
     "@0x/json-schemas" "^3.0.10"
     "@0x/types" "^2.2.2"
