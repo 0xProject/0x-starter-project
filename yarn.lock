@@ -185,9 +185,9 @@
     semaphore-async-await "^1.5.1"
     websocket "^1.0.26"
 
-"@0x/subproviders@^4.0.6":
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/@0x/subproviders/-/subproviders-4.0.6.tgz#4e7c9e9c43d8cf53593215c9614f47ffefde3e82"
+"@0x/subproviders@^4.0.6", "@0x/subproviders@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@0x/subproviders/-/subproviders-4.1.0.tgz#15fc94793c20d9c9c05f9c965e613db8ceaff79a"
   dependencies:
     "@0x/assert" "^2.0.10"
     "@0x/types" "^2.2.2"
