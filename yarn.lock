@@ -71,6 +71,12 @@
   dependencies:
     lodash "^4.17.11"
 
+"@0x/contract-addresses@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-3.0.1.tgz#96c2fcfeb79efa1543c3027aa9aef3cb28de54cb"
+  dependencies:
+    lodash "^4.17.11"
+
 "@0x/contract-artifacts@^1.5.1":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@0x/contract-artifacts/-/contract-artifacts-1.5.1.tgz#6fba56a1d3e2d5d897a75fcfa432e49e2ebb17a7"
