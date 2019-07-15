@@ -50,7 +50,7 @@
         "websocket": "^1.0.26"
     },
     "devDependencies": {
-        "@0x/dev-utils": "^2.2.2",
+        "@0x/dev-utils": "^2.2.4",
         "@0x/tslint-config": "^3.0.1",
         "@types/body-parser": "^1.17.0",
         "@types/express": "^4.16.1",
