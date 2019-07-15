@@ -17,7 +17,7 @@ export const dummyERC721TokenContracts: DummyERC721TokenContract[] = [];
 
 for (const tokenAddress of ERC721_TOKENS_BY_NETWORK_ID[NETWORK_CONFIGS.networkId]) {
     dummyERC721TokenContracts.push(
-        new DummyERC721TokenContract((DummyERC721Token as any).compilerOutput.abi, tokenAddress, providerEngine),
+        new DummyERC721TokenContract(tokenAddress, providerEngine),
     );
 }
 
