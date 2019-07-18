@@ -11,6 +11,7 @@
         "ganache-cli": "cross-env ganache-cli --noVMErrorsOnRPCResponse --gasLimit 10000000 --db 0x_ganache_snapshot  -p 8545 --networkId 50 -m \"concert load couple harbor equip island argue ramp clarify fence smart topic\"",
         "fake_sra_server": "cross-env yarn build && node ./lib/sra_server.js",
         "scenario:all": "cross-env yarn build && node ./lib/scenarios/all.js",
+        "scenario:asset_swapper": "cross-env yarn build && node ./lib/scenarios/asset_swapper.js",
         "scenario:dutch_auction": "cross-env yarn build && node ./lib/scenarios/dutch_auction.js",
         "scenario:fill_order_erc20": "cross-env yarn build && node ./lib/scenarios/fill_order_erc20.js",
         "scenario:fill_order_sra": "cross-env yarn build && node ./lib/scenarios/fill_order_sra.js",
@@ -34,6 +35,7 @@
     "dependencies": {
         "0x.js": "^6.0.12",
         "@0x/abi-gen-wrappers": "^5.0.2",
+        "@0x/asset-swapper": "^0.0.4",
         "@0x/connect": "^5.0.13",
         "@0x/contract-addresses": "^3.0.2",
         "@0x/contract-artifacts": "^2.0.1",
