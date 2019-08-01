@@ -22,13 +22,13 @@
     lodash "^4.17.11"
     web3-provider-engine "14.0.6"
 
-"@0x/abi-gen-wrappers@^5.0.2":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-5.0.2.tgz#23e6979cd70e43d17b12c361b34cad195fb04b6c"
+"@0x/abi-gen-wrappers@^5.0.2", "@0x/abi-gen-wrappers@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-5.1.0.tgz#9caf764ff48bc3601ccbf3300038643ecf7bbb7e"
   dependencies:
-    "@0x/base-contract" "^5.1.1"
+    "@0x/base-contract" "^5.3.0"
     "@0x/contract-addresses" "^3.0.2"
-    "@0x/contract-artifacts" "^2.0.1"
+    "@0x/contract-artifacts" "^2.0.3"
 
 "@0x/assert@^2.1.0":
   version "2.1.0"
@@ -40,18 +40,32 @@
     lodash "^4.17.11"
     valid-url "^1.0.9"
 
-"@0x/base-contract@^5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-5.1.1.tgz#5a985f381813cd26ae805d65447fb28f20f594fd"
+"@0x/assert@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@0x/assert/-/assert-2.1.2.tgz#cf2b95baf70b0d6d3a955306340cb745fe2be14e"
   dependencies:
-    "@0x/assert" "^2.1.0"
-    "@0x/json-schemas" "^3.0.11"
-    "@0x/typescript-typings" "^4.2.3"
-    "@0x/utils" "^4.4.0"
-    "@0x/web3-wrapper" "^6.0.7"
-    ethereum-types "^2.1.3"
-    ethers "~4.0.4"
+    "@0x/json-schemas" "^3.1.12"
+    "@0x/typescript-typings" "^4.2.4"
+    "@0x/utils" "^4.4.2"
     lodash "^4.17.11"
+    valid-url "^1.0.9"
+
+"@0x/base-contract@^5.1.1", "@0x/base-contract@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-5.3.0.tgz#71581b9e0205347d39776bfd4d8347f770614cf0"
+  dependencies:
+    "@0x/assert" "^2.1.2"
+    "@0x/json-schemas" "^3.1.12"
+    "@0x/typescript-typings" "^4.2.4"
+    "@0x/utils" "^4.4.2"
+    "@0x/web3-wrapper" "^6.0.9"
+    ethereum-types "^2.1.4"
+    ethereumjs-blockstream "6.0.0"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    js-sha3 "^0.7.0"
+    lodash "^4.17.11"
+    uuid "^3.3.2"
 
 "@0x/connect@^5.0.13":
   version "5.0.13"
@@ -75,9 +89,9 @@
   dependencies:
     lodash "^4.17.11"
 
-"@0x/contract-artifacts@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@0x/contract-artifacts/-/contract-artifacts-2.0.1.tgz#055c3f0d961ff923291cbf2ee29d9ad14a9b6a65"
+"@0x/contract-artifacts@^2.0.1", "@0x/contract-artifacts@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/contract-artifacts/-/contract-artifacts-2.0.3.tgz#ffbfaab9d7988b7c29a0185c9edc61fbce107dbf"
 
 "@0x/contract-wrappers@^9.1.7":
   version "9.1.7"
@@ -137,6 +151,15 @@
   resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-3.0.11.tgz#895e2eeab3a9c5ce3cac796a2bdf1a9733a8b79b"
   dependencies:
     "@0x/typescript-typings" "^4.2.3"
+    "@types/node" "*"
+    jsonschema "^1.2.0"
+    lodash.values "^4.3.0"
+
+"@0x/json-schemas@^3.1.12":
+  version "3.1.12"
+  resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-3.1.12.tgz#65839afa4c2c8643f676cee5901bf747db526645"
+  dependencies:
+    "@0x/typescript-typings" "^4.2.4"
     "@types/node" "*"
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
@@ -235,6 +258,14 @@
     bignumber.js "~8.0.2"
     ethereum-types "^2.1.3"
 
+"@0x/types@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@0x/types/-/types-2.4.1.tgz#41a42185dcd093b19ef0d4595a432b285aae4746"
+  dependencies:
+    "@types/node" "*"
+    bignumber.js "~8.0.2"
+    ethereum-types "^2.1.4"
+
 "@0x/typescript-typings@^4.2.3":
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/@0x/typescript-typings/-/typescript-typings-4.2.3.tgz#eabf54053307ac505ef0013c189b9747425825d0"
@@ -243,6 +274,16 @@
     "@types/react" "*"
     bignumber.js "~8.0.2"
     ethereum-types "^2.1.3"
+    popper.js "1.14.3"
+
+"@0x/typescript-typings@^4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@0x/typescript-typings/-/typescript-typings-4.2.4.tgz#0858639ddfdf7e9e1a3f9fd8f7d8f2e8ebfdce85"
+  dependencies:
+    "@types/bn.js" "^4.11.0"
+    "@types/react" "*"
+    bignumber.js "~8.0.2"
+    ethereum-types "^2.1.4"
     popper.js "1.14.3"
 
 "@0x/utils@^4.4.0":
@@ -263,6 +304,24 @@
     js-sha3 "^0.7.0"
     lodash "^4.17.11"
 
+"@0x/utils@^4.4.2":
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.4.2.tgz#8c7899f0f768859a92e805cfa93e57f921cf6122"
+  dependencies:
+    "@0x/types" "^2.4.1"
+    "@0x/typescript-typings" "^4.2.4"
+    "@types/node" "*"
+    abortcontroller-polyfill "^1.1.9"
+    bignumber.js "~8.0.2"
+    chalk "^2.3.0"
+    detect-node "2.0.3"
+    ethereum-types "^2.1.4"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    isomorphic-fetch "2.2.1"
+    js-sha3 "^0.7.0"
+    lodash "^4.17.11"
+
 "@0x/web3-wrapper@^6.0.6", "@0x/web3-wrapper@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-6.0.7.tgz#dc8c11e7e68f58be059656349c0f3cc203ed7188"
@@ -272,6 +331,19 @@
     "@0x/typescript-typings" "^4.2.3"
     "@0x/utils" "^4.4.0"
     ethereum-types "^2.1.3"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    lodash "^4.17.11"
+
+"@0x/web3-wrapper@^6.0.9":
+  version "6.0.9"
+  resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-6.0.9.tgz#f5a4133ffe1cb7be3ad2decb85570122edee0176"
+  dependencies:
+    "@0x/assert" "^2.1.2"
+    "@0x/json-schemas" "^3.1.12"
+    "@0x/typescript-typings" "^4.2.4"
+    "@0x/utils" "^4.4.2"
+    ethereum-types "^2.1.4"
     ethereumjs-util "^5.1.1"
     ethers "~4.0.4"
     lodash "^4.17.11"
@@ -2645,6 +2717,13 @@ ethereum-common@^0.0.18:
 ethereum-types@^2.1.3:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-2.1.3.tgz#766a483f1beedd195e9e1665ba38979fc3b81a47"
+  dependencies:
+    "@types/node" "*"
+    bignumber.js "~8.0.2"
+
+ethereum-types@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-2.1.4.tgz#5e3f5fd562f354d6334500af7a10bea10da0c7c4"
   dependencies:
     "@types/node" "*"
     bignumber.js "~8.0.2"
