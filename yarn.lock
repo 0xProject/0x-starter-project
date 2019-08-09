@@ -69,9 +69,9 @@
     uuid "^3.3.2"
     websocket "^1.0.26"
 
-"@0x/contract-addresses@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-3.0.2.tgz#3dab5e762d6a6627667cd947f273a0ccc7d7e9a7"
+"@0x/contract-addresses@^3.0.2", "@0x/contract-addresses@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-3.0.3.tgz#3ecca2264d09c9d3d4e9c215a83973b789fa7f58"
   dependencies:
     lodash "^4.17.11"
 
