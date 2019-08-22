@@ -34,7 +34,7 @@
     "dependencies": {
         "0x.js": "^6.0.13",
         "@0x/abi-gen-wrappers": "^5.0.3",
-        "@0x/connect": "^5.0.14",
+        "@0x/connect": "^5.0.17",
         "@0x/contract-addresses": "^3.0.2",
         "@0x/contract-artifacts": "^2.0.2",
         "@0x/subproviders": "^4.1.2",
