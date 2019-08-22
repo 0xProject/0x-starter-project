@@ -30,13 +30,13 @@
     "@0x/contract-addresses" "^3.0.2"
     "@0x/contract-artifacts" "^2.0.2"
 
-"@0x/assert@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@0x/assert/-/assert-2.1.1.tgz#53c0023ab0664cdb3546f076265309caaaf86885"
+"@0x/assert@^2.1.1", "@0x/assert@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@0x/assert/-/assert-2.1.4.tgz#83d55f010552c1983940c4c44eee01a751cf7458"
   dependencies:
-    "@0x/json-schemas" "^3.1.11"
+    "@0x/json-schemas" "^4.0.0"
     "@0x/typescript-typings" "^4.2.4"
-    "@0x/utils" "^4.4.1"
+    "@0x/utils" "^4.5.0"
     lodash "^4.17.11"
     valid-url "^1.0.9"
 
@@ -135,6 +135,15 @@
 "@0x/json-schemas@^3.1.11":
   version "3.1.11"
   resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-3.1.11.tgz#57de26f30a9949fff3866ddeeaeab1f710c32f28"
+  dependencies:
+    "@0x/typescript-typings" "^4.2.4"
+    "@types/node" "*"
+    jsonschema "^1.2.0"
+    lodash.values "^4.3.0"
+
+"@0x/json-schemas@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-4.0.0.tgz#f6b9287175f7ac980452e913c042e8e858b0b2f2"
   dependencies:
     "@0x/typescript-typings" "^4.2.4"
     "@types/node" "*"
@@ -245,9 +254,9 @@
     ethereum-types "^2.1.4"
     popper.js "1.14.3"
 
-"@0x/utils@^4.4.1":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.4.1.tgz#bcdf992ee59ca7b3e7042795b142fa3a22e1bd56"
+"@0x/utils@^4.4.1", "@0x/utils@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.5.0.tgz#b5780ea76f4553ef458c4dddc970262c5d6cee75"
   dependencies:
     "@0x/types" "^2.4.1"
     "@0x/typescript-typings" "^4.2.4"
@@ -263,14 +272,14 @@
     js-sha3 "^0.7.0"
     lodash "^4.17.11"
 
-"@0x/web3-wrapper@^6.0.8":
-  version "6.0.8"
-  resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-6.0.8.tgz#04515c902aeb8253af93d0babfcf19337129f4db"
+"@0x/web3-wrapper@^6.0.11", "@0x/web3-wrapper@^6.0.8":
+  version "6.0.11"
+  resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-6.0.11.tgz#99d3f914db2d84cc2d26b86d44e1e0b63df9b045"
   dependencies:
-    "@0x/assert" "^2.1.1"
-    "@0x/json-schemas" "^3.1.11"
+    "@0x/assert" "^2.1.4"
+    "@0x/json-schemas" "^4.0.0"
     "@0x/typescript-typings" "^4.2.4"
-    "@0x/utils" "^4.4.1"
+    "@0x/utils" "^4.5.0"
     ethereum-types "^2.1.4"
     ethereumjs-util "^5.1.1"
     ethers "~4.0.4"
