@@ -21,12 +21,5 @@ jobs:
                   paths:
                       - node_modules
                   key: v1-dependencies-{{ checksum "package.json" }}
-            - run:
-                  name: Ganache Snapshot download
-                  command: yarn download_snapshot
-            - run:
-                  name: Ganache Snapshot
-                  command: yarn ganache-cli
-                  background: true
             - run: yarn build
             - run: yarn scenario:all
