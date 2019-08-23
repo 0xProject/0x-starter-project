@@ -7,8 +7,6 @@
         "watch": "cross-env tsc -w",
         "build": "cross-env tsc",
         "clean": "shx rm -rf lib",
-        "download_snapshot": "cross-env-shell download --extract --strip 1 --out 0x_ganache_snapshot ${npm_package_config_snapshot_url}",
-        "ganache-cli": "cross-env ganache-cli --noVMErrorsOnRPCResponse --gasLimit 10000000 --db 0x_ganache_snapshot  -p 8545 --networkId 50 -m \"concert load couple harbor equip island argue ramp clarify fence smart topic\"",
         "fake_sra_server": "cross-env yarn build && node ./lib/sra_server.js",
         "scenario:all": "cross-env yarn build && node ./lib/scenarios/all.js",
         "scenario:dutch_auction": "cross-env yarn build && node ./lib/scenarios/dutch_auction.js",
@@ -26,8 +24,6 @@
         "scenario:exchange_subscribe": "cross-env yarn build && node ./lib/scenarios/exchange_subscribe.js"
     },
     "config": {
-        "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "snapshot_url": "http://ganache-snapshots.0x.org.s3.amazonaws.com/0x_ganache_snapshot-4.2.0.zip"
     },
     "author": "",
     "license": "Apache-2.0",
@@ -37,7 +33,9 @@
         "@0x/connect": "^5.0.17",
         "@0x/contract-addresses": "^3.1.0",
         "@0x/contract-artifacts": "^2.2.0",
+        "@0x/migrations": "^4.3.0",
         "@0x/subproviders": "^5.0.2",
+        "@0x/utils": "^4.5.0",
         "@0x/web3-wrapper": "^6.0.11",
         "body-parser": "^1.19.0",
         "cli-table": "^0.3.1",

@@ -43,13 +43,6 @@ Build this package:
 yarn build
 ```
 
-Download the Ganache snapshot and load it on to a Ganache node:
-
-```
-yarn download_snapshot
-yarn ganache-cli
-```
-
 Run a scenario in another terminal:
 
 ```

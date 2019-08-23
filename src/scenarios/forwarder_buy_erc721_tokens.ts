@@ -14,7 +14,7 @@ import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
 import { contractAddresses, dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds } from '../utils';
+import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling an ERC721 token for WETH.
@@ -22,6 +22,7 @@ import { getRandomFutureDateInSeconds } from '../utils';
  * contract the taker does not require any additional setup.
  */
 export async function scenarioAsync(): Promise<void> {
+    await runMigrationsOnceIfRequiredAsync();
     PrintUtils.printScenario('Forwarder Buy ERC721 token');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
