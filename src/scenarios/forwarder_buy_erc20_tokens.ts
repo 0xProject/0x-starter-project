@@ -2,6 +2,7 @@ import {
     assetDataUtils,
     BigNumber,
     ContractWrappers,
+    ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
@@ -10,7 +11,7 @@ import {
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -50,10 +51,12 @@ export async function scenarioAsync(): Promise<void> {
     let txHash;
     let txReceipt;
 
+    const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
-    const makerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        zrxTokenAddress,
-        maker,
+    const makerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
     // With the Forwarding contract, the taker requires no set up
@@ -86,30 +89,29 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractAllowancesAsync();
     await printUtils.fetchAndPrintContractBalancesAsync();
 
-    // Generate the order hash and sign it
-    const orderHashHex = orderHashUtils.getOrderHashHex(order);
-    const signature = await signatureUtils.ecSignHashAsync(providerEngine, orderHashHex, maker);
-    const signedOrder = {
-        ...order,
-        signature,
-    };
+    // Maker signs the order
+    const signedOrder = await signatureUtils.ecSignOrderAsync(providerEngine, order, maker);
 
     // Use the Forwarder to market buy the ERC20 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
-    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
         [signedOrder],
         order.makerAssetAmount,
-        taker,
-        order.takerAssetAmount,
+        [signedOrder.signature],
         [],
-        0,
+        [],
+        new BigNumber(0),
         NULL_ADDRESS,
         {
-            gasLimit: TX_DEFAULTS.gas,
+            gas: TX_DEFAULTS.gas,
+            from: taker,
+            value: order.takerAssetAmount,
         },
     );
     txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('marketBuyTokensWithEth', txHash);
-    printUtils.printTransaction('marketBuyTokensWithEth', txReceipt, [['orderHash', orderHashHex]]);
+    printUtils.printTransaction('marketBuyTokensWithEth', txReceipt, [
+        ['orderHash', orderHashUtils.getOrderHashHex(order)],
+    ]);
 
     // Print the Balances
     await printUtils.fetchAndPrintContractBalancesAsync();

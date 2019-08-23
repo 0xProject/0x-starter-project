@@ -2,16 +2,18 @@ import {
     assetDataUtils,
     BigNumber,
     ContractWrappers,
+    ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
     signatureUtils,
     SignedOrder,
+    transactionHashUtils,
 } from '0x.js';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS } from '../constants';
+import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -58,33 +60,36 @@ export async function scenarioAsync(): Promise<void> {
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
     let txHash;
 
+    const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     // Approve the ERC20 Proxy to move ZRX for maker
-    const makerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        zrxTokenAddress,
-        maker,
+    const makerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
 
     // Approve the ERC20 Proxy to move ZRX for taker
-    const takerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        zrxTokenAddress,
-        taker,
+    const takerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: taker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker ZRX Approval', takerZRXApprovalTxHash);
 
     // Approve the ERC20 Proxy to move WETH for taker
-    const takerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        etherTokenAddress,
-        taker,
+    const takerWETHApprovalTxHash = await contractWrappers.weth9.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: taker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
-        etherTokenAddress,
-        takerAssetAmount,
-        taker,
-    );
+    const takerWETHDepositTxHash = await contractWrappers.weth9.deposit.validateAndSendTransactionAsync({
+        from: taker,
+        value: takerAssetAmount,
+    });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Deposit', takerWETHDepositTxHash);
 
     PrintUtils.printData('Setup', [
@@ -132,44 +137,42 @@ export async function scenarioAsync(): Promise<void> {
         ...order,
         signature,
     };
-    let orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
+    let orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
     printUtils.printOrderInfos({ order: orderInfo });
 
-    // The transaction encoder provides helpers in encoding 0x Exchange transactions to allow
-    // a third party to submit the transaction. This operates in the context of the signer (maker)
-    // rather then the context of the submitter (sender)
-    const transactionEncoder = await contractWrappers.exchange.transactionEncoderAsync();
     // This is an ABI encoded function call that the taker wishes to perform
     // in this scenario it is a fillOrder
-    const cancelData = transactionEncoder.cancelOrderTx(signedOrder);
+    const cancelData = contractWrappers.exchange.cancelOrder.getABIEncodedTransactionData(signedOrder);
     // Generate a random salt to mitigate replay attacks
     const makerCancelOrderTransactionSalt = generatePseudoRandomSalt();
     // The maker signs the operation data (cancelOrder) with the salt
-    const executeTransactionHex = transactionEncoder.getTransactionHashHex(
-        cancelData,
-        makerCancelOrderTransactionSalt,
-        maker,
-    );
+    const zeroExTransaction = {
+        data: cancelData,
+        salt: makerCancelOrderTransactionSalt,
+        signerAddress: maker,
+        verifyingContractAddress: contractAddresses.exchange,
+    };
+    const executeTransactionHex = transactionHashUtils.getTransactionHashHex(zeroExTransaction);
     const makerCancelOrderSignatureHex = await signatureUtils.ecSignHashAsync(
         providerEngine,
         executeTransactionHex,
         maker,
     );
     // The sender submits this operation via executeTransaction passing in the signature from the taker
-    txHash = await contractWrappers.exchange.executeTransactionAsync(
-        makerCancelOrderTransactionSalt,
-        maker,
-        cancelData,
+    txHash = await contractWrappers.exchange.executeTransaction.validateAndSendTransactionAsync(
+        zeroExTransaction.salt,
+        zeroExTransaction.signerAddress,
+        zeroExTransaction.data,
         makerCancelOrderSignatureHex,
-        sender,
         {
-            gasLimit: TX_DEFAULTS.gas,
+            gas: TX_DEFAULTS.gas,
+            from: sender,
         },
     );
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('executeTransaction', txHash);
     printUtils.printTransaction('Execute Transaction cancelOrderOrder', txReceipt, [['orderHash', orderHashHex]]);
 
-    orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
+    orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
     printUtils.printOrderInfos({ order: orderInfo });
 
     // Stop the Provider Engine
