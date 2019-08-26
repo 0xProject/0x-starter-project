@@ -92,6 +92,8 @@ export async function scenarioAsync(): Promise<void> {
 
     // Maker signs the order
     const signedOrder = await signatureUtils.ecSignOrderAsync(providerEngine, order, maker);
+    const affiliateFeeRecipient = NULL_ADDRESS;
+    const affiliateFee = ZERO;
 
     // Use the Forwarder to market buy the ERC20 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
@@ -99,10 +101,10 @@ export async function scenarioAsync(): Promise<void> {
         [signedOrder],
         order.makerAssetAmount,
         [signedOrder.signature],
+        [], // no fees required
         [],
-        [],
-        new BigNumber(0),
-        NULL_ADDRESS,
+        affiliateFee,
+        affiliateFeeRecipient,
         {
             gas: TX_DEFAULTS.gas,
             from: taker,

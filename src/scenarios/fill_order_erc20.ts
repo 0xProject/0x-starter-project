@@ -114,10 +114,6 @@ export async function scenarioAsync(): Promise<void> {
     const signedOrder = { ...order, signature };
 
     // Validate the order is Fillable before calling fillOrder
-    // This checks both the maker and taker balances and allowances to ensure it is fillable
-    // up to takerAssetAmount
-    // await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
-
     // Fill the Order via 0x Exchange contract
     txHash = await contractWrappers.exchange.fillOrder.validateAndSendTransactionAsync(
         signedOrder,

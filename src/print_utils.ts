@@ -124,7 +124,7 @@ export class PrintUtils {
         this._tokens = tokens;
         this._web3Wrapper.abiDecoder.addABI(contractWrappers.exchange.abi);
         this._web3Wrapper.abiDecoder.addABI(contractWrappers.weth9.abi);
-        // this._web3Wrapper.abiDecoder.addABI(contractWrappers.erc721Token.abi);
+        this._web3Wrapper.abiDecoder.addABI(ERC721TokenContract.ABI());
     }
     public printAccounts(): void {
         const data: string[][] = [];
