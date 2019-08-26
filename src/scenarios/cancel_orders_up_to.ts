@@ -6,13 +6,14 @@ import { NULL_ADDRESS, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants'
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds } from '../utils';
+import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs many orders selling ZRX for WETH.
  * The maker is able to cancel all any number of these orders effeciently by using cancelOrdersUpTo.
  */
 export async function scenarioAsync(): Promise<void> {
+    await runMigrationsOnceIfRequiredAsync();
     PrintUtils.printScenario('Cancel Orders Up To');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
@@ -75,22 +76,23 @@ export async function scenarioAsync(): Promise<void> {
     };
 
     // Fetch and print the order info
-    let order1Info = await contractWrappers.exchange.getOrderInfoAsync(order1);
-    let order2Info = await contractWrappers.exchange.getOrderInfoAsync(order2);
-    let order3Info = await contractWrappers.exchange.getOrderInfoAsync(order3);
+    let order1Info = await contractWrappers.exchange.getOrderInfo.callAsync(order1);
+    let order2Info = await contractWrappers.exchange.getOrderInfo.callAsync(order2);
+    let order3Info = await contractWrappers.exchange.getOrderInfo.callAsync(order3);
     printUtils.printOrderInfos({ order1: order1Info, order2: order2Info, order3: order3Info });
 
     // Maker cancels all orders before and including order2, order3 remains valid
     const targetOrderEpoch = order2.salt;
-    const txHash = await contractWrappers.exchange.cancelOrdersUpToAsync(targetOrderEpoch, maker, {
-        gasLimit: TX_DEFAULTS.gas,
+    const txHash = await contractWrappers.exchange.cancelOrdersUpTo.validateAndSendTransactionAsync(targetOrderEpoch, {
+        gas: TX_DEFAULTS.gas,
+        from: maker,
     });
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('cancelOrdersUpTo', txHash);
     printUtils.printTransaction('cancelOrdersUpTo', txReceipt, [['targetOrderEpoch', targetOrderEpoch.toString()]]);
     // Fetch and print the order info
-    order1Info = await contractWrappers.exchange.getOrderInfoAsync(order1);
-    order2Info = await contractWrappers.exchange.getOrderInfoAsync(order2);
-    order3Info = await contractWrappers.exchange.getOrderInfoAsync(order3);
+    order1Info = await contractWrappers.exchange.getOrderInfo.callAsync(order1);
+    order2Info = await contractWrappers.exchange.getOrderInfo.callAsync(order2);
+    order3Info = await contractWrappers.exchange.getOrderInfo.callAsync(order3);
     printUtils.printOrderInfos({ order1: order1Info, order2: order2Info, order3: order3Info });
 
     // Stop the Provider Engine

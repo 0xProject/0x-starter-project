@@ -10,6 +10,7 @@ import {
 import { NETWORK_CONFIGS } from '../configs';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
+import { runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, we will subscribe to the Exchange events, listening for Fills. This
@@ -18,6 +19,7 @@ import { providerEngine } from '../provider_engine';
  */
 export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Exchange Subscribe');
+    await runMigrationsOnceIfRequiredAsync();
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });

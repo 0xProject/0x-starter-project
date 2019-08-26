@@ -7,20 +7,22 @@ import {
     orderHashUtils,
     signatureUtils,
 } from '0x.js';
+import { ERC721TokenContract } from '@0x/abi-gen-wrappers';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { contractAddresses, dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds } from '../utils';
+import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling an ERC721 token for WETH.
  * The taker fills it via the 0x Exchange contract.
  */
 export async function scenarioAsync(): Promise<void> {
+    await runMigrationsOnceIfRequiredAsync();
     PrintUtils.printScenario('Fill Order ERC721');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
@@ -54,27 +56,28 @@ export async function scenarioAsync(): Promise<void> {
     const mintTxHash = await dummyERC721TokenContract.mint.sendTransactionAsync(maker, tokenId, { from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Mint ERC721 Token', mintTxHash);
 
+    const erc721Token = new ERC721TokenContract(dummyERC721TokenContract.address, providerEngine);
     // Allow the 0x ERC721 Proxy to move ERC721 tokens on behalf of maker
-    const makerERC721ApprovalTxHash = await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
-        dummyERC721TokenContract.address,
-        maker,
+    const makerERC721ApprovalTxHash = await erc721Token.setApprovalForAll.validateAndSendTransactionAsync(
+        contractAddresses.erc721Proxy,
         true,
+        { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ERC721 Approval', makerERC721ApprovalTxHash);
 
     // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
-    const takerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        etherTokenAddress,
-        taker,
+    const takerWETHApprovalTxHash = await contractWrappers.weth9.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: taker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
-        etherTokenAddress,
-        takerAssetAmount,
-        taker,
-    );
+    const takerWETHDepositTxHash = await contractWrappers.weth9.deposit.validateAndSendTransactionAsync({
+        from: taker,
+        value: takerAssetAmount,
+    });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Deposit', takerWETHDepositTxHash);
 
     PrintUtils.printData('Setup', [
@@ -117,9 +120,15 @@ export async function scenarioAsync(): Promise<void> {
     const signature = await signatureUtils.ecSignHashAsync(providerEngine, orderHashHex, maker);
     const signedOrder = { ...order, signature };
     // Fill the Order via 0x.js Exchange contract
-    txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerAssetAmount, taker, {
-        gasLimit: TX_DEFAULTS.gas,
-    });
+    txHash = await contractWrappers.exchange.fillOrder.validateAndSendTransactionAsync(
+        signedOrder,
+        takerAssetAmount,
+        signedOrder.signature,
+        {
+            gas: TX_DEFAULTS.gas,
+            from: taker,
+        },
+    );
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillOrder', txHash);
     printUtils.printTransaction('fillOrder', txReceipt, [['orderHash', orderHashHex]]);
 

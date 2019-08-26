@@ -14,7 +14,7 @@ import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
 import { contractAddresses, dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds } from '../utils';
+import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling an ERC721 token for WETH.
@@ -22,6 +22,7 @@ import { getRandomFutureDateInSeconds } from '../utils';
  * contract the taker does not require any additional setup.
  */
 export async function scenarioAsync(): Promise<void> {
+    await runMigrationsOnceIfRequiredAsync();
     PrintUtils.printScenario('Forwarder Buy ERC721 token');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
@@ -55,10 +56,10 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.awaitTransactionMinedSpinnerAsync('Mint ERC721 Token', mintTxHash);
     // Allow the 0x ERC721 Proxy to move ERC721 tokens on behalf of maker
     const isApproved = true;
-    const makerERC721ApprovalTxHash = await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
-        dummyERC721TokenContract.address,
-        maker,
+    const makerERC721ApprovalTxHash = await dummyERC721TokenContract.setApprovalForAll.validateAndSendTransactionAsync(
+        contractAddresses.erc721Proxy,
         isApproved,
+        { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ERC721 Approval', makerERC721ApprovalTxHash);
 
@@ -96,30 +97,31 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractBalancesAsync();
     await printUtils.fetchAndPrintERC721OwnerAsync(dummyERC721TokenContract.address, tokenId);
 
-    // Generate the order hash and sign it
-    const orderHashHex = orderHashUtils.getOrderHashHex(order);
-    const signature = await signatureUtils.ecSignHashAsync(providerEngine, orderHashHex, maker);
-    const signedOrder = {
-        ...order,
-        signature,
-    };
+    // Maker signs the order
+    const signedOrder = await signatureUtils.ecSignOrderAsync(providerEngine, order, maker);
+    const affiliateFeeRecipient = NULL_ADDRESS;
+    const affiliateFee = ZERO;
 
     // Use the Forwarder to market buy the ERC721 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
-    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
         [signedOrder],
         order.makerAssetAmount,
-        taker,
-        order.takerAssetAmount,
+        [signedOrder.signature],
+        [], // no fees required
         [],
-        0,
-        NULL_ADDRESS,
+        affiliateFee,
+        affiliateFeeRecipient,
         {
-            gasLimit: TX_DEFAULTS.gas,
+            gas: TX_DEFAULTS.gas,
+            from: taker,
+            value: order.takerAssetAmount,
         },
     );
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('marketBuyTokensWithEth', txHash);
-    printUtils.printTransaction('marketBuyTokensWithEth', txReceipt, [['orderHash', orderHashHex]]);
+    printUtils.printTransaction('marketBuyTokensWithEth', txReceipt, [
+        ['orderHash', orderHashUtils.getOrderHashHex(order)],
+    ]);
 
     // Print the Balances
     await printUtils.fetchAndPrintContractBalancesAsync();

@@ -2,7 +2,7 @@ import {
     assetDataUtils,
     BigNumber,
     ContractWrappers,
-    DutchAuctionWrapper,
+    ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
@@ -11,11 +11,18 @@ import {
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, ONE_SECOND_MS, TEN_MINUTES_MS, ZERO } from '../constants';
+import {
+    DECIMALS,
+    NULL_ADDRESS,
+    ONE_SECOND_MS,
+    TEN_MINUTES_MS,
+    UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+    ZERO,
+} from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds } from '../utils';
+import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the Seller is creating an order for use via the Dutch Auction contract.
@@ -30,6 +37,7 @@ import { getRandomFutureDateInSeconds } from '../utils';
  * has any excess amount it is returned to the buyer.
  */
 export async function scenarioAsync(): Promise<void> {
+    await runMigrationsOnceIfRequiredAsync();
     PrintUtils.printScenario('Dutch Auction');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
@@ -63,7 +71,7 @@ export async function scenarioAsync(): Promise<void> {
         .integerValue(BigNumber.ROUND_CEIL);
     // Additional data is encoded in the maker asset data, this includes the begin time and begin amount
     // for the auction
-    const dutchAuctionEncodedAssetData = DutchAuctionWrapper.encodeDutchAuctionAssetData(
+    const dutchAuctionEncodedAssetData = assetDataUtils.encodeDutchAuctionAssetData(
         makerAssetData,
         auctionBeginTimeSeconds,
         auctionBeginAmount,
@@ -71,26 +79,28 @@ export async function scenarioAsync(): Promise<void> {
     let txHash;
     let txReceipt;
 
+    const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
-    const sellMakerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        zrxTokenAddress,
-        sellMaker,
+    const sellMakerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: sellMaker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Sell Maker ZRX Approval', sellMakerZRXApprovalTxHash);
 
     // Approve the ERC20 Proxy to move WETH for rightMaker
-    const buyMakerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        etherTokenAddress,
-        buyMaker,
+    const buyMakerWETHApprovalTxHash = await contractWrappers.weth9.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: buyMaker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Buy Maker WETH Approval', buyMakerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const buyMakerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
-        etherTokenAddress,
-        auctionBeginAmount,
-        buyMaker,
-    );
+    const buyMakerWETHDepositTxHash = await contractWrappers.weth9.deposit.validateAndSendTransactionAsync({
+        from: buyMaker,
+        value: auctionBeginAmount,
+    });
     await printUtils.awaitTransactionMinedSpinnerAsync('Buy Maker WETH Deposit', buyMakerWETHDepositTxHash);
 
     PrintUtils.printData('Setup', [
@@ -132,7 +142,7 @@ export async function scenarioAsync(): Promise<void> {
     const sellSignedOrder = { ...sellOrder, signature: sellOrderSignature };
 
     // Create the buy order
-    const auctionDetails = await contractWrappers.dutchAuction.getAuctionDetailsAsync(sellSignedOrder);
+    const auctionDetails = await contractWrappers.dutchAuction.getAuctionDetails.callAsync(sellSignedOrder);
     const currentAuctionAmount = auctionDetails.currentAmount;
     // The buyer creates a matching order, specifying the current auction amount
     const buyOrder: Order = {
@@ -154,9 +164,16 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractAllowancesAsync();
     await printUtils.fetchAndPrintContractBalancesAsync();
     // Match the orders via the Dutch Auction contract
-    txHash = await contractWrappers.dutchAuction.matchOrdersAsync(buySignedOrder, sellSignedOrder, buyMaker, {
-        gasLimit: TX_DEFAULTS.gas,
-    });
+    txHash = await contractWrappers.dutchAuction.matchOrders.validateAndSendTransactionAsync(
+        buySignedOrder,
+        sellSignedOrder,
+        buySignedOrder.signature,
+        sellSignedOrder.signature,
+        {
+            gas: TX_DEFAULTS.gas,
+            from: buyMaker,
+        },
+    );
 
     txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('DutchAuction', txHash);
     printUtils.printTransaction('DutchAuction', txReceipt, [

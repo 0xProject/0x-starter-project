@@ -2,6 +2,7 @@ import {
     assetDataUtils,
     BigNumber,
     ContractWrappers,
+    ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
@@ -10,17 +11,18 @@ import {
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds } from '../utils';
+import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
  * The taker takes this order and fills it via the 0x Exchange contract.
  */
 export async function scenarioAsync(): Promise<void> {
+    await runMigrationsOnceIfRequiredAsync();
     PrintUtils.printScenario('Fill Order');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
@@ -49,26 +51,28 @@ export async function scenarioAsync(): Promise<void> {
     let txHash;
     let txReceipt;
 
+    const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
-    const makerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        zrxTokenAddress,
-        maker,
+    const makerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
 
     // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
-    const takerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        etherTokenAddress,
-        taker,
+    const takerWETHApprovalTxHash = await contractWrappers.weth9.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: taker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
-        etherTokenAddress,
-        takerAssetAmount,
-        taker,
-    );
+    const takerWETHDepositTxHash = await contractWrappers.weth9.deposit.validateAndSendTransactionAsync({
+        value: takerAssetAmount,
+        from: taker,
+    });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Deposit', takerWETHDepositTxHash);
 
     PrintUtils.printData('Setup', [
@@ -110,14 +114,13 @@ export async function scenarioAsync(): Promise<void> {
     const signedOrder = { ...order, signature };
 
     // Validate the order is Fillable before calling fillOrder
-    // This checks both the maker and taker balances and allowances to ensure it is fillable
-    // up to takerAssetAmount
-    await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
-
     // Fill the Order via 0x Exchange contract
-    txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerAssetAmount, taker, {
-        gasLimit: TX_DEFAULTS.gas,
-    });
+    txHash = await contractWrappers.exchange.fillOrder.validateAndSendTransactionAsync(
+        signedOrder,
+        takerAssetAmount,
+        signedOrder.signature,
+        { from: taker, gas: TX_DEFAULTS.gas },
+    );
     txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillOrder', txHash);
     printUtils.printTransaction('fillOrder', txReceipt, [['orderHash', orderHashHex]]);
 

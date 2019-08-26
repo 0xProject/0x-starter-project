@@ -2,6 +2,7 @@ import {
     assetDataUtils,
     BigNumber,
     ContractWrappers,
+    ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
@@ -10,11 +11,11 @@ import {
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS } from '../constants';
+import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds } from '../utils';
+import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
@@ -22,6 +23,7 @@ import { getRandomFutureDateInSeconds } from '../utils';
  * The taker takes this order and fills it via the 0x Exchange contract.
  */
 export async function scenarioAsync(): Promise<void> {
+    await runMigrationsOnceIfRequiredAsync();
     PrintUtils.printScenario('Fill Order with Fees');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
@@ -55,31 +57,34 @@ export async function scenarioAsync(): Promise<void> {
     let txHash;
     let txReceipt;
 
+    const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     // Approve the ERC20 Proxy to move ZRX for maker and taker
-    const makerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        zrxTokenAddress,
-        maker,
+    const makerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
-    const takerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        zrxTokenAddress,
-        taker,
+    const takerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: taker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker ZRX Approval', takerZRXApprovalTxHash);
 
     // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
-    const takerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-        etherTokenAddress,
-        taker,
+    const takerWETHApprovalTxHash = await contractWrappers.weth9.approve.validateAndSendTransactionAsync(
+        contractAddresses.erc20Proxy,
+        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        { from: taker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
-        etherTokenAddress,
-        takerAssetAmount,
-        taker,
-    );
+    const takerWETHDepositTxHash = await contractWrappers.weth9.deposit.validateAndSendTransactionAsync({
+        value: takerAssetAmount,
+        from: taker,
+    });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Deposit', takerWETHDepositTxHash);
 
     PrintUtils.printData('Setup', [
@@ -121,9 +126,15 @@ export async function scenarioAsync(): Promise<void> {
     const signature = await signatureUtils.ecSignHashAsync(providerEngine, orderHashHex, maker);
     const signedOrder = { ...order, signature };
     // Fill the Order via 0x Exchange contract
-    txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerAssetAmount, taker, {
-        gasLimit: TX_DEFAULTS.gas,
-    });
+    txHash = await contractWrappers.exchange.fillOrder.validateAndSendTransactionAsync(
+        signedOrder,
+        takerAssetAmount,
+        signedOrder.signature,
+        {
+            gas: TX_DEFAULTS.gas,
+            from: taker,
+        },
+    );
     txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillOrder', txHash);
     printUtils.printTransaction('fillOrder', txReceipt, [
         ['orderHash', orderHashHex],
