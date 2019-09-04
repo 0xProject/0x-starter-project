@@ -271,36 +271,36 @@
     tslint-react "^3.2.0"
     tsutils "3.0.0"
 
-"@0x/types@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@0x/types/-/types-2.4.1.tgz#41a42185dcd093b19ef0d4595a432b285aae4746"
+"@0x/types@^2.4.1", "@0x/types@^2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@0x/types/-/types-2.4.2.tgz#1d6dd85d9ac20f267a1206b477caf55e90522879"
   dependencies:
     "@types/node" "*"
     bignumber.js "~8.0.2"
-    ethereum-types "^2.1.4"
+    ethereum-types "^2.1.5"
 
-"@0x/typescript-typings@^4.2.4":
-  version "4.2.4"
-  resolved "https://registry.yarnpkg.com/@0x/typescript-typings/-/typescript-typings-4.2.4.tgz#0858639ddfdf7e9e1a3f9fd8f7d8f2e8ebfdce85"
+"@0x/typescript-typings@^4.2.4", "@0x/typescript-typings@^4.2.5":
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/@0x/typescript-typings/-/typescript-typings-4.2.5.tgz#3ceebadd60377abc6e4d2e86c2585ddaf857abef"
   dependencies:
     "@types/bn.js" "^4.11.0"
     "@types/react" "*"
     bignumber.js "~8.0.2"
-    ethereum-types "^2.1.4"
+    ethereum-types "^2.1.5"
     popper.js "1.14.3"
 
-"@0x/utils@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.5.0.tgz#b5780ea76f4553ef458c4dddc970262c5d6cee75"
+"@0x/utils@^4.5.0", "@0x/utils@^4.5.1":
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.5.1.tgz#0a5e474eefa5676f22ebdf0cf1e4bef375f26146"
   dependencies:
-    "@0x/types" "^2.4.1"
-    "@0x/typescript-typings" "^4.2.4"
+    "@0x/types" "^2.4.2"
+    "@0x/typescript-typings" "^4.2.5"
     "@types/node" "*"
     abortcontroller-polyfill "^1.1.9"
     bignumber.js "~8.0.2"
     chalk "^2.3.0"
     detect-node "2.0.3"
-    ethereum-types "^2.1.4"
+    ethereum-types "^2.1.5"
     ethereumjs-util "^5.1.1"
     ethers "~4.0.4"
     isomorphic-fetch "2.2.1"
@@ -2645,9 +2645,9 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
-ethereum-types@^2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-2.1.4.tgz#5e3f5fd562f354d6334500af7a10bea10da0c7c4"
+ethereum-types@^2.1.4, ethereum-types@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-2.1.5.tgz#477e2741837af07286cb3c48f3443a8bac2afb4b"
   dependencies:
     "@types/node" "*"
     bignumber.js "~8.0.2"
