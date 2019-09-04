@@ -100,9 +100,9 @@
   dependencies:
     lodash "^4.17.11"
 
-"@0x/contract-artifacts@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@0x/contract-artifacts/-/contract-artifacts-2.2.0.tgz#ac11b2076acf2722068492dc5488b275db2e1165"
+"@0x/contract-artifacts@^2.2.0", "@0x/contract-artifacts@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@0x/contract-artifacts/-/contract-artifacts-2.2.1.tgz#3fc38c90816907f5a68838e682d0e76523f32879"
 
 "@0x/contract-wrappers@^11.1.0":
   version "11.1.0"
