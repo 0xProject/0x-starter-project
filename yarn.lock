@@ -486,9 +486,9 @@
   dependencies:
     "@types/node" "*"
 
-"@types/lodash@^4.14.137":
-  version "4.14.137"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.137.tgz#8a4804937dc6462274ffcc088df8f14fc1b368e2"
+"@types/lodash@^4.14.140":
+  version "4.14.140"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.140.tgz#8d2bd55e6a22221cd662bbb85969eb00ec283da6"
 
 "@types/mime@*":
   version "2.0.1"
