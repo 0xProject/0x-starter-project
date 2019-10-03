@@ -1,7 +1,6 @@
 import {
     assetDataUtils,
     BigNumber,
-    ContractWrappers,
     ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
@@ -9,11 +8,13 @@ import {
     signatureUtils,
     SignedOrder,
     transactionHashUtils,
+    ZeroExTransaction,
 } from '0x.js';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
+import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -104,26 +105,25 @@ export async function scenarioAsync(): Promise<void> {
     const randomExpiration = getRandomFutureDateInSeconds();
 
     // Create the order
-    const orderWithoutExchangeAddress = {
+    const order: Order = {
+        chainId: NETWORK_CONFIGS.networkId,
+        exchangeAddress: contractAddresses.exchange,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
         senderAddress: NULL_ADDRESS,
-        feeRecipientAddress,
+        feeRecipientAddress: NULL_ADDRESS,
         expirationTimeSeconds: randomExpiration,
         salt: generatePseudoRandomSalt(),
         makerAssetAmount,
         takerAssetAmount,
         makerAssetData,
         takerAssetData,
-        makerFee,
-        takerFee,
+        makerFeeAssetData: NULL_BYTES,
+        takerFeeAssetData: NULL_BYTES,
+        makerFee: ZERO,
+        takerFee: ZERO,
     };
 
-    const exchangeAddress = contractAddresses.exchange;
-    const order: Order = {
-        ...orderWithoutExchangeAddress,
-        exchangeAddress,
-    };
     printUtils.printOrder(order);
 
     // Print out the Balances and Allowances
@@ -149,19 +149,22 @@ export async function scenarioAsync(): Promise<void> {
     // Generate a random salt to mitigate replay attacks
     const takerTransactionSalt = generatePseudoRandomSalt();
     // The taker signs the operation data (fillOrder) with the salt
-    const zeroExTransaction = {
+    const zeroExTransaction: ZeroExTransaction = {
         data: fillData,
         salt: takerTransactionSalt,
         signerAddress: taker,
-        verifyingContractAddress: contractAddresses.exchange,
+        gasPrice: new BigNumber(2000000000),
+        expirationTimeSeconds: randomExpiration,
+        domain: {
+            chainId: NETWORK_CONFIGS.networkId,
+            verifyingContract: contractAddresses.exchange,
+        },
     };
     const executeTransactionHex = transactionHashUtils.getTransactionHashHex(zeroExTransaction);
     const takerSignatureHex = await signatureUtils.ecSignHashAsync(providerEngine, executeTransactionHex, taker);
     // The sender submits this operation via executeTransaction passing in the signature from the taker
     txHash = await contractWrappers.exchange.executeTransaction.validateAndSendTransactionAsync(
-        zeroExTransaction.salt,
-        zeroExTransaction.signerAddress,
-        zeroExTransaction.data,
+        zeroExTransaction,
         takerSignatureHex,
         {
             gas: TX_DEFAULTS.gas,

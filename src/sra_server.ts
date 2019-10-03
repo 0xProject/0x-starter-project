@@ -1,6 +1,5 @@
 import {
     BigNumber,
-    ContractWrappers,
     DecodedLogEvent,
     ExchangeCancelEventArgs,
     ExchangeEvents,
@@ -9,6 +8,7 @@ import {
     SignedOrder,
 } from '0x.js';
 import { APIOrder, OrderbookResponse } from '@0x/connect';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 

@@ -1,17 +1,17 @@
 import {
     assetDataUtils,
     BigNumber,
-    ContractWrappers,
     ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
     signatureUtils,
 } from '0x.js';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -69,6 +69,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const order: Order = {
+        chainId: NETWORK_CONFIGS.networkId,
         exchangeAddress,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
@@ -80,6 +81,8 @@ export async function scenarioAsync(): Promise<void> {
         takerAssetAmount,
         makerAssetData,
         takerAssetData,
+        makerFeeAssetData: NULL_BYTES,
+        takerFeeAssetData: NULL_BYTES,
         makerFee: ZERO,
         takerFee: ZERO,
     };
@@ -101,8 +104,6 @@ export async function scenarioAsync(): Promise<void> {
         [signedOrder],
         order.makerAssetAmount,
         [signedOrder.signature],
-        [], // no fees required
-        [],
         affiliateFee,
         affiliateFeeRecipient,
         {

@@ -1,11 +1,5 @@
-import {
-    assetDataUtils,
-    ContractWrappers,
-    DecodedLogEvent,
-    ExchangeEvents,
-    ExchangeFillEventArgs,
-    IndexedFilterValues,
-} from '0x.js';
+import { assetDataUtils, DecodedLogEvent, ExchangeEvents, ExchangeFillEventArgs, IndexedFilterValues } from '0x.js';
+import { ContractWrappers } from '@0x/contract-wrappers';
 
 import { NETWORK_CONFIGS } from '../configs';
 import { PrintUtils } from '../print_utils';

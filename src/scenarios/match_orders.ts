@@ -1,17 +1,17 @@
 import {
     assetDataUtils,
     BigNumber,
-    ContractWrappers,
     ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
     signatureUtils,
 } from '0x.js';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -109,6 +109,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const leftOrder: Order = {
+        chainId: NETWORK_CONFIGS.networkId,
         exchangeAddress,
         makerAddress: leftMaker,
         takerAddress: NULL_ADDRESS,
@@ -120,6 +121,8 @@ export async function scenarioAsync(): Promise<void> {
         takerAssetAmount,
         makerAssetData,
         takerAssetData,
+        makerFeeAssetData: NULL_BYTES,
+        takerFeeAssetData: NULL_BYTES,
         makerFee: ZERO,
         takerFee: ZERO,
     };
@@ -128,6 +131,7 @@ export async function scenarioAsync(): Promise<void> {
     // Create the matched order
     const rightOrderTakerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.2), DECIMALS);
     const rightOrder: Order = {
+        chainId: NETWORK_CONFIGS.networkId,
         exchangeAddress,
         makerAddress: rightMaker,
         takerAddress: NULL_ADDRESS,
@@ -139,6 +143,8 @@ export async function scenarioAsync(): Promise<void> {
         takerAssetAmount: rightOrderTakerAssetAmount,
         makerAssetData: leftOrder.takerAssetData,
         takerAssetData: leftOrder.makerAssetData,
+        makerFeeAssetData: NULL_BYTES,
+        takerFeeAssetData: NULL_BYTES,
         makerFee: ZERO,
         takerFee: ZERO,
     };

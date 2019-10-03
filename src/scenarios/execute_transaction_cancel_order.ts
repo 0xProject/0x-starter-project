@@ -1,7 +1,6 @@
 import {
     assetDataUtils,
     BigNumber,
-    ContractWrappers,
     ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
@@ -9,11 +8,14 @@ import {
     signatureUtils,
     SignedOrder,
     transactionHashUtils,
+    WETH9Contract,
+    ZeroExTransaction,
 } from '0x.js';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
+import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -61,33 +63,31 @@ export async function scenarioAsync(): Promise<void> {
     const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
     let txHash;
 
-    const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
-    // Approve the ERC20 Proxy to move ZRX for maker
-    const makerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+    // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
+    const erc20Token = new ERC20TokenContract(zrxTokenAddress, providerEngine);
+    const makerZRXApprovalTxHash = await erc20Token.approve.validateAndSendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
-
-    // Approve the ERC20 Proxy to move ZRX for taker
-    const takerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+    const takerZRXApprovalTxHash = await erc20Token.approve.validateAndSendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: taker },
     );
-    await printUtils.awaitTransactionMinedSpinnerAsync('Taker ZRX Approval', takerZRXApprovalTxHash);
 
-    // Approve the ERC20 Proxy to move WETH for taker
-    const takerWETHApprovalTxHash = await contractWrappers.weth9.approve.validateAndSendTransactionAsync(
-        contractAddresses.erc20Proxy,
+    // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
+    const etherToken = new WETH9Contract(etherTokenAddress, providerEngine);
+    const takerWETHApprovalTxHash = await etherToken.approve.validateAndSendTransactionAsync(
+        contractWrappers.erc20Proxy.address,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: taker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await contractWrappers.weth9.deposit.validateAndSendTransactionAsync({
+    const takerWETHDepositTxHash = await etherToken.deposit.validateAndSendTransactionAsync({
         from: taker,
         value: takerAssetAmount,
     });
@@ -104,26 +104,25 @@ export async function scenarioAsync(): Promise<void> {
     const randomExpiration = getRandomFutureDateInSeconds();
 
     // Create the order
-    const orderWithoutExchangeAddress = {
+    const order: Order = {
+        chainId: NETWORK_CONFIGS.networkId,
+        exchangeAddress: contractAddresses.exchange,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
-        senderAddress: sender,
-        feeRecipientAddress,
+        senderAddress: NULL_ADDRESS,
+        feeRecipientAddress: NULL_ADDRESS,
         expirationTimeSeconds: randomExpiration,
         salt: generatePseudoRandomSalt(),
         makerAssetAmount,
         takerAssetAmount,
         makerAssetData,
         takerAssetData,
-        makerFee,
-        takerFee,
+        makerFeeAssetData: NULL_BYTES,
+        takerFeeAssetData: NULL_BYTES,
+        makerFee: ZERO,
+        takerFee: ZERO,
     };
 
-    const exchangeAddress = contractAddresses.exchange;
-    const order: Order = {
-        ...orderWithoutExchangeAddress,
-        exchangeAddress,
-    };
     printUtils.printOrder(order);
 
     // Print out the Balances and Allowances
@@ -143,15 +142,20 @@ export async function scenarioAsync(): Promise<void> {
 
     // This is an ABI encoded function call that the taker wishes to perform
     // in this scenario it is a fillOrder
-    const cancelData = contractWrappers.exchange.cancelOrder.getABIEncodedTransactionData(signedOrder);
+    const cancelData = contractWrappers.exchange.cancelOrder.getABIEncodedTransactionData(order);
     // Generate a random salt to mitigate replay attacks
     const makerCancelOrderTransactionSalt = generatePseudoRandomSalt();
     // The maker signs the operation data (cancelOrder) with the salt
-    const zeroExTransaction = {
+    const zeroExTransaction: ZeroExTransaction = {
         data: cancelData,
         salt: makerCancelOrderTransactionSalt,
         signerAddress: maker,
-        verifyingContractAddress: contractAddresses.exchange,
+        expirationTimeSeconds: randomExpiration,
+        gasPrice: new BigNumber(2000000000),
+        domain: {
+            chainId: NETWORK_CONFIGS.networkId,
+            verifyingContract: contractAddresses.exchange,
+        },
     };
     const executeTransactionHex = transactionHashUtils.getTransactionHashHex(zeroExTransaction);
     const makerCancelOrderSignatureHex = await signatureUtils.ecSignHashAsync(
@@ -161,9 +165,7 @@ export async function scenarioAsync(): Promise<void> {
     );
     // The sender submits this operation via executeTransaction passing in the signature from the taker
     txHash = await contractWrappers.exchange.executeTransaction.validateAndSendTransactionAsync(
-        zeroExTransaction.salt,
-        zeroExTransaction.signerAddress,
-        zeroExTransaction.data,
+        zeroExTransaction,
         makerCancelOrderSignatureHex,
         {
             gas: TX_DEFAULTS.gas,

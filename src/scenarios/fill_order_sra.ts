@@ -1,7 +1,6 @@
 import {
     assetDataUtils,
     BigNumber,
-    ContractWrappers,
     ERC20TokenContract,
     generatePseudoRandomSalt,
     Order,
@@ -9,6 +8,7 @@ import {
     signatureUtils,
 } from '0x.js';
 import { HttpClient, OrderbookRequest } from '@0x/connect';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
@@ -117,6 +117,7 @@ export async function scenarioAsync(): Promise<void> {
     // Create the order
     const order: Order = {
         salt: generatePseudoRandomSalt(),
+        chainId: NETWORK_CONFIGS.networkId,
         ...orderConfigRequest,
         ...orderConfig,
     };

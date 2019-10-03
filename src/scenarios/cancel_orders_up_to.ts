@@ -1,8 +1,9 @@
-import { assetDataUtils, BigNumber, ContractWrappers, Order } from '0x.js';
+import { assetDataUtils, BigNumber, Order } from '0x.js';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { NULL_ADDRESS, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants';
+import { NULL_ADDRESS, NULL_BYTES, ONE_MINUTE_MS, TEN_MINUTES_MS, ZERO } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -47,20 +48,21 @@ export async function scenarioAsync(): Promise<void> {
     // Rather than using a random salt, we use an incrementing salt value.
     // When combined with cancelOrdersUpTo, all lesser values of salt can be cancelled
     // This allows the maker to cancel many orders with one on-chain transaction
-
-    // Create the order
     const order1: Order = {
+        chainId: NETWORK_CONFIGS.networkId,
+        salt: new BigNumber(Date.now() - TEN_MINUTES_MS),
         exchangeAddress,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
         senderAddress: NULL_ADDRESS,
         feeRecipientAddress: NULL_ADDRESS,
         expirationTimeSeconds: randomExpiration,
-        salt: new BigNumber(Date.now() - TEN_MINUTES_MS),
         makerAssetAmount,
         takerAssetAmount,
         makerAssetData,
         takerAssetData,
+        makerFeeAssetData: NULL_BYTES,
+        takerFeeAssetData: NULL_BYTES,
         makerFee: ZERO,
         takerFee: ZERO,
     };
@@ -84,8 +86,8 @@ export async function scenarioAsync(): Promise<void> {
     // Maker cancels all orders before and including order2, order3 remains valid
     const targetOrderEpoch = order2.salt;
     const txHash = await contractWrappers.exchange.cancelOrdersUpTo.validateAndSendTransactionAsync(targetOrderEpoch, {
-        gas: TX_DEFAULTS.gas,
         from: maker,
+        gas: TX_DEFAULTS.gas,
     });
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('cancelOrdersUpTo', txHash);
     printUtils.printTransaction('cancelOrdersUpTo', txReceipt, [['targetOrderEpoch', targetOrderEpoch.toString()]]);

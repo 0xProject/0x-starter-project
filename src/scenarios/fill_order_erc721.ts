@@ -1,17 +1,17 @@
 import {
     assetDataUtils,
     BigNumber,
-    ContractWrappers,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
     signatureUtils,
+    WETH9Contract,
 } from '0x.js';
-import { ERC721TokenContract } from '@0x/abi-gen-wrappers';
+import { ContractWrappers, ERC721TokenContract } from '@0x/contract-wrappers';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
+import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { contractAddresses, dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -56,25 +56,26 @@ export async function scenarioAsync(): Promise<void> {
     const mintTxHash = await dummyERC721TokenContract.mint.sendTransactionAsync(maker, tokenId, { from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Mint ERC721 Token', mintTxHash);
 
-    const erc721Token = new ERC721TokenContract(dummyERC721TokenContract.address, providerEngine);
     // Allow the 0x ERC721 Proxy to move ERC721 tokens on behalf of maker
+    const erc721Token = new ERC721TokenContract(dummyERC721TokenContract.address, providerEngine);
     const makerERC721ApprovalTxHash = await erc721Token.setApprovalForAll.validateAndSendTransactionAsync(
-        contractAddresses.erc721Proxy,
+        contractWrappers.erc721Proxy.address,
         true,
         { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ERC721 Approval', makerERC721ApprovalTxHash);
 
     // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
-    const takerWETHApprovalTxHash = await contractWrappers.weth9.approve.validateAndSendTransactionAsync(
-        contractAddresses.erc20Proxy,
+    const etherToken = new WETH9Contract(etherTokenAddress, providerEngine);
+    const takerWETHApprovalTxHash = await etherToken.approve.validateAndSendTransactionAsync(
+        contractWrappers.erc20Proxy.address,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: taker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await contractWrappers.weth9.deposit.validateAndSendTransactionAsync({
+    const takerWETHDepositTxHash = await etherToken.deposit.validateAndSendTransactionAsync({
         from: taker,
         value: takerAssetAmount,
     });
@@ -93,6 +94,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const order: Order = {
+        chainId: NETWORK_CONFIGS.networkId,
         exchangeAddress,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
@@ -104,6 +106,8 @@ export async function scenarioAsync(): Promise<void> {
         takerAssetAmount,
         makerAssetData,
         takerAssetData,
+        makerFeeAssetData: NULL_BYTES,
+        takerFeeAssetData: NULL_BYTES,
         makerFee: ZERO,
         takerFee: ZERO,
     };
@@ -124,10 +128,7 @@ export async function scenarioAsync(): Promise<void> {
         signedOrder,
         takerAssetAmount,
         signedOrder.signature,
-        {
-            gas: TX_DEFAULTS.gas,
-            from: taker,
-        },
+        { from: taker, gas: TX_DEFAULTS.gas },
     );
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillOrder', txHash);
     printUtils.printTransaction('fillOrder', txReceipt, [['orderHash', orderHashHex]]);
