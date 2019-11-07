@@ -82,6 +82,10 @@ export async function scenarioAsync(): Promise<void> {
     });
     await printUtils.awaitTransactionMinedSpinnerAsync('Decrease Operator Share', txHash);
 
+    // At the end of the Epoch, finalize the pool to withdraw operator rewards
+    txHash = await stakingContract.finalizePool.sendTransactionAsync(poolId, { from: maker });
+    await printUtils.awaitTransactionMinedSpinnerAsync(`Finalize Pool ${poolId}`, txHash);
+
     providerEngine.stop();
 }
 
