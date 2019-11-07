@@ -1,5 +1,5 @@
-import { BigNumber } from '0x.js';
 import { runMigrationsOnceAsync } from '@0x/migrations';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { GANACHE_CONFIGS, NETWORK_CONFIGS } from './configs';

@@ -1,5 +1,6 @@
-import { assetDataUtils, BigNumber, generatePseudoRandomSalt, Order, orderHashUtils, signatureUtils } from '0x.js';
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, Order } from '@0x/contract-wrappers';
+import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
@@ -19,7 +20,7 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Forwarder Buy ERC721 token');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
     const etherTokenAddress = contractAddresses.etherToken;
     const dummyERC721TokenContract = dummyERC721TokenContracts[0];
     if (!dummyERC721TokenContract) {
@@ -41,7 +42,7 @@ export async function scenarioAsync(): Promise<void> {
     const tokenId = generatePseudoRandomSalt();
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC721AssetData(dummyERC721TokenContract.address, tokenId);
-    const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
     let txHash;
 
     // Mint a new ERC721 token for the maker
@@ -49,7 +50,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.awaitTransactionMinedSpinnerAsync('Mint ERC721 Token', mintTxHash);
     // Allow the 0x ERC721 Proxy to move ERC721 tokens on behalf of maker
     const isApproved = true;
-    const makerERC721ApprovalTxHash = await dummyERC721TokenContract.setApprovalForAll.validateAndSendTransactionAsync(
+    const makerERC721ApprovalTxHash = await dummyERC721TokenContract.setApprovalForAll.sendTransactionAsync(
         contractAddresses.erc721Proxy,
         isApproved,
         { from: maker },
@@ -100,7 +101,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Use the Forwarder to market buy the ERC721 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
-    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
+    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
         [signedOrder],
         order.makerAssetAmount,
         [signedOrder.signature],

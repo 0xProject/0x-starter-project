@@ -1,13 +1,6 @@
-import {
-    assetDataUtils,
-    BigNumber,
-    ERC20TokenContract,
-    generatePseudoRandomSalt,
-    Order,
-    orderHashUtils,
-    signatureUtils,
-} from '0x.js';
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, ERC20TokenContract, Order } from '@0x/contract-wrappers';
+import { generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
@@ -27,7 +20,7 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Forwarder Buy Tokens');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
     // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
@@ -47,14 +40,14 @@ export async function scenarioAsync(): Promise<void> {
     // the amount the maker wants of taker asset
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
-    const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
     let txHash;
     let txReceipt;
 
     const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
-    const makerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+    const makerZRXApprovalTxHash = await zrxToken.approve.sendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: maker },
@@ -100,7 +93,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Use the Forwarder to market buy the ERC20 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
-    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
+    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
         [signedOrder],
         order.makerAssetAmount,
         [signedOrder.signature],

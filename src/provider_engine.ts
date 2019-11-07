@@ -1,5 +1,4 @@
-import { RPCSubprovider, Web3ProviderEngine } from '0x.js';
-import { GanacheSubprovider, MnemonicWalletSubprovider } from '@0x/subproviders';
+import { GanacheSubprovider, MnemonicWalletSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { providerUtils } from '@0x/utils';
 
 import { BASE_DERIVATION_PATH, GANACHE_CONFIGS, MNEMONIC, NETWORK_CONFIGS } from './configs';

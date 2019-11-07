@@ -1,13 +1,6 @@
-import {
-    assetDataUtils,
-    BigNumber,
-    generatePseudoRandomSalt,
-    Order,
-    orderHashUtils,
-    signatureUtils,
-    WETH9Contract,
-} from '0x.js';
-import { ContractWrappers, ERC721TokenContract } from '@0x/contract-wrappers';
+import { ContractWrappers, ERC721TokenContract, Order } from '@0x/contract-wrappers';
+import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
@@ -26,7 +19,7 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Fill Order ERC721');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
     const etherTokenAddress = contractAddresses.etherToken;
     const dummyERC721TokenContract = dummyERC721TokenContracts[0];
     if (!dummyERC721TokenContract) {
@@ -49,7 +42,7 @@ export async function scenarioAsync(): Promise<void> {
     const tokenId = generatePseudoRandomSalt();
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC721AssetData(dummyERC721TokenContract.address, tokenId);
-    const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
     let txHash;
 
     // Mint a new ERC721 token for the maker
@@ -58,7 +51,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Allow the 0x ERC721 Proxy to move ERC721 tokens on behalf of maker
     const erc721Token = new ERC721TokenContract(dummyERC721TokenContract.address, providerEngine);
-    const makerERC721ApprovalTxHash = await erc721Token.setApprovalForAll.validateAndSendTransactionAsync(
+    const makerERC721ApprovalTxHash = await erc721Token.setApprovalForAll.sendTransactionAsync(
         contractWrappers.erc721Proxy.address,
         true,
         { from: maker },
@@ -66,8 +59,8 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ERC721 Approval', makerERC721ApprovalTxHash);
 
     // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
-    const etherToken = new WETH9Contract(etherTokenAddress, providerEngine);
-    const takerWETHApprovalTxHash = await etherToken.approve.validateAndSendTransactionAsync(
+    const etherToken = contractWrappers.weth9;
+    const takerWETHApprovalTxHash = await etherToken.approve.sendTransactionAsync(
         contractWrappers.erc20Proxy.address,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: taker },
@@ -75,7 +68,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await etherToken.deposit.validateAndSendTransactionAsync({
+    const takerWETHDepositTxHash = await etherToken.deposit.sendTransactionAsync({
         from: taker,
         value: takerAssetAmount,
     });
@@ -124,7 +117,7 @@ export async function scenarioAsync(): Promise<void> {
     const signature = await signatureUtils.ecSignHashAsync(providerEngine, orderHashHex, maker);
     const signedOrder = { ...order, signature };
     // Fill the Order via 0x.js Exchange contract
-    txHash = await contractWrappers.exchange.fillOrder.validateAndSendTransactionAsync(
+    txHash = await contractWrappers.exchange.fillOrder.sendTransactionAsync(
         signedOrder,
         takerAssetAmount,
         signedOrder.signature,

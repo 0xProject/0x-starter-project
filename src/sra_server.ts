@@ -1,14 +1,14 @@
+import { APIOrder, OrderbookResponse } from '@0x/connect';
 import {
-    BigNumber,
+    ContractWrappers,
     DecodedLogEvent,
     ExchangeCancelEventArgs,
     ExchangeEvents,
     ExchangeFillEventArgs,
-    orderHashUtils,
     SignedOrder,
-} from '0x.js';
-import { APIOrder, OrderbookResponse } from '@0x/connect';
-import { ContractWrappers } from '@0x/contract-wrappers';
+} from '@0x/contract-wrappers';
+import { orderHashUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
@@ -25,7 +25,7 @@ const orders: SignedOrder[] = [];
 const ordersByHash: { [hash: string]: SignedOrder } = {};
 
 // We subscribe to the Exchange Events to remove any filled or cancelled orders
-const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
 contractWrappers.exchange.subscribe(
     ExchangeEvents.Fill,
     {},
@@ -63,15 +63,15 @@ app.use(bodyParser.json());
  * GET Orderbook endpoint retrieves the orderbook for a given asset pair.
  * http://sra-spec.s3-website-us-east-1.amazonaws.com/#operation/getOrderbook
  */
-app.get('/v2/orderbook', (req, res) => {
+app.get('/v3/orderbook', (req, res) => {
     console.log('HTTP: GET orderbook');
     const baseAssetData = req.query.baseAssetData;
     const quoteAssetData = req.query.quoteAssetData;
-    const networkIdRaw = req.query.networkId;
+    const chainIdRaw = req.query.chainId;
     // tslint:disable-next-line:custom-no-magic-numbers
-    const networkId = parseInt(networkIdRaw, 10);
-    if (networkId !== NETWORK_CONFIGS.networkId) {
-        console.log(`Incorrect Network ID: ${networkId}`);
+    const chainId = parseInt(chainIdRaw, 10);
+    if (chainId !== NETWORK_CONFIGS.chainId) {
+        console.log(`Incorrect Chain ID: ${chainId}`);
         res.status(HTTP_BAD_REQUEST_STATUS).send({});
     } else {
         const orderbookResponse = renderOrderbookResponse(baseAssetData, quoteAssetData);
@@ -82,13 +82,13 @@ app.get('/v2/orderbook', (req, res) => {
  * POST Order config endpoint retrives the values for order fields that the relayer requires.
  * http://sra-spec.s3-website-us-east-1.amazonaws.com/#operation/getOrderConfig
  */
-app.post('/v2/order_config', (req, res) => {
+app.post('/v3/order_config', (req, res) => {
     console.log('HTTP: POST order config');
-    const networkIdRaw = req.query.networkId;
+    const chainIdRaw = req.query.chainId;
     // tslint:disable-next-line:custom-no-magic-numbers
-    const networkId = parseInt(networkIdRaw, 10);
-    if (networkId !== NETWORK_CONFIGS.networkId) {
-        console.log(`Incorrect Network ID: ${networkId}`);
+    const chainId = parseInt(chainIdRaw, 10);
+    if (chainId !== NETWORK_CONFIGS.chainId) {
+        console.log(`Incorrect Chain ID: ${chainId}`);
         res.status(HTTP_BAD_REQUEST_STATUS).send({});
     } else {
         const orderConfigResponse = {
@@ -104,13 +104,13 @@ app.post('/v2/order_config', (req, res) => {
  * POST Order endpoint submits an order to the Relayer.
  * http://sra-spec.s3-website-us-east-1.amazonaws.com/#operation/postOrder
  */
-app.post('/v2/order', (req, res) => {
+app.post('/v3/order', (req, res) => {
     console.log('HTTP: POST order');
-    const networkIdRaw = req.query.networkId;
+    const chainIdRaw = req.query.chainId;
     // tslint:disable-next-line:custom-no-magic-numbers
-    const networkId = parseInt(networkIdRaw, 10);
-    if (networkId !== NETWORK_CONFIGS.networkId) {
-        console.log(`Incorrect Network ID: ${networkId}`);
+    const chainId = parseInt(chainIdRaw, 10);
+    if (chainId !== NETWORK_CONFIGS.chainId) {
+        console.log(`Incorrect Chain ID: ${chainId}`);
         res.status(HTTP_BAD_REQUEST_STATUS).send({});
     } else {
         const signedOrder = parseHTTPOrder(req.body);

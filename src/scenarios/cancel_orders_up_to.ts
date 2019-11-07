@@ -1,5 +1,5 @@
-import { assetDataUtils, BigNumber, Order } from '0x.js';
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, Order } from '@0x/contract-wrappers';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
@@ -18,7 +18,7 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Cancel Orders Up To');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
     // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
@@ -38,8 +38,8 @@ export async function scenarioAsync(): Promise<void> {
     // the amount the maker wants of taker asset
     const takerAssetAmount = new BigNumber(10);
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
-    const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
 
     // Set up the Order and fill it
     const randomExpiration = getRandomFutureDateInSeconds();
@@ -85,7 +85,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Maker cancels all orders before and including order2, order3 remains valid
     const targetOrderEpoch = order2.salt;
-    const txHash = await contractWrappers.exchange.cancelOrdersUpTo.validateAndSendTransactionAsync(targetOrderEpoch, {
+    const txHash = await contractWrappers.exchange.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, {
         from: maker,
         gas: TX_DEFAULTS.gas,
     });

@@ -1,5 +1,13 @@
-import { BigNumber, ERC20TokenContract, ERC721TokenContract, Order, SignedOrder } from '0x.js';
-import { ContractWrappers, OrderInfo, OrderStatus } from '@0x/contract-wrappers';
+import {
+    ContractWrappers,
+    ERC20TokenContract,
+    ERC721TokenContract,
+    Order,
+    OrderInfo,
+    OrderStatus,
+    SignedOrder,
+} from '@0x/contract-wrappers';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { DecodedLogArgs, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';

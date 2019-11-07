@@ -1,13 +1,6 @@
-import {
-    assetDataUtils,
-    BigNumber,
-    ERC20TokenContract,
-    generatePseudoRandomSalt,
-    Order,
-    orderHashUtils,
-    signatureUtils,
-} from '0x.js';
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, ERC20TokenContract, Order } from '@0x/contract-wrappers';
+import { generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
@@ -30,7 +23,7 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Match Orders');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
     // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
@@ -50,15 +43,15 @@ export async function scenarioAsync(): Promise<void> {
     // the amount the maker wants of taker asset
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.4), DECIMALS);
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
-    const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
     let txHash;
     let txReceipt;
 
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
     const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     const etherToken = new ERC20TokenContract(etherTokenAddress, providerEngine);
-    const leftMakerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+    const leftMakerZRXApprovalTxHash = await zrxToken.approve.sendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: leftMaker },
@@ -66,14 +59,14 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.awaitTransactionMinedSpinnerAsync('Left Maker ZRX Approval', leftMakerZRXApprovalTxHash);
 
     // Approve the ERC20 Proxy to move ZRX for rightMaker
-    const rightMakerZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+    const rightMakerZRXApprovalTxHash = await zrxToken.approve.sendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: rightMaker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Right Maker ZRX Approval', rightMakerZRXApprovalTxHash);
     // Approve the ERC20 Proxy to move ZRX for matcherAccount
-    const matcherZRXApprovalTxHash = await zrxToken.approve.validateAndSendTransactionAsync(
+    const matcherZRXApprovalTxHash = await zrxToken.approve.sendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: matcherAccount },
@@ -81,7 +74,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.awaitTransactionMinedSpinnerAsync('Matcher ZRX Approval', matcherZRXApprovalTxHash);
 
     // Approve the ERC20 Proxy to move WETH for rightMaker
-    const rightMakerWETHApprovalTxHash = await etherToken.approve.validateAndSendTransactionAsync(
+    const rightMakerWETHApprovalTxHash = await etherToken.approve.sendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: rightMaker },
@@ -89,7 +82,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.awaitTransactionMinedSpinnerAsync('Right Maker WETH Approval', rightMakerZRXApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const rightMakerWETHDepositTxHash = await contractWrappers.weth9.deposit.validateAndSendTransactionAsync({
+    const rightMakerWETHDepositTxHash = await contractWrappers.weth9.deposit.sendTransactionAsync({
         value: takerAssetAmount,
         from: rightMaker,
     });
@@ -160,7 +153,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractAllowancesAsync();
     await printUtils.fetchAndPrintContractBalancesAsync();
     // Match the orders via 0x Exchange
-    txHash = await contractWrappers.exchange.matchOrders.validateAndSendTransactionAsync(
+    txHash = await contractWrappers.exchange.matchOrders.sendTransactionAsync(
         leftSignedOrder,
         rightSignedOrder,
         leftSignedOrder.signature,

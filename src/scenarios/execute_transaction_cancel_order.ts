@@ -1,17 +1,6 @@
-import {
-    assetDataUtils,
-    BigNumber,
-    ERC20TokenContract,
-    generatePseudoRandomSalt,
-    Order,
-    orderHashUtils,
-    signatureUtils,
-    SignedOrder,
-    transactionHashUtils,
-    WETH9Contract,
-    ZeroExTransaction,
-} from '0x.js';
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, ERC20TokenContract, Order, SignedOrder, ZeroExTransaction } from '@0x/contract-wrappers';
+import { generatePseudoRandomSalt, orderHashUtils, signatureUtils, transactionHashUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
@@ -34,7 +23,7 @@ export async function scenarioAsync(): Promise<void> {
     PrintUtils.printScenario('Execute Transaction cancelOrderOrder');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
     // Initialize the Web3Wrapper, this provides helper functions around fetching
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
@@ -54,32 +43,28 @@ export async function scenarioAsync(): Promise<void> {
     const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), DECIMALS);
     // the amount the maker wants of taker asset
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
-    // the amount of fees the maker pays in ZRX
-    const makerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.01), DECIMALS);
-    // the amount of fees the taker pays in ZRX
-    const takerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.01), DECIMALS);
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
-    const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
     let txHash;
 
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
     const erc20Token = new ERC20TokenContract(zrxTokenAddress, providerEngine);
-    const makerZRXApprovalTxHash = await erc20Token.approve.validateAndSendTransactionAsync(
+    const makerZRXApprovalTxHash = await erc20Token.approve.sendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: maker },
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
-    const takerZRXApprovalTxHash = await erc20Token.approve.validateAndSendTransactionAsync(
+    const takerZRXApprovalTxHash = await erc20Token.approve.sendTransactionAsync(
         contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: taker },
     );
 
     // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
-    const etherToken = new WETH9Contract(etherTokenAddress, providerEngine);
-    const takerWETHApprovalTxHash = await etherToken.approve.validateAndSendTransactionAsync(
+    const etherToken = contractWrappers.weth9;
+    const takerWETHApprovalTxHash = await etherToken.approve.sendTransactionAsync(
         contractWrappers.erc20Proxy.address,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         { from: taker },
@@ -87,7 +72,7 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await etherToken.deposit.validateAndSendTransactionAsync({
+    const takerWETHDepositTxHash = await etherToken.deposit.sendTransactionAsync({
         from: taker,
         value: takerAssetAmount,
     });
@@ -164,7 +149,7 @@ export async function scenarioAsync(): Promise<void> {
         maker,
     );
     // The sender submits this operation via executeTransaction passing in the signature from the taker
-    txHash = await contractWrappers.exchange.executeTransaction.validateAndSendTransactionAsync(
+    txHash = await contractWrappers.exchange.executeTransaction.sendTransactionAsync(
         zeroExTransaction,
         makerCancelOrderSignatureHex,
         {

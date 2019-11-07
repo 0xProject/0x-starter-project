@@ -1,4 +1,4 @@
-import { BigNumber } from '0x.js';
+import { BigNumber } from '@0x/utils';
 
 // tslint:disable-next-line:custom-no-magic-numbers
 export const ONE_SECOND_MS = 1000;

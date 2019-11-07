@@ -40,8 +40,8 @@ export async function scenarioAsync(): Promise<void> {
     // // the final amount at the end of the auction
     // const auctionEndAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
     // // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    // const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
-    // const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    // const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
+    // const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
     // // Begin the auction ten minutes ago
     // const auctionBeginTimeSeconds = new BigNumber(Date.now() - TEN_MINUTES_MS)
     //     .div(ONE_SECOND_MS)
