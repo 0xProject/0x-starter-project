@@ -17,8 +17,8 @@ enum StakeStatus {
 const NIL_POOL_ID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 /**
- * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
- * The taker takes this order and fills it via the 0x Exchange contract.
+ * In this scenario, the maker creates a staking pool and joins it with
+ * multiple addresses.
  */
 export async function scenarioAsync(): Promise<void> {
     await runMigrationsOnceIfRequiredAsync();
@@ -35,9 +35,11 @@ export async function scenarioAsync(): Promise<void> {
     // at stakingProxyContractAddress
     const stakingContract = new StakingContract(contractAddresses.stakingProxy, providerEngine, { from: maker });
 
-    const operatorShare = new BigNumber(2);
+    // A small share is kept for the operator, note 1,000,000 represents all rebates
+    // going to the operator
+    const operatorSharePpm = new BigNumber(2);
     const stakingPoolReceipt = await stakingContract.createStakingPool.awaitTransactionSuccessAsync(
-        operatorShare,
+        operatorSharePpm,
         true,
         {
             from: maker,
@@ -68,9 +70,13 @@ export async function scenarioAsync(): Promise<void> {
     );
     await printUtils.awaitTransactionMinedSpinnerAsync('Move Stake To Pool', txHash);
 
+    // Join the Pool with another maker address
+    // This is useful if you wish to Market Make from different addresses
     txHash = await stakingContract.joinStakingPoolAsMaker.sendTransactionAsync(poolId, { from: otherMaker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Other Maker Joins Pool', txHash);
 
+    // Decreases the Share of rebates for the Operator
+    // This will give more rebate share to third party stakers and less to the operator
     txHash = await stakingContract.decreaseStakingPoolOperatorShare.sendTransactionAsync(poolId, new BigNumber(1), {
         from: maker,
     });
