@@ -8,7 +8,7 @@ import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, 
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
+import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
@@ -100,9 +100,9 @@ export async function scenarioAsync(): Promise<void> {
         affiliateFee,
         affiliateFeeRecipient,
         {
-            gas: TX_DEFAULTS.gas,
             from: taker,
-            value: order.takerAssetAmount,
+            ...TX_DEFAULTS,
+            value: order.takerAssetAmount.plus(calculateProtocolFee([signedOrder])),
         },
     );
     txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('marketBuyTokensWithEth', txHash);

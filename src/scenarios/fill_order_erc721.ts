@@ -8,7 +8,7 @@ import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, 
 import { contractAddresses, dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
+import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling an ERC721 token for WETH.
@@ -121,7 +121,7 @@ export async function scenarioAsync(): Promise<void> {
         signedOrder,
         takerAssetAmount,
         signedOrder.signature,
-        { from: taker, gas: TX_DEFAULTS.gas },
+        { from: taker, ...TX_DEFAULTS, value: calculateProtocolFee([signedOrder]) },
     );
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillOrder', txHash);
     printUtils.printTransaction('fillOrder', txReceipt, [['orderHash', orderHashHex]]);

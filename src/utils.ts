@@ -1,8 +1,9 @@
+import { SignedOrder } from '@0x/contract-wrappers';
 import { runMigrationsOnceAsync } from '@0x/migrations';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
-import { GANACHE_CONFIGS, NETWORK_CONFIGS } from './configs';
+import { GANACHE_CONFIGS, NETWORK_CONFIGS, TX_DEFAULTS } from './configs';
 import { ONE_SECOND_MS, TEN_MINUTES_MS } from './constants';
 import { PrintUtils } from './print_utils';
 import { providerEngine } from './provider_engine';
@@ -21,4 +22,11 @@ export const runMigrationsOnceIfRequiredAsync = async (): Promise<void> => {
         const [owner] = await web3Wrapper.getAvailableAddressesAsync();
         await runMigrationsOnceAsync(providerEngine, { from: owner });
     }
+};
+
+export const calculateProtocolFee = (
+    orders: SignedOrder[],
+    gasPrice: BigNumber | number = TX_DEFAULTS.gasPrice,
+): BigNumber => {
+    return new BigNumber(150000).times(gasPrice).times(orders.length);
 };

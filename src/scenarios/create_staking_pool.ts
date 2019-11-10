@@ -49,10 +49,10 @@ export async function scenarioAsync(): Promise<void> {
     const poolId = (createStakingPoolLog as any).args.poolId;
     await printUtils.awaitTransactionMinedSpinnerAsync(`Create Pool ${poolId}`, stakingPoolReceipt.transactionHash);
 
-    // Approve the ZRX Vault to move the tokens for Staking
+    // Approve the ZRX token for Staking using the ERC20Proxy
     const zrxTokenContract = new ERC20TokenContract(zrxTokenAddress, providerEngine, { from: maker });
     await zrxTokenContract.approve.awaitTransactionSuccessAsync(
-        contractAddresses.zrxVault,
+        contractAddresses.erc20Proxy,
         UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
     );
 

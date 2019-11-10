@@ -8,7 +8,7 @@ import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../co
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
+import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the maker creates and signs an order for selling ZRX for WETH.
@@ -129,7 +129,8 @@ export async function scenarioAsync(): Promise<void> {
         signedOrder.signature,
         {
             from: taker,
-            gas: TX_DEFAULTS.gas,
+            ...TX_DEFAULTS,
+            value: calculateProtocolFee([signedOrder]),
         },
     );
     txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillOrder', txHash);

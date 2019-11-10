@@ -8,7 +8,7 @@ import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, 
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
+import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario, the leftMaker creates and signs an order (leftOrder) for selling ZRX for WETH.
@@ -159,8 +159,9 @@ export async function scenarioAsync(): Promise<void> {
         leftSignedOrder.signature,
         rightSignedOrder.signature,
         {
-            gas: TX_DEFAULTS.gas,
             from: matcherAccount,
+            ...TX_DEFAULTS,
+            value: calculateProtocolFee([leftSignedOrder, rightSignedOrder]),
         },
     );
     const leftOrderHashHex = orderHashUtils.getOrderHashHex(leftOrder);
