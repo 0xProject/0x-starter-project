@@ -37,7 +37,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // A small share is kept for the operator, note 1,000,000 represents all rebates
     // going to the operator
-    const operatorSharePpm = new BigNumber(2);
+    const operatorSharePpm = new BigNumber(900000); // 90 %
     const stakingPoolReceipt = await stakingContract.createStakingPool.awaitTransactionSuccessAsync(
         operatorSharePpm,
         true,
@@ -75,9 +75,9 @@ export async function scenarioAsync(): Promise<void> {
     txHash = await stakingContract.joinStakingPoolAsMaker.sendTransactionAsync(poolId, { from: otherMaker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Other Maker Joins Pool', txHash);
 
-    // Decreases the Share of rebates for the Operator
+    // Decreases the Share of rebates for the Operator to 80%
     // This will give more rebate share to third party stakers and less to the operator
-    txHash = await stakingContract.decreaseStakingPoolOperatorShare.sendTransactionAsync(poolId, new BigNumber(1), {
+    txHash = await stakingContract.decreaseStakingPoolOperatorShare.sendTransactionAsync(poolId, new BigNumber(80000), {
         from: maker,
     });
     await printUtils.awaitTransactionMinedSpinnerAsync('Decrease Operator Share', txHash);
