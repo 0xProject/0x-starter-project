@@ -1,11 +1,10 @@
-import { ContractWrappers, ERC20TokenContract, Order } from '@0x/contract-wrappers';
-import { generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
+import { generatePseudoRandomSalt, Order, signatureUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
-import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
@@ -25,8 +24,8 @@ export async function scenarioAsync(): Promise<void> {
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();
-    const zrxTokenAddress = contractAddresses.zrxToken;
-    const etherTokenAddress = contractAddresses.etherToken;
+    const zrxTokenAddress = contractWrappers.contractAddresses.zrxToken;
+    const etherTokenAddress = contractWrappers.contractAddresses.etherToken;
     const printUtils = new PrintUtils(
         web3Wrapper,
         contractWrappers,
@@ -40,25 +39,23 @@ export async function scenarioAsync(): Promise<void> {
     // the amount the maker wants of taker asset
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
-    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
+    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(zrxTokenAddress).callAsync();
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(etherTokenAddress).callAsync();
     let txHash;
     let txReceipt;
 
     const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
-    const makerZRXApprovalTxHash = await zrxToken.approve.sendTransactionAsync(
-        contractAddresses.erc20Proxy,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-        { from: maker },
-    );
+    const makerZRXApprovalTxHash = await zrxToken
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync({ from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
     // With the Forwarding contract, the taker requires no set up
     PrintUtils.printData('Setup', [['Maker ZRX Approval', makerZRXApprovalTxHash]]);
 
     // Set up the Order and fill it
     const randomExpiration = getRandomFutureDateInSeconds();
-    const exchangeAddress = contractAddresses.exchange;
+    const exchangeAddress = contractWrappers.contractAddresses.exchange;
 
     // Create the order
     const order: Order = {
@@ -88,27 +85,27 @@ export async function scenarioAsync(): Promise<void> {
 
     // Maker signs the order
     const signedOrder = await signatureUtils.ecSignOrderAsync(providerEngine, order, maker);
+    const { orderHash } = await contractWrappers.exchange.getOrderInfo(signedOrder).callAsync();
     const affiliateFeeRecipient = NULL_ADDRESS;
     const affiliateFee = ZERO;
 
     // Use the Forwarder to market buy the ERC20 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
-    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
-        [signedOrder],
-        order.makerAssetAmount,
-        [signedOrder.signature],
-        affiliateFee,
-        affiliateFeeRecipient,
-        {
+    txHash = await contractWrappers.forwarder
+        .marketBuyOrdersWithEth(
+            [signedOrder],
+            order.makerAssetAmount,
+            [signedOrder.signature],
+            affiliateFee,
+            affiliateFeeRecipient,
+        )
+        .sendTransactionAsync({
             from: taker,
             ...TX_DEFAULTS,
             value: order.takerAssetAmount.plus(calculateProtocolFee([signedOrder])),
-        },
-    );
+        });
     txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('marketBuyTokensWithEth', txHash);
-    printUtils.printTransaction('marketBuyTokensWithEth', txReceipt, [
-        ['orderHash', orderHashUtils.getOrderHashHex(order)],
-    ]);
+    printUtils.printTransaction('marketBuyTokensWithEth', txReceipt, [['orderHash', orderHash]]);
 
     // Print the Balances
     await printUtils.fetchAndPrintContractBalancesAsync();

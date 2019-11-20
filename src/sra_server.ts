@@ -5,9 +5,9 @@ import {
     ExchangeCancelEventArgs,
     ExchangeEvents,
     ExchangeFillEventArgs,
-    SignedOrder,
+    OrderStatus,
 } from '@0x/contract-wrappers';
-import { orderHashUtils } from '@0x/order-utils';
+import { SignedOrder } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
@@ -114,10 +114,24 @@ app.post('/v3/order', (req, res) => {
         res.status(HTTP_BAD_REQUEST_STATUS).send({});
     } else {
         const signedOrder = parseHTTPOrder(req.body);
-        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        ordersByHash[orderHash] = signedOrder;
-        orders.push(signedOrder);
-        res.status(HTTP_OK_STATUS).send({});
+        contractWrappers.devUtils
+            .getOrderRelevantState(signedOrder, signedOrder.signature)
+            .callAsync()
+            .then(orderRelevantState => {
+                const [{ orderStatus, orderHash }, remainingFillableAmount, isValidSignature] = orderRelevantState;
+                if (
+                    orderStatus === OrderStatus.Fillable &&
+                    remainingFillableAmount.isGreaterThan(0) &&
+                    isValidSignature
+                ) {
+                    // Order is fillable
+                    ordersByHash[orderHash] = signedOrder;
+                    orders.push(signedOrder);
+                    res.status(HTTP_OK_STATUS).send({});
+                } else {
+                    res.status(HTTP_BAD_REQUEST_STATUS).send();
+                }
+            });
     }
 });
 app.listen(HTTP_PORT, () => console.log('Standard relayer API (HTTP) listening on port 3000!'));

@@ -23,8 +23,8 @@ export async function scenarioAsync(): Promise<void> {
     // // account information, balances, general contract logs
     // const web3Wrapper = new Web3Wrapper(providerEngine);
     // const [sellMaker, buyMaker] = await web3Wrapper.getAvailableAddressesAsync();
-    // const zrxTokenAddress = contractAddresses.zrxToken;
-    // const etherTokenAddress = contractAddresses.etherToken;
+    // const zrxTokenAddress = contractWrappers.contractAddresses.zrxToken;
+    // const etherTokenAddress = contractWrappers.contractAddresses.etherToken;
     // const printUtils = new PrintUtils(
     //     web3Wrapper,
     //     contractWrappers,
@@ -40,8 +40,8 @@ export async function scenarioAsync(): Promise<void> {
     // // the final amount at the end of the auction
     // const auctionEndAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
     // // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    // const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
-    // const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
+    // const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(zrxTokenAddress).callAsync();
+    // const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(etherTokenAddress).callAsync();
     // // Begin the auction ten minutes ago
     // const auctionBeginTimeSeconds = new BigNumber(Date.now() - TEN_MINUTES_MS)
     //     .div(ONE_SECOND_MS)
@@ -86,7 +86,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // // Set up the Order and fill it
     // const randomExpiration = getRandomFutureDateInSeconds();
-    // const exchangeAddress = contractAddresses.exchange;
+    // const exchangeAddress = contractWrappers.contractAddresses.exchange;
 
     // // Create the order
     // const sellOrder: Order = {

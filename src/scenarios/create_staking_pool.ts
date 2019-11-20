@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS } from '../configs';
-import { UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
+import { DECIMALS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
 import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
@@ -27,8 +27,8 @@ export async function scenarioAsync(): Promise<void> {
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, otherMaker] = await web3Wrapper.getAvailableAddressesAsync();
-    const zrxTokenAddress = contractAddresses.zrxToken;
     const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
+    const zrxTokenAddress = contractWrappers.contractAddresses.zrxToken;
     const printUtils = new PrintUtils(web3Wrapper, contractWrappers, { maker }, { ZRX: zrxTokenAddress });
 
     // Staking Proxy is a delegate contract. We initialize a Staking Contract (ABI) pointing to the delegate proxy
@@ -38,52 +38,50 @@ export async function scenarioAsync(): Promise<void> {
     // A small share is kept for the operator, note 1,000,000 represents all rebates
     // going to the operator
     const operatorSharePpm = new BigNumber(900000); // 90 %
-    const stakingPoolReceipt = await stakingContract.createStakingPool.awaitTransactionSuccessAsync(
-        operatorSharePpm,
-        true,
-        {
+    const stakingPoolReceipt = await stakingContract
+        .createStakingPool(operatorSharePpm, true)
+        .awaitTransactionSuccessAsync({
             from: maker,
-        },
-    );
+        });
     const createStakingPoolLog = stakingPoolReceipt.logs[0];
     const poolId = (createStakingPoolLog as any).args.poolId;
     await printUtils.awaitTransactionMinedSpinnerAsync(`Create Pool ${poolId}`, stakingPoolReceipt.transactionHash);
 
     // Approve the ZRX token for Staking using the ERC20Proxy
     const zrxTokenContract = new ERC20TokenContract(zrxTokenAddress, providerEngine, { from: maker });
-    await zrxTokenContract.approve.awaitTransactionSuccessAsync(
-        contractAddresses.erc20Proxy,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-    );
+    await zrxTokenContract
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync();
 
     // Stake 1000 ZRX
-    const stakeAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18);
+    const stakeAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100), DECIMALS);
     // Transfer the ZRX to the Staking Contract
-    txHash = await stakingContract.stake.sendTransactionAsync(stakeAmount, { from: maker });
+    txHash = await stakingContract.stake(stakeAmount).sendTransactionAsync({ from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Stake ZRX', txHash);
     // Move the staked ZRX to delegate the Staking Pool
-    txHash = await stakingContract.moveStake.sendTransactionAsync(
-        { status: StakeStatus.Undelegated, poolId: NIL_POOL_ID },
-        { status: StakeStatus.Delegated, poolId },
-        stakeAmount,
-        { from: maker },
-    );
+    txHash = await stakingContract
+        .moveStake(
+            { status: StakeStatus.Undelegated, poolId: NIL_POOL_ID },
+            { status: StakeStatus.Delegated, poolId },
+            stakeAmount,
+        )
+        .sendTransactionAsync({ from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Move Stake To Pool', txHash);
 
     // Join the Pool with another maker address
     // This is useful if you wish to Market Make from different addresses
-    txHash = await stakingContract.joinStakingPoolAsMaker.sendTransactionAsync(poolId, { from: otherMaker });
+    txHash = await stakingContract.joinStakingPoolAsMaker(poolId).sendTransactionAsync({ from: otherMaker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Other Maker Joins Pool', txHash);
 
     // Decreases the Share of rebates for the Operator to 80%
     // This will give more rebate share to third party stakers and less to the operator
-    txHash = await stakingContract.decreaseStakingPoolOperatorShare.sendTransactionAsync(poolId, new BigNumber(80000), {
+    txHash = await stakingContract.decreaseStakingPoolOperatorShare(poolId, new BigNumber(80000)).sendTransactionAsync({
         from: maker,
     });
     await printUtils.awaitTransactionMinedSpinnerAsync('Decrease Operator Share', txHash);
 
     // At the end of the Epoch, finalize the pool to withdraw operator rewards
-    txHash = await stakingContract.finalizePool.sendTransactionAsync(poolId, { from: maker });
+    txHash = await stakingContract.finalizePool(poolId).sendTransactionAsync({ from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync(`Finalize Pool ${poolId}`, txHash);
 
     providerEngine.stop();

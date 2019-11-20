@@ -1,11 +1,11 @@
-import { ContractWrappers, Order } from '@0x/contract-wrappers';
-import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { ContractWrappers } from '@0x/contract-wrappers';
+import { assetDataUtils, generatePseudoRandomSalt, Order, signatureUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS, NULL_BYTES, ZERO } from '../constants';
-import { contractAddresses, dummyERC721TokenContracts } from '../contracts';
+import { dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
@@ -21,7 +21,7 @@ export async function scenarioAsync(): Promise<void> {
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
-    const etherTokenAddress = contractAddresses.etherToken;
+    const etherTokenAddress = contractWrappers.contractAddresses.etherToken;
     const dummyERC721TokenContract = dummyERC721TokenContracts[0];
     if (!dummyERC721TokenContract) {
         console.log('No Dummy ERC721 Tokens deployed on this network');
@@ -42,19 +42,17 @@ export async function scenarioAsync(): Promise<void> {
     const tokenId = generatePseudoRandomSalt();
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
     const makerAssetData = assetDataUtils.encodeERC721AssetData(dummyERC721TokenContract.address, tokenId);
-    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(etherTokenAddress).callAsync();
     let txHash;
 
     // Mint a new ERC721 token for the maker
-    const mintTxHash = await dummyERC721TokenContract.mint.sendTransactionAsync(maker, tokenId, { from: maker });
+    const mintTxHash = await dummyERC721TokenContract.mint(maker, tokenId).sendTransactionAsync({ from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Mint ERC721 Token', mintTxHash);
     // Allow the 0x ERC721 Proxy to move ERC721 tokens on behalf of maker
     const isApproved = true;
-    const makerERC721ApprovalTxHash = await dummyERC721TokenContract.setApprovalForAll.sendTransactionAsync(
-        contractAddresses.erc721Proxy,
-        isApproved,
-        { from: maker },
-    );
+    const makerERC721ApprovalTxHash = await dummyERC721TokenContract
+        .setApprovalForAll(contractWrappers.contractAddresses.erc721Proxy, isApproved)
+        .sendTransactionAsync({ from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ERC721 Approval', makerERC721ApprovalTxHash);
 
     // With the Forwarding contract, the taker requires 0 additional set up
@@ -65,7 +63,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Set up the Order and fill it
     const randomExpiration = getRandomFutureDateInSeconds();
-    const exchangeAddress = contractAddresses.exchange;
+    const exchangeAddress = contractWrappers.contractAddresses.exchange;
 
     // Create the order
     const order: Order = {
@@ -96,27 +94,27 @@ export async function scenarioAsync(): Promise<void> {
 
     // Maker signs the order
     const signedOrder = await signatureUtils.ecSignOrderAsync(providerEngine, order, maker);
+    const { orderHash } = await contractWrappers.exchange.getOrderInfo(signedOrder).callAsync();
     const affiliateFeeRecipient = NULL_ADDRESS;
     const affiliateFee = ZERO;
 
     // Use the Forwarder to market buy the ERC721 orders using Eth. When using the Forwarder
     // the taker does not need to set any allowances or deposit any ETH into WETH
-    txHash = await contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
-        [signedOrder],
-        order.makerAssetAmount,
-        [signedOrder.signature],
-        affiliateFee,
-        affiliateFeeRecipient,
-        {
+    txHash = await contractWrappers.forwarder
+        .marketBuyOrdersWithEth(
+            [signedOrder],
+            order.makerAssetAmount,
+            [signedOrder.signature],
+            affiliateFee,
+            affiliateFeeRecipient,
+        )
+        .sendTransactionAsync({
             from: taker,
             ...TX_DEFAULTS,
             value: order.takerAssetAmount.plus(calculateProtocolFee([signedOrder])),
-        },
-    );
+        });
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('marketBuyTokensWithEth', txHash);
-    printUtils.printTransaction('marketBuyTokensWithEth', txReceipt, [
-        ['orderHash', orderHashUtils.getOrderHashHex(order)],
-    ]);
+    printUtils.printTransaction('marketBuyTokensWithEth', txReceipt, [['orderHash', orderHash]]);
 
     // Print the Balances
     await printUtils.fetchAndPrintContractBalancesAsync();

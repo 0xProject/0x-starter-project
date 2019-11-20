@@ -1,11 +1,10 @@
-import { ContractWrappers, ERC20TokenContract, Order } from '@0x/contract-wrappers';
-import { generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
+import { generatePseudoRandomSalt, Order, signatureUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
-import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
@@ -28,8 +27,8 @@ export async function scenarioAsync(): Promise<void> {
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [leftMaker, rightMaker, matcherAccount] = await web3Wrapper.getAvailableAddressesAsync();
-    const zrxTokenAddress = contractAddresses.zrxToken;
-    const etherTokenAddress = contractAddresses.etherToken;
+    const zrxTokenAddress = contractWrappers.contractAddresses.zrxToken;
+    const etherTokenAddress = contractWrappers.contractAddresses.etherToken;
     const printUtils = new PrintUtils(
         web3Wrapper,
         contractWrappers,
@@ -43,46 +42,38 @@ export async function scenarioAsync(): Promise<void> {
     // the amount the maker wants of taker asset
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.4), DECIMALS);
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
-    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
+    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(zrxTokenAddress).callAsync();
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(etherTokenAddress).callAsync();
     let txHash;
     let txReceipt;
 
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
     const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     const etherToken = new ERC20TokenContract(etherTokenAddress, providerEngine);
-    const leftMakerZRXApprovalTxHash = await zrxToken.approve.sendTransactionAsync(
-        contractAddresses.erc20Proxy,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-        { from: leftMaker },
-    );
+    const leftMakerZRXApprovalTxHash = await zrxToken
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync({ from: leftMaker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Left Maker ZRX Approval', leftMakerZRXApprovalTxHash);
 
     // Approve the ERC20 Proxy to move ZRX for rightMaker
-    const rightMakerZRXApprovalTxHash = await zrxToken.approve.sendTransactionAsync(
-        contractAddresses.erc20Proxy,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-        { from: rightMaker },
-    );
+    const rightMakerZRXApprovalTxHash = await zrxToken
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync({ from: rightMaker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Right Maker ZRX Approval', rightMakerZRXApprovalTxHash);
     // Approve the ERC20 Proxy to move ZRX for matcherAccount
-    const matcherZRXApprovalTxHash = await zrxToken.approve.sendTransactionAsync(
-        contractAddresses.erc20Proxy,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-        { from: matcherAccount },
-    );
+    const matcherZRXApprovalTxHash = await zrxToken
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync({ from: matcherAccount });
     await printUtils.awaitTransactionMinedSpinnerAsync('Matcher ZRX Approval', matcherZRXApprovalTxHash);
 
     // Approve the ERC20 Proxy to move WETH for rightMaker
-    const rightMakerWETHApprovalTxHash = await etherToken.approve.sendTransactionAsync(
-        contractAddresses.erc20Proxy,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-        { from: rightMaker },
-    );
+    const rightMakerWETHApprovalTxHash = await etherToken
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync({ from: rightMaker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Right Maker WETH Approval', rightMakerZRXApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const rightMakerWETHDepositTxHash = await contractWrappers.weth9.deposit.sendTransactionAsync({
+    const rightMakerWETHDepositTxHash = await contractWrappers.weth9.deposit().sendTransactionAsync({
         value: takerAssetAmount,
         from: rightMaker,
     });
@@ -98,7 +89,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Set up the Order and fill it
     const randomExpiration = getRandomFutureDateInSeconds();
-    const exchangeAddress = contractAddresses.exchange;
+    const exchangeAddress = contractWrappers.contractAddresses.exchange;
 
     // Create the order
     const leftOrder: Order = {
@@ -153,19 +144,15 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractAllowancesAsync();
     await printUtils.fetchAndPrintContractBalancesAsync();
     // Match the orders via 0x Exchange
-    txHash = await contractWrappers.exchange.matchOrders.sendTransactionAsync(
-        leftSignedOrder,
-        rightSignedOrder,
-        leftSignedOrder.signature,
-        rightSignedOrder.signature,
-        {
+    txHash = await contractWrappers.exchange
+        .matchOrders(leftSignedOrder, rightSignedOrder, leftSignedOrder.signature, rightSignedOrder.signature)
+        .sendTransactionAsync({
             from: matcherAccount,
             ...TX_DEFAULTS,
             value: calculateProtocolFee([leftSignedOrder, rightSignedOrder]),
-        },
-    );
-    const leftOrderHashHex = orderHashUtils.getOrderHashHex(leftOrder);
-    const rightOrderHashHex = orderHashUtils.getOrderHashHex(rightOrder);
+        });
+    const { orderHash: leftOrderHashHex } = await contractWrappers.exchange.getOrderInfo(leftOrder).callAsync();
+    const { orderHash: rightOrderHashHex } = await contractWrappers.exchange.getOrderInfo(rightOrder).callAsync();
 
     txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('matchOrders', txHash);
     printUtils.printTransaction('matchOrders', txReceipt, [

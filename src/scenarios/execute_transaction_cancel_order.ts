@@ -1,11 +1,11 @@
-import { ContractWrappers, ERC20TokenContract, Order, SignedOrder, ZeroExTransaction } from '@0x/contract-wrappers';
-import { generatePseudoRandomSalt, orderHashUtils, signatureUtils, transactionHashUtils } from '@0x/order-utils';
+import { ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { generatePseudoRandomSalt, Order, signatureUtils, ZeroExTransaction } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
-import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
@@ -29,8 +29,8 @@ export async function scenarioAsync(): Promise<void> {
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker, sender] = await web3Wrapper.getAvailableAddressesAsync();
     const feeRecipientAddress = sender;
-    const zrxTokenAddress = contractAddresses.zrxToken;
-    const etherTokenAddress = contractAddresses.etherToken;
+    const zrxTokenAddress = contractWrappers.contractAddresses.zrxToken;
+    const etherTokenAddress = contractWrappers.contractAddresses.etherToken;
     const printUtils = new PrintUtils(
         web3Wrapper,
         contractWrappers,
@@ -44,35 +44,29 @@ export async function scenarioAsync(): Promise<void> {
     // the amount the maker wants of taker asset
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
     // 0x v2 uses hex encoded asset data strings to encode all the information needed to identify an asset
-    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(zrxTokenAddress);
-    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(etherTokenAddress);
+    const makerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(zrxTokenAddress).callAsync();
+    const takerAssetData = await contractWrappers.devUtils.encodeERC20AssetData(etherTokenAddress).callAsync();
     let txHash;
 
     // Allow the 0x ERC20 Proxy to move ZRX on behalf of makerAccount
     const erc20Token = new ERC20TokenContract(zrxTokenAddress, providerEngine);
-    const makerZRXApprovalTxHash = await erc20Token.approve.sendTransactionAsync(
-        contractAddresses.erc20Proxy,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-        { from: maker },
-    );
+    const makerZRXApprovalTxHash = await erc20Token
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync({ from: maker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
-    const takerZRXApprovalTxHash = await erc20Token.approve.sendTransactionAsync(
-        contractAddresses.erc20Proxy,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-        { from: taker },
-    );
+    const takerZRXApprovalTxHash = await erc20Token
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync({ from: taker });
 
     // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
     const etherToken = contractWrappers.weth9;
-    const takerWETHApprovalTxHash = await etherToken.approve.sendTransactionAsync(
-        contractWrappers.erc20Proxy.address,
-        UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-        { from: taker },
-    );
+    const takerWETHApprovalTxHash = await etherToken
+        .approve(contractWrappers.contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+        .sendTransactionAsync({ from: taker });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await etherToken.deposit.sendTransactionAsync({
+    const takerWETHDepositTxHash = await etherToken.deposit().sendTransactionAsync({
         from: taker,
         value: takerAssetAmount,
     });
@@ -91,7 +85,7 @@ export async function scenarioAsync(): Promise<void> {
     // Create the order
     const order: Order = {
         chainId: NETWORK_CONFIGS.networkId,
-        exchangeAddress: contractAddresses.exchange,
+        exchangeAddress: contractWrappers.contractAddresses.exchange,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
         senderAddress: NULL_ADDRESS,
@@ -115,19 +109,15 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractBalancesAsync();
 
     // Generate the order hash and sign it
-    const orderHashHex = orderHashUtils.getOrderHashHex(order);
-    const signature = await signatureUtils.ecSignHashAsync(providerEngine, orderHashHex, maker);
+    const signedOrder = await signatureUtils.ecSignOrderAsync(providerEngine, order, maker);
+    const { orderHash } = await contractWrappers.exchange.getOrderInfo(signedOrder).callAsync();
 
-    const signedOrder: SignedOrder = {
-        ...order,
-        signature,
-    };
-    let orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
+    let orderInfo = await contractWrappers.exchange.getOrderInfo(signedOrder).callAsync();
     printUtils.printOrderInfos({ order: orderInfo });
 
     // This is an ABI encoded function call that the taker wishes to perform
     // in this scenario it is a fillOrder
-    const cancelData = contractWrappers.exchange.cancelOrder.getABIEncodedTransactionData(order);
+    const cancelData = contractWrappers.exchange.cancelOrder(order).getABIEncodedTransactionData();
     // Generate a random salt to mitigate replay attacks
     const makerCancelOrderTransactionSalt = generatePseudoRandomSalt();
     // The maker signs the operation data (cancelOrder) with the salt
@@ -139,28 +129,33 @@ export async function scenarioAsync(): Promise<void> {
         gasPrice: new BigNumber(2000000000),
         domain: {
             chainId: NETWORK_CONFIGS.networkId,
-            verifyingContract: contractAddresses.exchange,
+            verifyingContract: contractWrappers.contractAddresses.exchange,
         },
     };
-    const executeTransactionHex = transactionHashUtils.getTransactionHashHex(zeroExTransaction);
+    const devUtils = new DevUtilsContract(contractWrappers.contractAddresses.devUtils, providerEngine);
+    const executeTransactionHex = await devUtils
+        .getTransactionHash(
+            zeroExTransaction,
+            new BigNumber(NETWORK_CONFIGS.chainId),
+            contractWrappers.contractAddresses.exchange,
+        )
+        .callAsync();
     const makerCancelOrderSignatureHex = await signatureUtils.ecSignHashAsync(
         providerEngine,
         executeTransactionHex,
         maker,
     );
     // The sender submits this operation via executeTransaction passing in the signature from the taker
-    txHash = await contractWrappers.exchange.executeTransaction.sendTransactionAsync(
-        zeroExTransaction,
-        makerCancelOrderSignatureHex,
-        {
+    txHash = await contractWrappers.exchange
+        .executeTransaction(zeroExTransaction, makerCancelOrderSignatureHex)
+        .sendTransactionAsync({
             gas: TX_DEFAULTS.gas,
             from: sender,
-        },
-    );
+        });
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('executeTransaction', txHash);
-    printUtils.printTransaction('Execute Transaction cancelOrderOrder', txReceipt, [['orderHash', orderHashHex]]);
+    printUtils.printTransaction('Execute Transaction cancelOrderOrder', txReceipt, [['orderHash', orderHash]]);
 
-    orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
+    orderInfo = await contractWrappers.exchange.getOrderInfo(signedOrder).callAsync();
     printUtils.printOrderInfos({ order: orderInfo });
 
     // Stop the Provider Engine
