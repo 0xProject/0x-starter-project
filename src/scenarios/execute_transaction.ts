@@ -8,7 +8,7 @@ import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
+import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
  * In this scenario a third party, called the sender, submits the operation on behalf of the taker.
@@ -86,7 +86,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const order: Order = {
-        chainId: NETWORK_CONFIGS.networkId,
+        chainId: NETWORK_CONFIGS.chainId,
         exchangeAddress: contractWrappers.contractAddresses.exchange,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
@@ -121,15 +121,16 @@ export async function scenarioAsync(): Promise<void> {
         .getABIEncodedTransactionData();
     // Generate a random salt to mitigate replay attacks
     const takerTransactionSalt = generatePseudoRandomSalt();
+    const gasPrice = new BigNumber(2000000000);
     // The taker signs the operation data (fillOrder) with the salt
     const zeroExTransaction: ZeroExTransaction = {
         data: fillData,
         salt: takerTransactionSalt,
         signerAddress: taker,
-        gasPrice: new BigNumber(2000000000),
+        gasPrice,
         expirationTimeSeconds: randomExpiration,
         domain: {
-            chainId: NETWORK_CONFIGS.networkId,
+            chainId: NETWORK_CONFIGS.chainId,
             verifyingContract: contractWrappers.contractAddresses.exchange,
         },
     };
@@ -148,6 +149,8 @@ export async function scenarioAsync(): Promise<void> {
         .sendTransactionAsync({
             gas: TX_DEFAULTS.gas,
             from: sender,
+            gasPrice,
+            value: calculateProtocolFee([signedOrder], gasPrice),
         });
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('executeTransaction', txHash);
     printUtils.printTransaction('Execute Transaction fillOrder', txReceipt, [['orderHash', orderHash]]);

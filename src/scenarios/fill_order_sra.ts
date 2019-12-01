@@ -101,7 +101,7 @@ export async function scenarioAsync(): Promise<void> {
     // Create the order
     const order: Order = {
         salt: generatePseudoRandomSalt(),
-        chainId: NETWORK_CONFIGS.networkId,
+        chainId: NETWORK_CONFIGS.chainId,
         ...orderConfigRequest,
         ...orderConfig,
     };

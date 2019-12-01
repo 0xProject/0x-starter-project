@@ -93,7 +93,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const leftOrder: Order = {
-        chainId: NETWORK_CONFIGS.networkId,
+        chainId: NETWORK_CONFIGS.chainId,
         exchangeAddress,
         makerAddress: leftMaker,
         takerAddress: NULL_ADDRESS,
@@ -115,7 +115,7 @@ export async function scenarioAsync(): Promise<void> {
     // Create the matched order
     const rightOrderTakerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.2), DECIMALS);
     const rightOrder: Order = {
-        chainId: NETWORK_CONFIGS.networkId,
+        chainId: NETWORK_CONFIGS.chainId,
         exchangeAddress,
         makerAddress: rightMaker,
         takerAddress: NULL_ADDRESS,

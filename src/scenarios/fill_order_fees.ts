@@ -87,7 +87,7 @@ export async function scenarioAsync(): Promise<void> {
     const feeAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
     // Create the order
     const order: Order = {
-        chainId: NETWORK_CONFIGS.networkId,
+        chainId: NETWORK_CONFIGS.chainId,
         exchangeAddress,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,

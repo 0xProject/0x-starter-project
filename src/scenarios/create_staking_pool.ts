@@ -1,11 +1,9 @@
-import { ERC20TokenContract, StakingContract } from '@0x/abi-gen-wrappers';
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, ERC20TokenContract, StakingContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS } from '../configs';
 import { DECIMALS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
-import { contractAddresses } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { runMigrationsOnceIfRequiredAsync } from '../utils';
@@ -33,7 +31,9 @@ export async function scenarioAsync(): Promise<void> {
 
     // Staking Proxy is a delegate contract. We initialize a Staking Contract (ABI) pointing to the delegate proxy
     // at stakingProxyContractAddress
-    const stakingContract = new StakingContract(contractAddresses.stakingProxy, providerEngine, { from: maker });
+    const stakingContract = new StakingContract(contractWrappers.contractAddresses.stakingProxy, providerEngine, {
+        from: maker,
+    });
 
     // A small share is kept for the operator, note 1,000,000 represents all rebates
     // going to the operator

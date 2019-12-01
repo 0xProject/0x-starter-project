@@ -5,7 +5,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, NULL_ADDRESS, NULL_BYTES, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
-import { contractAddresses, dummyERC721TokenContracts } from '../contracts';
+import { dummyERC721TokenContracts } from '../contracts';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
 import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
@@ -106,7 +106,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const order: Order = {
-        chainId: NETWORK_CONFIGS.networkId,
+        chainId: NETWORK_CONFIGS.chainId,
         exchangeAddress,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,

@@ -84,7 +84,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const order: Order = {
-        chainId: NETWORK_CONFIGS.networkId,
+        chainId: NETWORK_CONFIGS.chainId,
         exchangeAddress: contractWrappers.contractAddresses.exchange,
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
@@ -128,7 +128,7 @@ export async function scenarioAsync(): Promise<void> {
         expirationTimeSeconds: randomExpiration,
         gasPrice: new BigNumber(2000000000),
         domain: {
-            chainId: NETWORK_CONFIGS.networkId,
+            chainId: NETWORK_CONFIGS.chainId,
             verifyingContract: contractWrappers.contractAddresses.exchange,
         },
     };

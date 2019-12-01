@@ -60,7 +60,7 @@
     uuid "^3.3.2"
     websocket "^1.0.26"
 
-"@0x/contract-addresses@^3.3.0-beta.3", "@0x/contract-addresses@^3.3.0-beta.4":
+"@0x/contract-addresses@^3.3.0-beta.4":
   version "3.3.0-beta.4"
   resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-3.3.0-beta.4.tgz#eec4492702b2e707bcace6ac274f9826761e08a4"
   dependencies:
@@ -109,7 +109,7 @@
     "@0x/utils" "^4.6.0-beta.2"
     ethereum-types "^2.2.0-beta.2"
 
-"@0x/contracts-dev-utils@0.1.0-beta.3", "@0x/contracts-dev-utils@^0.1.0-beta.3":
+"@0x/contracts-dev-utils@^0.1.0-beta.3":
   version "0.1.0-beta.3"
   resolved "https://registry.yarnpkg.com/@0x/contracts-dev-utils/-/contracts-dev-utils-0.1.0-beta.3.tgz#8343f08871249a24bc3d87716ebd3e0aaae50d45"
   dependencies:

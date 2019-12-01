@@ -49,7 +49,7 @@ export async function scenarioAsync(): Promise<void> {
     // When combined with cancelOrdersUpTo, all lesser values of salt can be cancelled
     // This allows the maker to cancel many orders with one on-chain transaction
     const order1: Order = {
-        chainId: NETWORK_CONFIGS.networkId,
+        chainId: NETWORK_CONFIGS.chainId,
         salt: new BigNumber(Date.now() - TEN_MINUTES_MS),
         exchangeAddress,
         makerAddress: maker,
