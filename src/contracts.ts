@@ -1,4 +1,4 @@
-import { DummyERC721TokenContract } from '@0x/abi-gen-wrappers';
+import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 
 import { GANACHE_CONFIGS, KOVAN_CONFIGS, NETWORK_CONFIGS, RINKEBY_CONFIGS } from './configs';
 import { ROPSTEN_NETWORK_ID } from './constants';
