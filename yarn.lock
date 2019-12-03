@@ -104,6 +104,10 @@
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@0x/contract-artifacts/-/contract-artifacts-2.2.0.tgz#ac11b2076acf2722068492dc5488b275db2e1165"
 
+"@0x/contract-artifacts@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@0x/contract-artifacts/-/contract-artifacts-3.0.0.tgz#9f45ca848137971a4598506d54ba5320d6976091"
+
 "@0x/contract-wrappers@^11.1.0":
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/@0x/contract-wrappers/-/contract-wrappers-11.1.0.tgz#89b2e2f84617c5c87c6abf5bfd9543f51beabb60"
