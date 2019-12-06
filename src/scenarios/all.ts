@@ -1,7 +1,6 @@
 import { providerEngine } from '../provider_engine';
 
 import { scenarioAsync as cancelOrdersUpTo } from './cancel_orders_up_to';
-import { scenarioAsync as dutchAuction } from './dutch_auction';
 import { scenarioAsync as executeTransaction } from './execute_transaction';
 import { scenarioAsync as executeTransactionCancelOrder } from './execute_transaction_cancel_order';
 import { scenarioAsync as fillOrderERC20 } from './fill_order_erc20';
@@ -24,7 +23,6 @@ void (async () => {
         await forwarder_buy_erc20_tokens();
         await forwarder_buy_erc721_tokens();
         await fillOrderMultiAsset();
-        await dutchAuction();
     } catch (e) {
         console.log(e);
         providerEngine.stop();

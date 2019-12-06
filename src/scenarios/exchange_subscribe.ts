@@ -1,11 +1,11 @@
 import {
-    assetDataUtils,
     ContractWrappers,
     DecodedLogEvent,
     ExchangeEvents,
     ExchangeFillEventArgs,
     IndexedFilterValues,
-} from '0x.js';
+} from '@0x/contract-wrappers';
+import { assetDataUtils } from '@0x/order-utils';
 
 import { NETWORK_CONFIGS } from '../configs';
 import { PrintUtils } from '../print_utils';
@@ -22,7 +22,7 @@ export async function scenarioAsync(): Promise<void> {
     await runMigrationsOnceIfRequiredAsync();
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
-    const contractWrappers = new ContractWrappers(providerEngine, { networkId: NETWORK_CONFIGS.networkId });
+    const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
     // No filter, get all of the Fill Events
     const filterValues: IndexedFilterValues = {};
     // Subscribe to the Fill Events on the Exchange

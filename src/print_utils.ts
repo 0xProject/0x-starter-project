@@ -1,13 +1,12 @@
 import {
-    BigNumber,
     ContractWrappers,
     ERC20TokenContract,
     ERC721TokenContract,
-    Order,
     OrderInfo,
     OrderStatus,
-    SignedOrder,
-} from '0x.js';
+} from '@0x/contract-wrappers';
+import { Order, SignedOrder } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { DecodedLogArgs, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -145,7 +144,7 @@ export class PrintUtils {
             for (const account in this._accounts) {
                 const address = this._accounts[account];
                 const token = new ERC20TokenContract(tokenAddress, this._contractWrappers.getProvider());
-                const balanceBaseUnits = await token.balanceOf.callAsync(address);
+                const balanceBaseUnits = await token.balanceOf(address).callAsync();
                 const balance = Web3Wrapper.toUnitAmount(balanceBaseUnits, DECIMALS);
                 balances.push(balance.toString());
             }
@@ -168,7 +167,7 @@ export class PrintUtils {
         PrintUtils.pushAndPrint(table, flattenedBalances);
     }
     public async fetchAndPrintContractAllowancesAsync(): Promise<void> {
-        const erc20ProxyAddress = this._contractWrappers.erc20Proxy.address;
+        const erc20ProxyAddress = this._contractWrappers.contractAddresses.erc20Proxy;
         const flattenedAllowances = [];
         const flattenedAccounts = Object.keys(this._accounts).map(
             account => account.charAt(0).toUpperCase() + account.slice(1),
@@ -179,7 +178,7 @@ export class PrintUtils {
             for (const account in this._accounts) {
                 const address = this._accounts[account];
                 const token = new ERC20TokenContract(tokenAddress, this._contractWrappers.getProvider());
-                const allowance = await token.allowance.callAsync(address, erc20ProxyAddress);
+                const allowance = await token.allowance(address, erc20ProxyAddress).callAsync();
                 allowances.push(allowance.toString());
             }
             flattenedAllowances.push(allowances);
@@ -258,7 +257,7 @@ export class PrintUtils {
         const tokenSymbol = 'ERC721';
         const balances = [tokenSymbol];
         const token = new ERC721TokenContract(erc721TokenAddress, this._contractWrappers.getProvider());
-        const owner = await token.ownerOf.callAsync(tokenId);
+        const owner = await token.ownerOf(tokenId).callAsync();
         for (const account in this._accounts) {
             const address = this._accounts[account];
             const balance = owner === address ? erc721Icon : '';
