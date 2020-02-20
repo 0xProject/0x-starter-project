@@ -6,8 +6,7 @@
 
 ![cli](https://user-images.githubusercontent.com/27389/42074402-6dcc5ccc-7baf-11e8-84f1-9a27f1a96b08.png)
 
-This project will take you through a number of scenarios using the 0x v2 protocol.
-The previous v1 starter project has been moved to the ['v1' branch](https://github.com/0xProject/0x-starter-project/tree/v1).
+This project will take you through a number of scenarios using the 0x v3 protocol.
 
 ## Scenarios
 
