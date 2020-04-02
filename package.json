@@ -59,7 +59,7 @@
         "make-promises-safe": "^5.0.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.3.2",
-        "tslint": "5.19.0",
+        "tslint": "6.1.1",
         "typescript": "3.5.3"
     }
 }
