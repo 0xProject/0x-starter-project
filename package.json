@@ -41,7 +41,7 @@
         "ethereumjs-util": "^6.1.0",
         "express": "^4.17.1",
         "http": "^0.0.0",
-        "lodash": "^4.17.15",
+        "lodash": "^4.17.20",
         "ora": "^3.4.0",
         "run-s": "^0.0.0",
         "websocket": "^1.0.29"
