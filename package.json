@@ -38,7 +38,7 @@
         "body-parser": "^1.19.0",
         "cli-table": "^0.3.1",
         "copyfiles": "^2.1.1",
-        "ethereumjs-util": "^6.1.0",
+        "ethereumjs-util": "^7.0.7",
         "express": "^4.17.1",
         "http": "^0.0.0",
         "lodash": "^4.17.15",
