@@ -2,6 +2,10 @@
 
 # 0x Starter Project
 
+## ⚠️ Deprecation Warning ️️⚠️
+
+This project does **not support 0x Protocol V4** and is no longer being actively maintained.
+
 [![CircleCI](https://circleci.com/gh/0xProject/0x-starter-project.svg?style=svg)](https://circleci.com/gh/0xProject/0x-starter-project)
 
 ![cli](https://user-images.githubusercontent.com/27389/42074402-6dcc5ccc-7baf-11e8-84f1-9a27f1a96b08.png)
