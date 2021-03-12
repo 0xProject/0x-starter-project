@@ -4992,9 +4992,9 @@ make-promises-safe@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/make-promises-safe/-/make-promises-safe-1.1.0.tgz#b4d28c61ef8ad5502f38dbb3a0ee89627f76ad61"
 
-make-promises-safe@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/make-promises-safe/-/make-promises-safe-5.0.0.tgz#a42b6d9cebfa1642fc3a5bdb4e583dce35f2689d"
+make-promises-safe@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/make-promises-safe/-/make-promises-safe-5.1.0.tgz#dd9d311f555bcaa144f12e225b3d37785f0aa8f2"
 
 map-age-cleaner@^0.1.1:
   version "0.1.3"
