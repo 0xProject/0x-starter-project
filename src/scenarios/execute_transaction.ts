@@ -91,7 +91,7 @@ export async function scenarioAsync(): Promise<void> {
         makerAddress: maker,
         takerAddress: NULL_ADDRESS,
         senderAddress: NULL_ADDRESS,
-        feeRecipientAddress: NULL_ADDRESS,
+        feeRecipientAddress,
         expirationTimeSeconds: randomExpiration,
         salt: generatePseudoRandomSalt(),
         makerAssetAmount,
