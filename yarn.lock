@@ -623,19 +623,21 @@
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
 
-"@types/express-serve-static-core@*":
-  version "4.16.9"
-  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.16.9.tgz#69e00643b0819b024bdede95ced3ff239bb54558"
+"@types/express-serve-static-core@*", "@types/express-serve-static-core@^4.17.18":
+  version "4.17.23"
+  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.23.tgz#721c371fc53fe7b3ea40d8977b209b90cb275f58"
   dependencies:
     "@types/node" "*"
+    "@types/qs" "*"
     "@types/range-parser" "*"
 
-"@types/express@^4.17.1":
-  version "4.17.1"
-  resolved "https://registry.yarnpkg.com/@types/express/-/express-4.17.1.tgz#4cf7849ae3b47125a567dfee18bfca4254b88c5c"
+"@types/express@^4.17.13":
+  version "4.17.13"
+  resolved "https://registry.yarnpkg.com/@types/express/-/express-4.17.13.tgz#a76e2995728999bab51a33fabce1d705a3709034"
   dependencies:
     "@types/body-parser" "*"
-    "@types/express-serve-static-core" "*"
+    "@types/express-serve-static-core" "^4.17.18"
+    "@types/qs" "*"
     "@types/serve-static" "*"
 
 "@types/hdkey@^0.7.0":
@@ -679,6 +681,10 @@
 "@types/prop-types@*":
   version "15.7.3"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.3.tgz#2ab0d5da2e5815f94b0b9d4b95d1e5f243ab2ca7"
+
+"@types/qs@*":
+  version "6.9.6"
+  resolved "https://registry.yarnpkg.com/@types/qs/-/qs-6.9.6.tgz#df9c3c8b31a247ec315e6996566be3171df4b3b1"
 
 "@types/range-parser@*":
   version "1.2.3"
