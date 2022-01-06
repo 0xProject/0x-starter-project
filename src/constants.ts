@@ -11,6 +11,7 @@ export const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus
 // tslint:disable-next-line:custom-no-magic-numbers
 export const DECIMALS = 18;
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 export const NULL_BYTES = '0x';
 export const ZERO = new BigNumber(0);
 export const GANACHE_NETWORK_ID = 50;

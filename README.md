@@ -2,32 +2,26 @@
 
 # 0x Starter Project
 
-## ⚠️ Deprecation Warning ️️⚠️
-
-This project does **not support 0x Protocol V4** and is no longer being actively maintained.
-
 [![CircleCI](https://circleci.com/gh/0xProject/0x-starter-project.svg?style=svg)](https://circleci.com/gh/0xProject/0x-starter-project)
 
 ![cli](https://user-images.githubusercontent.com/27389/42074402-6dcc5ccc-7baf-11e8-84f1-9a27f1a96b08.png)
 
-This project will take you through a number of scenarios using the 0x v3 protocol.
-The previous v1 starter project has been moved to the ['v1' branch](https://github.com/0xProject/0x-starter-project/tree/v1).
+This project will take you through a number of scenarios using the 0x v4 protocol.
 
 ## Scenarios
 
 This repository contains a bunch of scenarios that you can run from the command-line:
 
--   Fill order (ERC20)
--   Fill order Fees
--   Fill order (ERC721)
--   Fill order (Multiple assets)
--   Cancel orders up to
--   Match orders
--   Execute transaction
--   Forwarder buy orders (ERC20)
--   Forwarder buy orders (ERC721)
--   Standard Relayer API fill order example
--   Dutch Auction (decreasing price auction)
+-   [Fill ERC20 limit order](./src/scenarios/fill_erc20_limit_order.ts)
+-   [Cancel pair limit orders](./src/scenarios/cancel_pair_limit_orders.ts)
+-   [Fill ERC20 RFQ order](./src/scenarios/fill_erc20_rfq_order.ts)
+-   [Fill ERC20 RFQ order with a maker order signer](./src/scenarios/fill_erc20_rfq_order_with_maker_order_signer.ts)
+-   [Subscribe to RFQ order fill events](./src/scenarios/fill_erc20_limit_order.ts)
+-   [Execute Metatransaction](src/scenarios/execute_metatransaction_fill_rfq_order.ts)
+-   [Fill ERC20 OTC order](./src/scenarios/fill_erc20_otc_order.ts)
+-   [Fill taker-signed ERC20 OTC order](./src/scenarios/fill_taker_signed_erc20_otc_order.ts)
+-   [(Advanced) Fill an aggregated quote via TransformERC20](./src/scenarios/transform_erc20.ts)
+-   [Create a staking pool](./src/scenarios/create_staking_pool.ts)
 
 ## Getting Started
 
@@ -50,7 +44,7 @@ yarn build
 Run a scenario in another terminal:
 
 ```
-yarn scenario:fill_order_erc20
+yarn scenario:fill_erc20_limit_order
 ```
 
 To run all scenarios:
@@ -75,20 +69,6 @@ For Kovan:
 
 ```
 export const NETWORK_CONFIGS = KOVAN_CONFIGS;
-```
-
-### Fill Order SRA Example
-
-To run the Fill Order SRA Example you must first start up a server in another terminal:
-
-```
-yarn fake_sra_server
-```
-
-Then in another terminal run:
-
-```
-yarn scenario:fill_order_sra
 ```
 
 ### Windows Development Setup

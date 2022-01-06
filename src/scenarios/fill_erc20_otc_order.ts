@@ -1,23 +1,23 @@
 import { ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
-import { LimitOrder, OrderStatus, SignatureType } from '@0x/protocol-utils';
-import { BigNumber, hexUtils } from '@0x/utils';
+import { OrderStatus, OtcOrder, SignatureType } from '@0x/protocol-utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
-import { DECIMALS, NULL_ADDRESS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS, ZERO } from '../constants';
+import { DECIMALS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
 import { PrintUtils } from '../print_utils';
 import { providerEngine } from '../provider_engine';
-import { calculateProtocolFee, getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
+import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '../utils';
 
 /**
- * In this scenario, the maker creates and signs a limit order for selling
+ * In this scenario, the maker creates and signs an OTC order for selling
  * ZRX for WETH.
  *
  * The taker takes this order and fills it via the 0x Exchange Proxy contract.
  */
 export async function scenarioAsync(): Promise<void> {
     await runMigrationsOnceIfRequiredAsync();
-    PrintUtils.printScenario('Fill ERC20 Limit Order');
+    PrintUtils.printScenario('Fill ERC20 OTC Order');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain
     const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
@@ -25,7 +25,6 @@ export async function scenarioAsync(): Promise<void> {
     // account information, balances, general contract logs
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();
-    const exchangeProxyAddress = contractWrappers.contractAddresses.exchangeProxy;
     const zrxTokenAddress = contractWrappers.contractAddresses.zrxToken;
     const etherTokenAddress = contractWrappers.contractAddresses.etherToken;
     const printUtils = new PrintUtils(
@@ -70,62 +69,55 @@ export async function scenarioAsync(): Promise<void> {
 
     // Set up the Order and fill it
     const randomExpiration = getRandomFutureDateInSeconds();
-    const pool = hexUtils.leftPad(1);
+    const nonce = new BigNumber(1);
+    const nonceBucket = new BigNumber(0);
+
+    const expiryAndNonce = OtcOrder.encodeExpiryAndNonce(randomExpiration, nonceBucket, nonce);
 
     // Create the order
-    const limitOrder: LimitOrder = new LimitOrder({
+    const otcOrder: OtcOrder = new OtcOrder({
         // TODO: fix chain ID--ganache contract appears to be using chain ID 1
         // when calculating the order hash
         // chainId: NETWORK_CONFIGS.chainId,
         chainId: 1,
-        verifyingContract: exchangeProxyAddress,
+        verifyingContract: contractWrappers.contractAddresses.exchangeProxy,
         maker,
         taker,
         makerToken: zrxTokenAddress,
         takerToken: etherTokenAddress,
         makerAmount: makerAssetAmount,
         takerAmount: takerAssetAmount,
-        takerTokenFeeAmount: ZERO,
-        sender: NULL_ADDRESS,
-        feeRecipient: NULL_ADDRESS,
-        expiry: randomExpiration,
-        pool,
-        salt: new BigNumber(Date.now()),
+        txOrigin: taker,
+        expiryAndNonce,
     });
 
     // Print order
-    printUtils.printOrder(limitOrder);
+    printUtils.printOrder(otcOrder);
 
     // Print out the Balances and Allowances
     await printUtils.fetchAndPrintContractAllowancesAsync(contractWrappers.contractAddresses.exchangeProxy);
     await printUtils.fetchAndPrintContractBalancesAsync();
 
     // Generate the order hash and sign it
-    const signature = await limitOrder.getSignatureWithProviderAsync(web3Wrapper.getProvider(), SignatureType.EthSign, maker);
+    const signature = await otcOrder.getSignatureWithProviderAsync(web3Wrapper.getProvider(), SignatureType.EthSign, maker);
 
-    const [
-        { orderHash, status },
-        remainingFillableAmount,
-        isValidSignature,
-    ] = await contractWrappers.exchangeProxy.getLimitOrderRelevantState(limitOrder, signature).callAsync();
-    if (status === OrderStatus.Fillable && remainingFillableAmount.isGreaterThan(0) && isValidSignature) {
+    const {
+        orderHash,
+        status,
+    } = await contractWrappers.exchangeProxy.getOtcOrderInfo(otcOrder).callAsync();
+    if (status === OrderStatus.Fillable) {
         // Order is fillable
     }
 
-    // get the protocol fee multiplier
-    // protocol fee = multiplier * gasPrice * numOrders
-    const protocolFeeMultiplier = new BigNumber(await contractWrappers.exchangeProxy.getProtocolFeeMultiplier().callAsync());
-
     // Fill the Order via 0x Exchange Proxy contract
     const txHash = await contractWrappers.exchangeProxy
-        .fillLimitOrder(limitOrder, signature, takerAssetAmount)
+        .fillOtcOrder(otcOrder, signature, takerAssetAmount)
         .sendTransactionAsync({
             from: taker,
-            value: calculateProtocolFee(1, protocolFeeMultiplier),
             ...TX_DEFAULTS,
         });
-    const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillLimitOrder', txHash);
-    printUtils.printTransaction('fillLimitOrder', txReceipt, [['orderHash', orderHash]]);
+    const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillOtcOrder', txHash);
+    printUtils.printTransaction('fillOtcOrder', txReceipt, [['orderHash', orderHash]]);
 
     // Print the Balances
     await printUtils.fetchAndPrintContractBalancesAsync();

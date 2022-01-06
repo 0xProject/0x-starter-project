@@ -28,7 +28,8 @@ export const runMigrationsOnceIfRequiredAsync = async (): Promise<void> => {
 
 export const calculateProtocolFee = (
     numOrders: number,
+    multiplier: BigNumber,
     gasPrice: BigNumber | number = TX_DEFAULTS.gasPrice,
 ): BigNumber => {
-    return new BigNumber(70000).times(gasPrice).times(numOrders);
+    return multiplier.times(gasPrice).times(numOrders);
 };
