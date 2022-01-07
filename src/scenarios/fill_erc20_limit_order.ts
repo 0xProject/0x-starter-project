@@ -74,10 +74,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const limitOrder: LimitOrder = new LimitOrder({
-        // TODO: fix chain ID--ganache contract appears to be using chain ID 1
-        // when calculating the order hash
-        // chainId: NETWORK_CONFIGS.chainId,
-        chainId: 1,
+        chainId: NETWORK_CONFIGS.chainId,
         verifyingContract: exchangeProxyAddress,
         maker,
         taker,

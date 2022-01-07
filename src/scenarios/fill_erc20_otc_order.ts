@@ -76,10 +76,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const otcOrder: OtcOrder = new OtcOrder({
-        // TODO: fix chain ID--ganache contract appears to be using chain ID 1
-        // when calculating the order hash
-        // chainId: NETWORK_CONFIGS.chainId,
-        chainId: 1,
+        chainId: NETWORK_CONFIGS.chainId,
         verifyingContract: contractWrappers.contractAddresses.exchangeProxy,
         maker,
         taker,

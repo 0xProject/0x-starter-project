@@ -74,10 +74,7 @@ export async function scenarioAsync(): Promise<void> {
 
     // Create the order
     const rfqOrder: RfqOrder = new RfqOrder({
-        // TODO: fix chain ID--ganache contract appears to be using chain ID 1
-        // when calculating the order hash
-        // chainId: NETWORK_CONFIGS.chainId,
-        chainId: 1,
+        chainId: NETWORK_CONFIGS.chainId,
         verifyingContract: exchangeProxyAddress,
         maker,
         taker,
@@ -119,6 +116,9 @@ export async function scenarioAsync(): Promise<void> {
         });
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillRfqOrder', txHash);
     printUtils.printTransaction('fillRfqOrder', txReceipt, [['orderHash', orderHash]]);
+
+    console.log('chainId', await web3Wrapper.getChainIdAsync());
+    console.log('networkId', await web3Wrapper.getNetworkIdAsync());
 
     // Print the Balances
     await printUtils.fetchAndPrintContractBalancesAsync();
