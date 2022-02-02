@@ -18,3 +18,4 @@ export const GANACHE_NETWORK_ID = 50;
 export const KOVAN_NETWORK_ID = 42;
 export const ROPSTEN_NETWORK_ID = 3;
 export const RINKEBY_NETWORK_ID = 4;
+export const MOCK_0x_API_BASE_URL = 'https://mock.api.0x.org';

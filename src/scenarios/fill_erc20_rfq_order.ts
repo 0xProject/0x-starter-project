@@ -37,9 +37,9 @@ export async function scenarioAsync(): Promise<void> {
     printUtils.printAccounts();
 
     // the amount the maker is selling of maker asset
-    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), DECIMALS);
+    const makerAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), DECIMALS);
     // the amount the maker wants of taker asset
-    const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
+    const takerAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
 
     // Allow the 0x Exchange Proxy to move ZRX on behalf of the maker
     const erc20Token = new ERC20TokenContract(zrxTokenAddress, providerEngine);
@@ -58,7 +58,7 @@ export async function scenarioAsync(): Promise<void> {
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
     const takerWETHDepositTxHash = await etherToken.deposit().sendTransactionAsync({
         from: taker,
-        value: takerAssetAmount,
+        value: takerAmount,
     });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Deposit', takerWETHDepositTxHash);
 
@@ -80,8 +80,8 @@ export async function scenarioAsync(): Promise<void> {
         taker,
         makerToken: zrxTokenAddress,
         takerToken: etherTokenAddress,
-        makerAmount: makerAssetAmount,
-        takerAmount: takerAssetAmount,
+        makerAmount,
+        takerAmount,
         txOrigin: taker,
         expiry: randomExpiration,
         pool,
@@ -96,29 +96,28 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractBalancesAsync();
 
     // Generate the order hash and sign it
-    const signature = await rfqOrder.getSignatureWithProviderAsync(web3Wrapper.getProvider(), SignatureType.EthSign, maker);
+    const signature = await rfqOrder.getSignatureWithProviderAsync(
+        web3Wrapper.getProvider(),
+        SignatureType.EthSign,
+        maker,
+    );
 
-    const [
-        { orderHash, status },
-        remainingFillableAmount,
-        isValidSignature,
-    ] = await contractWrappers.exchangeProxy.getRfqOrderRelevantState(rfqOrder, signature).callAsync();
+    const [{ orderHash, status }, remainingFillableAmount, isValidSignature] = await contractWrappers.exchangeProxy
+        .getRfqOrderRelevantState(rfqOrder, signature)
+        .callAsync();
     if (status === OrderStatus.Fillable && remainingFillableAmount.isGreaterThan(0) && isValidSignature) {
         // Order is fillable
     }
 
     // Fill the Order via 0x Exchange Proxy contract
     const txHash = await contractWrappers.exchangeProxy
-        .fillRfqOrder(rfqOrder, signature, takerAssetAmount)
+        .fillRfqOrder(rfqOrder, signature, takerAmount)
         .sendTransactionAsync({
             from: taker,
             ...TX_DEFAULTS,
         });
     const txReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('fillRfqOrder', txHash);
     printUtils.printTransaction('fillRfqOrder', txReceipt, [['orderHash', orderHash]]);
-
-    console.log('chainId', await web3Wrapper.getChainIdAsync());
-    console.log('networkId', await web3Wrapper.getNetworkIdAsync());
 
     // Print the Balances
     await printUtils.fetchAndPrintContractBalancesAsync();
