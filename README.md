@@ -12,6 +12,7 @@ This project will take you through a number of scenarios using the 0x v4 protoco
 
 This repository contains a bunch of scenarios that you can run from the command-line:
 
+-   [Fill a 0x API quote](./src/scenarios/fill_0x_api_swap.ts)
 -   [Fill ERC20 limit order](./src/scenarios/fill_erc20_limit_order.ts)
 -   [Cancel pair limit orders](./src/scenarios/cancel_pair_limit_orders.ts)
 -   [Fill ERC20 RFQ order](./src/scenarios/fill_erc20_rfq_order.ts)
