@@ -2,10 +2,8 @@ import {
     ContractWrappers,
     ERC20TokenContract,
     ERC721TokenContract,
-    OrderInfo,
-    OrderStatus,
 } from '@0x/contract-wrappers';
-import { Order, SignedOrder } from '@0x/order-utils';
+import { LimitOrder, OrderInfo, OrderStatus, OtcOrder, RfqOrder } from '@0x/protocol-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { DecodedLogArgs, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -166,8 +164,7 @@ export class PrintUtils {
         PrintUtils.printHeader('Balances');
         PrintUtils.pushAndPrint(table, flattenedBalances);
     }
-    public async fetchAndPrintContractAllowancesAsync(): Promise<void> {
-        const erc20ProxyAddress = this._contractWrappers.contractAddresses.erc20Proxy;
+    public async fetchAndPrintContractAllowancesAsync(spenderAddress: string): Promise<void> {
         const flattenedAllowances = [];
         const flattenedAccounts = Object.keys(this._accounts).map(
             account => account.charAt(0).toUpperCase() + account.slice(1),
@@ -178,7 +175,7 @@ export class PrintUtils {
             for (const account in this._accounts) {
                 const address = this._accounts[account];
                 const token = new ERC20TokenContract(tokenAddress, this._contractWrappers.getProvider());
-                const allowance = await token.allowance(address, erc20ProxyAddress).callAsync();
+                const allowance = await token.allowance(address, spenderAddress).callAsync();
                 allowances.push(allowance.toString());
             }
             flattenedAllowances.push(allowances);
@@ -242,11 +239,11 @@ export class PrintUtils {
     // tslint:disable-next-line:prefer-function-over-method
     public printOrderInfos(orderInfos: { [orderName: string]: OrderInfo }): void {
         const data: string[][] = [];
-        _.forOwn(orderInfos, (value, key) => data.push([key, OrderStatus[value.orderStatus]]));
+        _.forOwn(orderInfos, (value, key) => data.push([key, OrderStatus[value.status]]));
         PrintUtils.printData('Order Info', data);
     }
     // tslint:disable-next-line:prefer-function-over-method
-    public printOrder(order: Order | SignedOrder): void {
+    public printOrder(order: LimitOrder | RfqOrder | OtcOrder): void {
         PrintUtils.printData('Order', Object.entries(order));
     }
     public async fetchAndPrintERC721OwnerAsync(erc721TokenAddress: string, tokenId: BigNumber): Promise<void> {

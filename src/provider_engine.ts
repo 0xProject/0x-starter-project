@@ -16,6 +16,7 @@ const determineProvider = (): Web3ProviderEngine => {
             new GanacheSubprovider({
                 vmErrorsOnRPCResponse: false,
                 network_id: GANACHE_CONFIGS.networkId,
+                _chainId: GANACHE_CONFIGS.chainId,
                 mnemonic: MNEMONIC,
             }),
         );
