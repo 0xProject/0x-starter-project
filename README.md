@@ -30,7 +30,7 @@ By default this project uses the 0x development mnemonic running against Ganache
 
 You may choose to update the mnemonic in `src/configs.ts` or use the one provided (note if many people use this mnemonic on Ropsten then the funds may be drained).
 
-When changing the mnemonic ensure that the first three derived address have test ETH. You can request ETH from the https://faucet.paradigm.xyz/. The first derived address will also need test ZRX, which you can mint by running `yarn mint_test_zrx`.
+When changing the mnemonic ensure that the first three derived address have test ETH. You can request test ETH from https://faucet.paradigm.xyz/. The first derived address will also need test ZRX, which you can mint by running `yarn mint_test_zrx`.
 
 Install dependencies:
 
