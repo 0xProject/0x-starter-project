@@ -20,7 +20,7 @@ import { getRandomFutureDateInSeconds, runMigrationsOnceIfRequiredAsync } from '
  */
 export async function scenarioAsync(): Promise<void> {
     await runMigrationsOnceIfRequiredAsync();
-    PrintUtils.printScenario('Fill ERC20 Taker-Signed Order');
+    PrintUtils.printScenario('Fill ERC20 Taker-Signed OTC Order');
     // Initialize the ContractWrappers, this provides helper functions around calling
     // 0x contracts as well as ERC20/ERC721 token contracts on the blockchain.
     const contractWrappers = new ContractWrappers(providerEngine, { chainId: NETWORK_CONFIGS.chainId });
@@ -53,20 +53,21 @@ export async function scenarioAsync(): Promise<void> {
     const erc20Token = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     const makerZRXApprovalTxHash = await erc20Token
         .approve(exchangeProxyAddress, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: maker });
+        .sendTransactionAsync({ from: maker, ...TX_DEFAULTS });
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
 
     // Allow the 0x Exchange Proxy to move WETH on behalf of the taker
     const etherToken = contractWrappers.weth9;
     const takerWETHApprovalTxHash = await etherToken
         .approve(exchangeProxyAddress, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: taker });
+        .sendTransactionAsync({ from: taker, ...TX_DEFAULTS });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
     const takerWETHDepositTxHash = await etherToken.deposit().sendTransactionAsync({
         from: taker,
         value: takerAssetAmount,
+        ...TX_DEFAULTS,
     });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Deposit', takerWETHDepositTxHash);
 
@@ -78,8 +79,10 @@ export async function scenarioAsync(): Promise<void> {
 
     // Set up the Order and fill it
     const randomExpiration = getRandomFutureDateInSeconds();
-    const nonce = new BigNumber(1);
     const nonceBucket = new BigNumber(0);
+    const nonce = (await contractWrappers.exchangeProxy
+        .lastOtcTxOriginNonce(sender, nonceBucket)
+        .callAsync()).plus(1);
 
     const expiryAndNonce = OtcOrder.encodeExpiryAndNonce(randomExpiration, nonceBucket, nonce);
 

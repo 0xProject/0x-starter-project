@@ -49,7 +49,7 @@ async function setUpWethZrxMockResponseAsync(
     // make sure maker has an allowance
     await zrkToken
         .approve(exchangeProxyAddress, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: maker });
+        .awaitTransactionSuccessAsync({ from: maker, ...TX_DEFAULTS });
 
     // Create the order
     const randomExpiration = getRandomFutureDateInSeconds();

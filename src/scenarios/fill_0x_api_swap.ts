@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import axios from 'axios';
 
-import { NETWORK_CONFIGS } from '../configs';
+import { NETWORK_CONFIGS, TX_DEFAULTS } from '../configs';
 import { DECIMALS, MOCK_0x_API_BASE_URL, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
 import { setUpMock0xApiResponsesAsync } from '../mock_0x_api_response_utils';
 import { PrintUtils } from '../print_utils';
@@ -52,7 +52,7 @@ export async function scenarioAsync(): Promise<void> {
     const etherToken = contractWrappers.weth9;
     const takerWETHApprovalTxHash = await etherToken
         .approve(exchangeProxyAddress, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: taker });
+        .sendTransactionAsync({ from: taker, ...TX_DEFAULTS });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract

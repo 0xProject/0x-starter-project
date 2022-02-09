@@ -64,7 +64,7 @@ export async function scenarioAsync(): Promise<void> {
     const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     const makerZRXApprovalTxHash = await zrxToken
         .approve(exchangeProxyAddress, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: maker });
+        .sendTransactionAsync({ from: maker, ...TX_DEFAULTS });
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
     const randomExpiration = getRandomFutureDateInSeconds();
     const pool = hexUtils.leftPad(1);

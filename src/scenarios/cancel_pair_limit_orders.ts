@@ -122,7 +122,7 @@ export async function scenarioAsync(): Promise<void> {
     const minValidZrxWethSalt = sellZrxLimitOrder2.salt.plus(1);
     const cancelZrxWethOrdersTx = await contractWrappers.exchangeProxy.cancelPairLimitOrders(zrxTokenAddress, etherTokenAddress, minValidZrxWethSalt).sendTransactionAsync({
         from: maker,
-        gas: TX_DEFAULTS.gas,
+        ...TX_DEFAULTS,
     });
     const cancelZrxWethOrdersReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('cancelPairLimitOrders', cancelZrxWethOrdersTx);
     printUtils.printTransaction('cancelPairLimitOrder: ZRX-->WETH', cancelZrxWethOrdersReceipt, [
@@ -139,7 +139,7 @@ export async function scenarioAsync(): Promise<void> {
     const minValidWethZrxSalt = sellWethLimitOrder2.salt.plus(1);
     const cancelWethZrxOrdersTx = await contractWrappers.exchangeProxy.cancelPairLimitOrders(etherTokenAddress, zrxTokenAddress, minValidWethZrxSalt).sendTransactionAsync({
         from: maker,
-        gas: TX_DEFAULTS.gas,
+        ...TX_DEFAULTS,
     });
     const cancelWethZrxOrdersReceipt = await printUtils.awaitTransactionMinedSpinnerAsync('cancelPairLimitOrders', cancelWethZrxOrdersTx);
     printUtils.printTransaction('cancelPairLimitOrder: WETH-->ZRX', cancelWethZrxOrdersReceipt, [

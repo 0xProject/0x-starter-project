@@ -42,23 +42,24 @@ export async function scenarioAsync(): Promise<void> {
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
 
     // Allow the 0x Exchange Proxy to move ZRX on behalf of the maker
-    const erc20Token = new ERC20TokenContract(zrxTokenAddress, providerEngine);
-    const makerZRXApprovalTxHash = await erc20Token
+    const zrxToken = new ERC20TokenContract(zrxTokenAddress, providerEngine);
+    const makerZRXApprovalTxHash = await zrxToken
         .approve(contractWrappers.contractAddresses.exchangeProxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: maker });
+        .sendTransactionAsync({ from: maker, ...TX_DEFAULTS });
     await printUtils.awaitTransactionMinedSpinnerAsync('Maker ZRX Approval', makerZRXApprovalTxHash);
 
     // Allow the 0x Exchange Proxy to move WETH on behalf of the taker
     const etherToken = contractWrappers.weth9;
     const takerWETHApprovalTxHash = await etherToken
         .approve(contractWrappers.contractAddresses.exchangeProxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: taker });
+        .sendTransactionAsync({ from: taker, ...TX_DEFAULTS });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
     const takerWETHDepositTxHash = await etherToken.deposit().sendTransactionAsync({
         from: taker,
         value: takerAssetAmount,
+        ...TX_DEFAULTS,
     });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Deposit', takerWETHDepositTxHash);
 
@@ -98,20 +99,24 @@ export async function scenarioAsync(): Promise<void> {
     await printUtils.fetchAndPrintContractBalancesAsync();
 
     // Generate the order hash and sign it
-    const signature = await limitOrder.getSignatureWithProviderAsync(web3Wrapper.getProvider(), SignatureType.EthSign, maker);
+    const signature = await limitOrder.getSignatureWithProviderAsync(
+        web3Wrapper.getProvider(),
+        SignatureType.EthSign,
+        maker,
+    );
 
-    const [
-        { orderHash, status },
-        remainingFillableAmount,
-        isValidSignature,
-    ] = await contractWrappers.exchangeProxy.getLimitOrderRelevantState(limitOrder, signature).callAsync();
+    const [{ orderHash, status }, remainingFillableAmount, isValidSignature] = await contractWrappers.exchangeProxy
+        .getLimitOrderRelevantState(limitOrder, signature)
+        .callAsync();
     if (status === OrderStatus.Fillable && remainingFillableAmount.isGreaterThan(0) && isValidSignature) {
         // Order is fillable
     }
 
     // get the protocol fee multiplier
     // protocol fee = multiplier * gasPrice * numOrders
-    const protocolFeeMultiplier = new BigNumber(await contractWrappers.exchangeProxy.getProtocolFeeMultiplier().callAsync());
+    const protocolFeeMultiplier = new BigNumber(
+        await contractWrappers.exchangeProxy.getProtocolFeeMultiplier().callAsync(),
+    );
 
     // Fill the Order via 0x Exchange Proxy contract
     const txHash = await contractWrappers.exchangeProxy
