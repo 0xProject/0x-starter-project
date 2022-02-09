@@ -20,6 +20,7 @@ export const getRandomFutureDateInSeconds = (): BigNumber => {
 
 export const runMigrationsOnceIfRequiredAsync = async (): Promise<void> => {
     if (NETWORK_CONFIGS === GANACHE_CONFIGS) {
+        console.log('shouldnt be here');
         const web3Wrapper = new Web3Wrapper(providerEngine);
         const [owner] = await web3Wrapper.getAvailableAddressesAsync();
         await runMigrationsOnceAsync(providerEngine, { from: owner });

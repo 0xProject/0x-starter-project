@@ -57,20 +57,21 @@ export async function scenarioAsync(): Promise<void> {
     const erc20Token = new ERC20TokenContract(zrxTokenAddress, providerEngine);
     const makerZRXApprovalTxHash = await erc20Token
         .approve(exchangeProxyAddress, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: makerWallet });
+        .sendTransactionAsync({ from: makerWallet, ...TX_DEFAULTS });
     await printUtils.awaitTransactionMinedSpinnerAsync('MakerWallet ZRX Approval', makerZRXApprovalTxHash);
 
     // Allow the 0x Exchange Proxy to move WETH on behalf of the taker
     const etherToken = contractWrappers.weth9;
     const takerWETHApprovalTxHash = await etherToken
         .approve(exchangeProxyAddress, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-        .sendTransactionAsync({ from: taker });
+        .sendTransactionAsync({ from: taker, ...TX_DEFAULTS });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Approval', takerWETHApprovalTxHash);
 
     // Convert ETH into WETH for taker by depositing ETH into the WETH contract
     const takerWETHDepositTxHash = await etherToken.deposit().sendTransactionAsync({
         from: taker,
         value: takerAssetAmount,
+        ...TX_DEFAULTS,
     });
     await printUtils.awaitTransactionMinedSpinnerAsync('Taker WETH Deposit', takerWETHDepositTxHash);
 

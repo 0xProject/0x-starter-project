@@ -28,7 +28,9 @@ This repository contains a bunch of scenarios that you can run from the command-
 
 By default this project uses the 0x development mnemonic running against Ganache. This project can be configured to use a different mnenonic and also run against Kovan testnet.
 
-You may choose to update the mnemonic in `src/configs.ts` or use the one provided (note if many people use this mnemonic on Kovan then the funds may be drained). When changing the mnemonic ensure that the account has available funds (ETH and ZRX) on the respective network. You can request ZRX and ETH from the 0x Faucet located in [0x Portal](https://0xproject.com/portal/account).
+You may choose to update the mnemonic in `src/configs.ts` or use the one provided (note if many people use this mnemonic on Ropsten then the funds may be drained).
+
+When changing the mnemonic ensure that the first three derived address have test ETH. You can request ETH from the https://faucet.paradigm.xyz/. The first derived address will also need test ZRX, which you can mint by running `yarn mint_test_zrx`.
 
 Install dependencies:
 
@@ -56,9 +58,11 @@ yarn scenario:all
 
 All the scenarios commands can be found in the `package.json`'s `scripts` section and begin with `scenario:`.
 
-### Switching to Kovan
+### Switching to Ropsten
 
-To switch between Kovan/ganache, change the last line in `src/configs.ts` and re-build. Ganache is enabled by default.
+To switch between Ropsten/ganache, change the last line in `src/configs.ts` and re-build. Ganache is enabled by default.
+
+For Ropsten, you'll also need to provide a value for `ROPSTEN_RPC_URL` in `.env` (copy `.env.example` to create `.env`). You can obtain an API key from [Alchemy](https://www.alchemy.com/).
 
 For Ganache:
 
@@ -69,7 +73,7 @@ export const NETWORK_CONFIGS = GANACHE_CONFIGS;
 For Kovan:
 
 ```
-export const NETWORK_CONFIGS = KOVAN_CONFIGS;
+export const NETWORK_CONFIGS = ROPSTEN_CONFIGS;
 ```
 
 ### Windows Development Setup

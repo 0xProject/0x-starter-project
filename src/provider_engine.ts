@@ -6,6 +6,7 @@ import { BASE_DERIVATION_PATH, GANACHE_CONFIGS, MNEMONIC, NETWORK_CONFIGS } from
 export const mnemonicWallet = new MnemonicWalletSubprovider({
     mnemonic: MNEMONIC,
     baseDerivationPath: BASE_DERIVATION_PATH,
+    chainId: NETWORK_CONFIGS.chainId,
 });
 
 const determineProvider = (): Web3ProviderEngine => {
